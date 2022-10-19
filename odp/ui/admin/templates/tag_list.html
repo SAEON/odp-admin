@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block web_title %}
+    {{ super() }} |
+    {% block heading %}
+        Tags
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% from 'macros.html' import render_table %}
+    {% call(tag) render_table(tags, 'Cardinality', 'Public', 'Scope') %}
+        <td>{{ tag.cardinality }}</td>
+        <td>{{ tag.public }}</td>
+        <td>{{ tag.scope_id }}</td>
+    {% endcall %}
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import render_info, render_table, render_audit_table, render_item_delete_form %}
+
+{% block web_title %}
+    {{ super() }} |
+    {% block heading %}
+        Vocabulary: {{ vocabulary.id }}
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#terms" type="button" role="tab">
+                Terms
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">
+                Info
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#schema" type="button" role="tab">
+                Schema
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#audit-log" type="button" role="tab">
+                Audit Log
+            </button>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div id="terms" class="tab-pane fade show active" role="tabpanel">
+            {% if vocabulary.id == 'Infrastructure' %}
+                {{ render_terms(terms, '.create_infrastructure_term', '.edit_infrastructure_term', '.delete_infrastructure_term',
+                   name='Name', description='Description') }}
+            {% elif vocabulary.id == 'Project' %}
+                {{ render_terms(terms, '.create_project_term', '.edit_project_term', '.delete_project_term',
+                   title='Title', description='Description') }}
+            {% endif %}
+        </div>
+        <div id="info" class="tab-pane fade" role="tabpanel">
+            {% call(prop) render_info(vocabulary, 'Scope', 'Schema URI') %}
+                {% if prop == 'Scope' %}
+                    {{ vocabulary.scope_id }}
+                {% elif prop == 'Schema URI' %}
+                    {{ vocabulary.schema_uri }}
+                {% endif %}
+            {% endcall %}
+        </div>
+        <div id="schema" class="tab-pane fade" role="tabpanel">
+            <pre class="m-3">
+                {{- vocabulary.schema_|format_json -}}
+            </pre>
+        </div>
+        <div id="audit-log" class="tab-pane fade" role="tabpanel">
+            {% call(audit_record) render_audit_table(audit_records) %}
+                <a href="{{ url_for('.view_audit_detail', id=vocabulary.id, audit_id=audit_record.audit_id) }}" class="text-decoration-none">
+                    {{ audit_record.term_id }}
+                </a>
+            {% endcall %}
+        </div>
+    </div>
+{% endblock %}
+
+{% macro render_terms(terms, create_view, edit_view, delete_view) %}
+    {% set cols = ['Id'] + kwargs.values()|list + [''] %}
+    {% set fields = kwargs.keys() %}
+    {% call(term) render_table(terms, columns=cols, hide_id=True) %}
+        <th>
+            <a href="{{ url_for(edit_view, id=term.id) }}" class="text-decoration-none">
+                {{ term.id }}
+            </a>
+        </th>
+        {% for field in fields %}
+            <td>{{ term.data[field] }}</td>
+        {% endfor %}
+        <td class="text-end">
+            {{ render_item_delete_form(delete_view, 'term', id=term.id) }}
+        </td>
+    {% endcall %}
+    <div class="btn-toolbar justify-content-between mt-4">
+        <a href="{{ url_for(create_view) }}" class="btn btn-outline-success btn-action">
+            Add
+        </a>
+    </div>
+{% endmacro %}

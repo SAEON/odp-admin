@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import render_info, render_buttons, render_button_prompt_form,
+    render_table, render_tag_table, render_audit_table, render_item_delete_form, obj_link %}
+
+{% block web_title %}
+    {{ super() }} |
+    {% block heading %}
+        Collection: {{ collection.name }}
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">
+                Info
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#projects" type="button" role="tab">
+                Projects
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#infrastructures" type="button" role="tab">
+                Infrastructures
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#audit-log" type="button" role="tab">
+                Audit Log
+            </button>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div id="info" class="tab-pane fade show active" role="tabpanel">
+            {% call(prop) render_info(collection, 'Name', 'Provider', 'DOI key', 'Records',
+                    'Ready', 'Frozen', 'Indexed', 'Projects', 'Infrastructures', 'Timestamp') %}
+                {% if prop == 'Name' %}
+                    {{ collection.name }}
+                {% elif prop == 'Provider' %}
+                    {{ obj_link('providers', collection.provider_id) }}
+                {% elif prop == 'DOI key' %}
+                    {{ collection.doi_key if collection.doi_key }}
+                {% elif prop == 'Records' %}
+                    <a href="{{ url_for('records.index', collection=collection.id) }}" class="text-decoration-none">
+                        {{ collection.record_count }}
+                    </a>
+                {% elif prop == 'Ready' %}
+                    {% if ready_tag %}
+                        {{ ready_tag.timestamp|timestamp }} by {{ obj_link('users', ready_tag.user_id, ready_tag.user_name) }}
+                    {% endif %}
+                {% elif prop == 'Frozen' %}
+                    {% if frozen_tag %}
+                        {{ frozen_tag.timestamp|timestamp }} by {{ obj_link('users', frozen_tag.user_id, frozen_tag.user_name) }}
+                    {% endif %}
+                {% elif prop == 'Indexed' %}
+                    {% if notindexed_tag %}
+                        False: tagged as not searchable at {{ notindexed_tag.timestamp|timestamp }} by {{ obj_link('users', notindexed_tag.user_id, notindexed_tag.user_name) }}
+                    {% else %}
+                        True
+                    {% endif %}
+                {% elif prop == 'Projects' %}
+                    {{ project_tags['items']|map(attribute='data.project')|sort|join(', ') }}
+                {% elif prop == 'Infrastructures' %}
+                    {{ infrastructure_tags['items']|map(attribute='data.infrastructure')|sort|join(', ') }}
+                {% elif prop == 'Timestamp' %}
+                    {{ collection.timestamp|timestamp }}
+                {% endif %}
+            {% endcall %}
+
+            {% if ready_tag %}
+                {% set ready_btn = ['unready'] %}
+            {% else %}
+                {% set ready_btn = ['ready'] %}
+            {% endif %}
+
+            {% if frozen_tag %}
+                {% set freeze_btn = ['unfreeze'] %}
+            {% else %}
+                {% set freeze_btn = ['freeze'] %}
+            {% endif %}
+
+            {% if notindexed_tag %}
+                {% set noindex_btn = ['index'] %}
+            {% else %}
+                {% set noindex_btn = ['unindex'] %}
+            {% endif %}
+
+            {% call(btn) render_buttons(collection, edit=True, delete=True, custom=ready_btn + freeze_btn + noindex_btn) %}
+                {% if btn == 'ready' %}
+                    {{ render_button_prompt_form('.tag_ready', collection.id, 'Ready', 'success',
+                        'Are you sure you want to tag the collection as ready for publication?') }}
+                {% elif btn == 'unready' %}
+                    {{ render_button_prompt_form('.untag_ready', collection.id, 'Un-ready', 'warning',
+                        'Are you sure you want to remove the ready for publication tag?') }}
+
+                {% elif btn == 'freeze' %}
+                    {{ render_button_prompt_form('.tag_frozen', collection.id, 'Freeze', 'warning',
+                        'Are you sure you want to freeze the collection?') }}
+                {% elif btn == 'unfreeze' %}
+                    {{ render_button_prompt_form('.untag_frozen', collection.id, 'Un-freeze', 'success',
+                        'Are you sure you want to un-freeze the collection?') }}
+
+                {% elif btn == 'unindex' %}
+                    {{ render_button_prompt_form('.tag_notindexed', collection.id, 'Un-index', 'warning',
+                        'Are you sure you want to tag the collection as not searchable?') }}
+                {% elif btn == 'index' %}
+                    {{ render_button_prompt_form('.untag_notindexed', collection.id, 'Index', 'success',
+                        'Are you sure you want the collection to be searchable?') }}
+                {% endif %}
+            {% endcall %}
+        </div>
+        <div id="projects" class="tab-pane fade" role="tabpanel">
+            {{ render_tag_table(collection, project_tags, '.tag_project', '.untag_project',
+               project='Project', comment='Comment') }}
+        </div>
+        <div id="infrastructures" class="tab-pane fade" role="tabpanel">
+            {{ render_tag_table(collection, infrastructure_tags, '.tag_infrastructure', '.untag_infrastructure',
+               infrastructure='Infrastructure', comment='Comment') }}
+        </div>
+        <div id="audit-log" class="tab-pane fade" role="tabpanel">
+            {% call(audit_record) render_audit_table(audit_records) %}
+                {% if audit_record.table == 'collection' %}
+                    <a href="{{ url_for('.view_audit_detail', id=collection.id, collection_audit_id=audit_record.audit_id) }}" class="text-decoration-none">
+                        Collection
+                    </a>
+                {% elif audit_record.table == 'collection_tag' %}
+                    <a href="{{ url_for('.view_tag_audit_detail', id=collection.id, collection_tag_audit_id=audit_record.audit_id) }}" class="text-decoration-none">
+                        {{ audit_record.tag_id }}
+                    </a>
+                {% endif %}
+            {% endcall %}
+        </div>
+    </div>
+{% endblock %}

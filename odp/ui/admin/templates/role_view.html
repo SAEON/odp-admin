@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block web_title %}
+    {{ super() }} |
+    {% block heading %}
+        Role: {{ role.id }}
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% from 'macros.html' import render_info, render_buttons, obj_link %}
+    {% call(prop) render_info(role, 'Collection', 'Scope') %}
+        {% if prop == 'Collection' %}
+            {{ obj_link('collections', role.collection_id) }}
+        {% elif prop == 'Scope' %}
+            {{ role.scope_ids|sort|join('<br/>')|safe }}
+        {% endif %}
+    {% endcall %}
+    {{ render_buttons(role, edit=True, delete=True) }}
+{% endblock %}

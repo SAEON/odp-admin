@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block web_title %}
+    {{ super() }} |
+    {% block heading %}
+        {% if client %}
+            Client: {{ client.name }}
+        {% else %}
+            Create Client
+        {% endif %}
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% from 'macros.html' import render_form %}
+    {{ render_form(form, client, ['grant_types', 'response_types', 'redirect_uris',
+        'post_logout_redirect_uris', 'token_endpoint_auth_method', 'allowed_cors_origins']) }}
+{% endblock %}

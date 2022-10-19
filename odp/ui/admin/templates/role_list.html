@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block web_title %}
+    {{ super() }} |
+    {% block heading %}
+        Roles
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% from 'macros.html' import render_table, render_buttons, obj_link %}
+    {{ render_buttons(create=True) }}
+    {% call(role) render_table(roles, 'Collection') %}
+        <td>{{ obj_link('collections', role.collection_id) }}</td>
+    {% endcall %}
+{% endblock %}

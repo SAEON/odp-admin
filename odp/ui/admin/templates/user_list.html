@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block web_title %}
+    {{ super() }} |
+    {% block heading %}
+        Users
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% from 'macros.html' import render_table, obj_link, obj_links %}
+    {% call(user) render_table(users, 'Name', 'Email', 'Verified', 'Active', 'Roles', hide_id=True) %}
+        <th scope="row">{{ obj_link('users', user.id, user.name) }}</th>
+        <td>{{ user.email }}</td>
+        <td>{{ user.verified }}</td>
+        <td>{{ user.active }}</td>
+        <td>{{ obj_links('roles', user.role_ids) }}</td>
+    {% endcall %}
+{% endblock %}

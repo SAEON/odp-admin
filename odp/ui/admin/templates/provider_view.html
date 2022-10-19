@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block web_title %}
+    {{ super() }} |
+    {% block heading %}
+        Provider: {{ provider.name }}
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% from 'macros.html' import render_info, render_buttons, obj_links %}
+    {% call(prop) render_info(provider, 'Name', 'Collections') %}
+        {% if prop == 'Name' %}
+            {{ provider.name }}
+        {% elif prop == 'Collections' %}
+            {{ obj_links('collections', provider.collection_ids, newlines=True) }}
+        {% endif %}
+    {% endcall %}
+    {{ render_buttons(provider, edit=True, delete=True) }}
+{% endblock %}

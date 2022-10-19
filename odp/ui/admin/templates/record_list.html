@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block web_title %}
+    {{ super() }} |
+    {% block heading %}
+        Records
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% from 'macros.html' import render_table, render_buttons, render_field, obj_link %}
+    {% call(btn) render_buttons(create=True, custom=['filter']) %}
+        {% if btn == 'filter' %}
+            <a href="#collapse-filter" data-bs-toggle="collapse" class="btn btn-outline-info btn-action">
+                Filter
+            </a>
+        {% endif %}
+    {% endcall %}
+    <div id="collapse-filter" class="container-fluid collapse">
+        <form action="{{ url_for('.index') }}" method="get">
+            <div class="row">
+                <div class="col">
+                    {% for field in filter_form if field.id in ('id_q', 'title_q') %}
+                        <div class="row">
+                            {{ render_field(field) }}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="col">
+                    {% set field = filter_form | selectattr('id', '==', 'collection') | first %}
+                    {{ render_field(field) }}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-outline-info btn-action">
+                Apply
+            </button>
+        </form>
+    </div>
+    {% call(record) render_table(records, 'Identifier', 'Title', 'Collection', 'Schema', 'Valid',
+            'Published', hide_id=True, filter_=filter_) %}
+        <th scope="row">{{ obj_link('records', record.id, record.doi or record.sid) }}</th>
+        <td>
+            {% if record.schema_id == 'SAEON.DataCite.4' %}
+                {% if 'titles' in record.metadata %}
+                    {{ record.metadata.titles[0].title }}
+                {% endif %}
+            {% elif record.schema_id == 'SAEON.ISO19115' %}
+                {{ record.metadata.title }}
+            {% endif %}
+        </td>
+        <td>{{ obj_link('collections', record.collection_id) }}</td>
+        <td>{{ obj_link('schemas', record.schema_id) }}</td>
+        <td>{{ '&#9989;'|safe if record.validity.valid else '&#10060;'|safe }}</td>
+        <td>
+            {% for catalog_id in record.published_catalog_ids %}
+                <a href="{{ url_for('.view_catalog_record', id=record.id, catalog_id=catalog_id) }}">
+                    {% if catalog_id == 'SAEON' %}
+                        <img src="{{ url_for('static', filename='nrf-favicon.ico') }}" height="20">
+                    {% elif catalog_id == 'DataCite' %}
+                        <img src="{{ url_for('static', filename='datacite-logo.svg') }}" height="20">
+                    {% endif %}
+                </a>
+            {% endfor %}
+        </td>
+    {% endcall %}
+{% endblock %}

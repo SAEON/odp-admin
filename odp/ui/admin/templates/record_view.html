@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import render_info, render_buttons, render_table, render_tag_table,
+    render_audit_table, render_item_delete_form, render_button_prompt_form, obj_link %}
+
+{% block web_title %}
+    {{ super() }} |
+    {% block heading %}
+        Record: {{ record.doi or record.sid }}
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">
+                Info
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#metadata" type="button" role="tab">
+                Metadata
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#validity" type="button" role="tab">
+                Validity
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tag-qc" type="button" role="tab">
+                QC
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tag-embargo" type="button" role="tab">
+                Embargo
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tag-notes" type="button" role="tab">
+                Notes
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#catalog-records" type="button" role="tab">
+                Catalog Records
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#audit-log" type="button" role="tab">
+                Audit Log
+            </button>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div id="info" class="tab-pane fade show active" role="tabpanel">
+            {% call(prop) render_info(record, 'DOI', 'SID', 'Collection', 'Schema', 'Migrated', 'Indexed',
+                    'Quality Control', 'Dataset Embargo', 'Retracted', 'Timestamp') %}
+                {% if prop == 'DOI' %}
+                    {{ record.doi if record.doi }}
+                {% elif prop == 'SID' %}
+                    {{ record.sid if record.sid }}
+                {% elif prop == 'Collection' %}
+                    {{ obj_link('collections', record.collection_id) }}
+                {% elif prop == 'Schema' %}
+                    {{ obj_link('schemas', record.schema_id) }}
+                {% elif prop == 'Migrated' %}
+                    {% if migrated_tag %}
+                        {{ migrated_tag.timestamp|timestamp }} from ODP v1 with a status of
+                        {{ 'Published' if migrated_tag.data.published else 'Not Published' }}
+                    {% endif %}
+                {% elif prop == 'Indexed' %}
+                    {% if notindexed_tag %}
+                        False: tagged as not searchable at {{ notindexed_tag.timestamp|timestamp }} by {{ obj_link('users', notindexed_tag.user_id, notindexed_tag.user_name) }}
+                    {% else %}
+                        True
+                    {% endif %}
+                {% elif prop == 'Quality Control' %}
+                    {% for qc_tag in qc_tags['items'] %}
+                        {{ qc_tag.data.pass_|replace('True', 'Passed')|replace('False', 'Failed') }}
+                        by {{ obj_link('users', qc_tag.user_id, qc_tag.user_name) }}<br/>
+                    {% endfor %}
+                {% elif prop == 'Dataset Embargo' %}
+                    {% for embargo_tag in embargo_tags['items'] %}
+                        From {{ embargo_tag.data.start|date }}
+                        to {{ embargo_tag.data.end|date if embargo_tag.data.end else '(no end date)' }}
+                        set by {{ obj_link('users', embargo_tag.user_id, embargo_tag.user_name) }}<br/>
+                    {% endfor %}
+                {% elif prop == 'Retracted' %}
+                    {% if retracted_tag %}
+                        {{ retracted_tag.timestamp|timestamp }} by {{ obj_link('users', retracted_tag.user_id, retracted_tag.user_name) }}
+                    {% endif %}
+                {% elif prop == 'Timestamp' %}
+                    {{ record.timestamp|timestamp }}
+                {% endif %}
+            {% endcall %}
+
+            {% if notindexed_tag %}
+                {% set noindex_btn = ['index'] %}
+            {% else %}
+                {% set noindex_btn = ['unindex'] %}
+            {% endif %}
+
+            {% if retracted_tag %}
+                {% set retract_btn = ['unretract'] %}
+            {% else %}
+                {% set retract_btn = ['retract'] %}
+            {% endif %}
+
+            {% call(btn) render_buttons(record, edit=True, delete=True, custom=noindex_btn + retract_btn) %}
+                {% if btn == 'unindex' %}
+                    {{ render_button_prompt_form('.tag_notindexed', record.id, 'Un-index', 'warning',
+                        'Are you sure you want to tag the record as not searchable?') }}
+                {% elif btn == 'index' %}
+                    {{ render_button_prompt_form('.untag_notindexed', record.id, 'Index', 'success',
+                        'Are you sure you want the record to be searchable?') }}
+
+                {% elif btn == 'retract' %}
+                    {{ render_button_prompt_form('.tag_retracted', record.id, 'Retract', 'danger',
+                        'Are you sure you want to retract the record from public catalogs?') }}
+                {% elif btn == 'unretract' %}
+                    {{ render_button_prompt_form('.untag_retracted', record.id, 'Un-retract', 'success',
+                        'Are you sure you want to cancel the record retraction?') }}
+                {% endif %}
+            {% endcall %}
+        </div>
+        <div id="metadata" class="tab-pane fade" role="tabpanel">
+            <pre class="m-3">
+                {{- record.metadata|format_json -}}
+            </pre>
+        </div>
+        <div id="validity" class="tab-pane fade" role="tabpanel">
+            <pre class="m-3">
+                {{- record.validity|format_json -}}
+            </pre>
+        </div>
+        <div id="tag-qc" class="tab-pane fade" role="tabpanel">
+            {{ render_tag_table(record, qc_tags, '.tag_qc', '.untag_qc',
+               pass_='Pass', comment='Comment') }}
+        </div>
+        <div id="tag-embargo" class="tab-pane fade" role="tabpanel">
+            {{ render_tag_table(record, embargo_tags, '.tag_embargo', '.untag_embargo',
+               start='Start date', end='End date', comment='Comment') }}
+        </div>
+        <div id="tag-notes" class="tab-pane fade" role="tabpanel">
+            {{ render_tag_table(record, note_tags, '.tag_note', '.untag_note',
+               comment='Note') }}
+        </div>
+        <div id="catalog-records" class="tab-pane fade" role="tabpanel">
+            {% call(catalog_record) render_table(catalog_records, 'Catalog', 'Published', 'Reason', 'Timestamp', hide_id=True) %}
+                <td>{{ obj_link('catalogs', catalog_record.catalog_id) }}</td>
+                <td>
+                    <a href="{{ url_for('.view_catalog_record', id=record.id, catalog_id=catalog_record.catalog_id) }}" class="text-decoration-none">
+                        {{ catalog_record.published }}
+                    </a>
+                </td>
+                <td>{{ catalog_record.reason }}</td>
+                <td>{{ catalog_record.timestamp|timestamp }}</td>
+            {% endcall %}
+        </div>
+        <div id="audit-log" class="tab-pane fade" role="tabpanel">
+            {% call(audit_record) render_audit_table(audit_records) %}
+                {% if audit_record.table == 'record' %}
+                    <a href="{{ url_for('.view_audit_detail', id=record.id, record_audit_id=audit_record.audit_id) }}" class="text-decoration-none">
+                        Record
+                    </a>
+                {% elif audit_record.table == 'record_tag' %}
+                    <a href="{{ url_for('.view_tag_audit_detail', id=record.id, record_tag_audit_id=audit_record.audit_id) }}" class="text-decoration-none">
+                        {{ audit_record.tag_id }}
+                    </a>
+                {% endif %}
+            {% endcall %}
+        </div>
+    </div>
+{% endblock %}
