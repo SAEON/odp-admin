@@ -1,2 +1,2 @@
--e git+https://github.com/SAEON/odp-core.git#egg=odp
+-e file:../odp-core
 gunicorn

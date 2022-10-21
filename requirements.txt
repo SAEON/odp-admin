@@ -4,7 +4,7 @@
 #
 #    pip-compile
 #
--e git+https://github.com/SAEON/odp-core.git#egg=odp
+-e file:../odp-core
     # via -r requirements.in
 async-timeout==4.0.2
     # via redis
