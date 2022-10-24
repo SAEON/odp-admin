@@ -4,7 +4,7 @@
 #
 #    pip-compile
 #
--e file:../odp-core
+-e file:../odp-server/odp-core
     # via -r requirements.in
 async-timeout==4.0.2
     # via redis
