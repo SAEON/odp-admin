@@ -1,12 +1,10 @@
 from flask import Flask
 
 from odp.ui.admin.views import catalogs, clients, collections, home, providers, records, roles, schemas, tags, users, vocabularies
-from odp.ui.views import hydra
 
 
 def init_app(app: Flask):
     app.register_blueprint(home.bp)
-    app.register_blueprint(hydra.bp, url_prefix='/oauth2')
     app.register_blueprint(catalogs.bp, url_prefix='/catalogs')
     app.register_blueprint(clients.bp, url_prefix='/clients')
     app.register_blueprint(collections.bp, url_prefix='/collections')

@@ -3,7 +3,7 @@ from wtforms.validators import data_required, input_required, length, optional, 
 
 from odp.const import DOI_REGEX, SID_REGEX
 from odp.const.hydra import GrantType, ResponseType, TokenEndpointAuthMethod
-from odp.ui.forms import BaseForm, DateStringField, JSONTextField, MultiCheckboxField, StringListField, json_object
+from odp.ui.base.forms import BaseForm, DateStringField, JSONTextField, MultiCheckboxField, StringListField, json_object
 
 
 class ClientForm(BaseForm):

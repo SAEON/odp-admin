@@ -3,9 +3,9 @@ import json
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for
 
 from odp.const import ODPRecordTag, ODPScope
-from odp.ui import api
 from odp.ui.admin.forms import RecordFilterForm, RecordForm, RecordTagEmbargoForm, RecordTagNoteForm, RecordTagQCForm
 from odp.ui.admin.views import utils
+from odp.ui.base import api
 
 bp = Blueprint('records', __name__)
 

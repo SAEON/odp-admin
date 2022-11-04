@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request
 
 from odp.const import ODPScope
-from odp.ui import api
+from odp.ui.base import api
 
 bp = Blueprint('catalogs', __name__)
 

@@ -1,9 +1,9 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from odp.const import ODPScope
-from odp.ui import api
 from odp.ui.admin.forms import UserForm
 from odp.ui.admin.views import utils
+from odp.ui.base import api
 
 bp = Blueprint('users', __name__)
 
