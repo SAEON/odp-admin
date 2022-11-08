@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% from 'macros.html' import render_info, render_buttons_2, obj_links %}
 
 {% block web_title %}
     {{ super() }} |
@@ -11,7 +12,6 @@
     {% if user.picture %}
         <img src="{{ user.picture }}" class="mb-3">
     {% endif %}
-    {% from 'macros.html' import render_info, render_buttons, obj_links %}
     {% call(prop) render_info(user, 'Name', 'Email', 'Verified', 'Active', 'Roles') %}
         {% if prop == 'Name' %}
             {{ user.name }}
@@ -25,5 +25,5 @@
             {{ obj_links('roles', user.role_ids, newlines=True) }}
         {% endif %}
     {% endcall %}
-    {{ render_buttons(user, edit=True, delete=True) }}
+    {{ render_buttons_2(buttons) }}
 {% endblock %}

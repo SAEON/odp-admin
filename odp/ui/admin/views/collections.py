@@ -5,6 +5,7 @@ from odp.const import ODPCollectionTag, ODPScope, ODPVocabulary
 from odp.ui.admin.forms import CollectionForm, CollectionTagInfrastructureForm, CollectionTagProjectForm
 from odp.ui.admin.views import utils
 from odp.ui.base import api
+from odp.ui.base.templates import create_btn
 
 bp = Blueprint('collections', __name__)
 
@@ -14,7 +15,13 @@ bp = Blueprint('collections', __name__)
 def index():
     page = request.args.get('page', 1)
     collections = api.get(f'/collection/?page={page}')
-    return render_template('collection_list.html', collections=collections)
+    return render_template(
+        'collection_list.html',
+        collections=collections,
+        buttons=[
+            create_btn(enabled=ODPScope.COLLECTION_ADMIN in g.user_permissions),
+        ]
+    )
 
 
 @bp.route('/<id>')
