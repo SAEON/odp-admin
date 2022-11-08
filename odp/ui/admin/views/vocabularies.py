@@ -1,5 +1,6 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
+from odp.client import ODPAPIError
 from odp.const import ODPScope, ODPVocabulary
 from odp.ui.admin.forms import VocabularyTermInfrastructureForm, VocabularyTermProjectForm
 from odp.ui.admin.views import utils
@@ -9,7 +10,7 @@ bp = Blueprint('vocabularies', __name__)
 
 
 @bp.route('/')
-@api.client(ODPScope.VOCABULARY_READ)
+@api.view(ODPScope.VOCABULARY_READ)
 def index():
     page = request.args.get('page', 1)
     vocabularies = api.get(f'/vocabulary/?page={page}')
@@ -17,7 +18,7 @@ def index():
 
 
 @bp.route('/<id>')
-@api.client(ODPScope.VOCABULARY_READ)
+@api.view(ODPScope.VOCABULARY_READ)
 def view(id):
     vocabulary = api.get(f'/vocabulary/{id}')
     audit_records = api.get(f'/vocabulary/{id}/audit')
@@ -31,44 +32,44 @@ def view(id):
 
 
 @bp.route('/<id>/audit/<audit_id>')
-@api.client(ODPScope.VOCABULARY_READ)
+@api.view(ODPScope.VOCABULARY_READ)
 def view_audit_detail(id, audit_id):
     audit_detail = api.get(f'/vocabulary/{id}/audit/{audit_id}')
     return render_template('vocabulary_audit_view.html', audit=audit_detail)
 
 
 @bp.route(f'/{ODPVocabulary.INFRASTRUCTURE}/new', methods=('GET', 'POST'))
-@api.client(ODPScope.VOCABULARY_INFRASTRUCTURE)
+@api.view(ODPScope.VOCABULARY_INFRASTRUCTURE)
 def create_infrastructure_term():
     return _create_term(ODPVocabulary.INFRASTRUCTURE.value, VocabularyTermInfrastructureForm, 'name', 'description')
 
 
 @bp.route(f'/{ODPVocabulary.INFRASTRUCTURE}/<id>/edit', methods=('GET', 'POST'))
-@api.client(ODPScope.VOCABULARY_INFRASTRUCTURE)
+@api.view(ODPScope.VOCABULARY_INFRASTRUCTURE)
 def edit_infrastructure_term(id):
     return _edit_term(ODPVocabulary.INFRASTRUCTURE.value, id, VocabularyTermInfrastructureForm, 'name', 'description')
 
 
 @bp.route(f'/{ODPVocabulary.INFRASTRUCTURE}/<id>/delete', methods=('POST',))
-@api.client(ODPScope.VOCABULARY_INFRASTRUCTURE, fallback_to_referrer=True)
+@api.view(ODPScope.VOCABULARY_INFRASTRUCTURE, fallback_to_referrer=True)
 def delete_infrastructure_term(id):
     return _delete_term(ODPVocabulary.INFRASTRUCTURE.value, id)
 
 
 @bp.route(f'/{ODPVocabulary.PROJECT}/new', methods=('GET', 'POST'))
-@api.client(ODPScope.VOCABULARY_PROJECT)
+@api.view(ODPScope.VOCABULARY_PROJECT)
 def create_project_term():
     return _create_term(ODPVocabulary.PROJECT.value, VocabularyTermProjectForm, 'title', 'description')
 
 
 @bp.route(f'/{ODPVocabulary.PROJECT}/<id>/edit', methods=('GET', 'POST'))
-@api.client(ODPScope.VOCABULARY_PROJECT)
+@api.view(ODPScope.VOCABULARY_PROJECT)
 def edit_project_term(id):
     return _edit_term(ODPVocabulary.PROJECT.value, id, VocabularyTermProjectForm, 'title', 'description')
 
 
 @bp.route(f'/{ODPVocabulary.PROJECT}/<id>/delete', methods=('POST',))
-@api.client(ODPScope.VOCABULARY_PROJECT, fallback_to_referrer=True)
+@api.view(ODPScope.VOCABULARY_PROJECT, fallback_to_referrer=True)
 def delete_project_term(id):
     return _delete_term(ODPVocabulary.PROJECT.value, id)
 
@@ -89,7 +90,7 @@ def _create_term(vocab_id, form_cls, *data_fields):
             flash(f'{vocab_id} {id} has been created.', category='success')
             return redirect(url_for('.view', id=vocab_id))
 
-        except api.ODPAPIError as e:
+        except ODPAPIError as e:
             if response := api.handle_error(e):
                 return response
 
@@ -117,7 +118,7 @@ def _edit_term(vocab_id, term_id, form_cls, *data_fields):
             flash(f'{vocab_id} {term_id} has been updated.', category='success')
             return redirect(url_for('.view', id=vocab_id))
 
-        except api.ODPAPIError as e:
+        except ODPAPIError as e:
             if response := api.handle_error(e):
                 return response
 

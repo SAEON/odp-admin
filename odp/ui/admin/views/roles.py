@@ -1,5 +1,6 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
+from odp.client import ODPAPIError
 from odp.const import ODPScope
 from odp.ui.admin.forms import RoleForm
 from odp.ui.admin.views import utils
@@ -9,7 +10,7 @@ bp = Blueprint('roles', __name__)
 
 
 @bp.route('/')
-@api.client(ODPScope.ROLE_READ)
+@api.view(ODPScope.ROLE_READ)
 def index():
     page = request.args.get('page', 1)
     roles = api.get(f'/role/?page={page}')
@@ -17,14 +18,14 @@ def index():
 
 
 @bp.route('/<id>')
-@api.client(ODPScope.ROLE_READ)
+@api.view(ODPScope.ROLE_READ)
 def view(id):
     role = api.get(f'/role/{id}')
     return render_template('role_view.html', role=role)
 
 
 @bp.route('/new', methods=('GET', 'POST'))
-@api.client(ODPScope.ROLE_ADMIN)
+@api.view(ODPScope.ROLE_ADMIN)
 def create():
     form = RoleForm(request.form)
     utils.populate_collection_choices(form.collection_id, include_none=True)
@@ -40,7 +41,7 @@ def create():
             flash(f'Role {id} has been created.', category='success')
             return redirect(url_for('.view', id=id))
 
-        except api.ODPAPIError as e:
+        except ODPAPIError as e:
             if response := api.handle_error(e):
                 return response
 
@@ -48,7 +49,7 @@ def create():
 
 
 @bp.route('/<id>/edit', methods=('GET', 'POST'))
-@api.client(ODPScope.ROLE_ADMIN)
+@api.view(ODPScope.ROLE_ADMIN)
 def edit(id):
     role = api.get(f'/role/{id}')
 
@@ -72,7 +73,7 @@ def edit(id):
             flash(f'Role {id} has been updated.', category='success')
             return redirect(url_for('.view', id=id))
 
-        except api.ODPAPIError as e:
+        except ODPAPIError as e:
             if response := api.handle_error(e):
                 return response
 
@@ -80,7 +81,7 @@ def edit(id):
 
 
 @bp.route('/<id>/delete', methods=('POST',))
-@api.client(ODPScope.ROLE_ADMIN)
+@api.view(ODPScope.ROLE_ADMIN)
 def delete(id):
     api.delete(f'/role/{id}')
     flash(f'Role {id} has been deleted.', category='success')

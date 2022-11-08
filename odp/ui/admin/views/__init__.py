@@ -1,9 +1,9 @@
 from flask import Flask
 
-from odp.ui.admin.views import catalogs, clients, collections, home, providers, records, roles, schemas, tags, users, vocabularies
-
 
 def init_app(app: Flask):
+    from . import catalogs, clients, collections, home, providers, records, roles, schemas, tags, users, vocabularies
+
     app.register_blueprint(home.bp)
     app.register_blueprint(catalogs.bp, url_prefix='/catalogs')
     app.register_blueprint(clients.bp, url_prefix='/clients')

@@ -1,6 +1,7 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from wtforms.validators import input_required
 
+from odp.client import ODPAPIError
 from odp.const import ODPScope
 from odp.ui.admin.forms import ClientForm
 from odp.ui.admin.views import utils
@@ -10,7 +11,7 @@ bp = Blueprint('clients', __name__)
 
 
 @bp.route('/')
-@api.client(ODPScope.CLIENT_READ)
+@api.view(ODPScope.CLIENT_READ)
 def index():
     page = request.args.get('page', 1)
     clients = api.get(f'/client/?page={page}')
@@ -18,14 +19,14 @@ def index():
 
 
 @bp.route('/<id>')
-@api.client(ODPScope.CLIENT_READ)
+@api.view(ODPScope.CLIENT_READ)
 def view(id):
     client = api.get(f'/client/{id}')
     return render_template('client_view.html', client=client)
 
 
 @bp.route('/new', methods=('GET', 'POST'))
-@api.client(ODPScope.CLIENT_ADMIN)
+@api.view(ODPScope.CLIENT_ADMIN)
 def create():
     form = ClientForm(request.form)
     form.secret.validators = [input_required()]
@@ -50,7 +51,7 @@ def create():
             flash(f'Client {id} has been created.', category='success')
             return redirect(url_for('.view', id=id))
 
-        except api.ODPAPIError as e:
+        except ODPAPIError as e:
             if response := api.handle_error(e):
                 return response
 
@@ -58,7 +59,7 @@ def create():
 
 
 @bp.route('/<id>/edit', methods=('GET', 'POST'))
-@api.client(ODPScope.CLIENT_ADMIN)
+@api.view(ODPScope.CLIENT_ADMIN)
 def edit(id):
     client = api.get(f'/client/{id}')
 
@@ -91,7 +92,7 @@ def edit(id):
             flash(f'Client {id} has been updated.', category='success')
             return redirect(url_for('.view', id=id))
 
-        except api.ODPAPIError as e:
+        except ODPAPIError as e:
             if response := api.handle_error(e):
                 return response
 
@@ -99,7 +100,7 @@ def edit(id):
 
 
 @bp.route('/<id>/delete', methods=('POST',))
-@api.client(ODPScope.CLIENT_ADMIN)
+@api.view(ODPScope.CLIENT_ADMIN)
 def delete(id):
     api.delete(f'/client/{id}')
     flash(f'Client {id} has been deleted.', category='success')

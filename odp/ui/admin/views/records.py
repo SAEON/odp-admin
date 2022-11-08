@@ -2,6 +2,7 @@ import json
 
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for
 
+from odp.client import ODPAPIError
 from odp.const import ODPRecordTag, ODPScope
 from odp.ui.admin.forms import RecordFilterForm, RecordForm, RecordTagEmbargoForm, RecordTagNoteForm, RecordTagQCForm
 from odp.ui.admin.views import utils
@@ -11,7 +12,7 @@ bp = Blueprint('records', __name__)
 
 
 @bp.route('/')
-@api.client(ODPScope.RECORD_READ)
+@api.view(ODPScope.RECORD_READ)
 def index():
     page = request.args.get('page', 1)
     id_q = request.args.get('id_q')
@@ -43,7 +44,7 @@ def index():
 
 
 @bp.route('/<id>')
-@api.client(ODPScope.RECORD_READ)
+@api.view(ODPScope.RECORD_READ)
 def view(id):
     record = api.get(f'/record/{id}')
     catalog_records = api.get(f'/record/{id}/catalog')
@@ -64,7 +65,7 @@ def view(id):
 
 
 @bp.route('/new', methods=('GET', 'POST'))
-@api.client(ODPScope.RECORD_ADMIN, ODPScope.RECORD_WRITE)
+@api.view(ODPScope.RECORD_ADMIN, ODPScope.RECORD_WRITE)
 def create():
     form = RecordForm(request.form)
     utils.populate_collection_choices(form.collection_id, include_none=True)
@@ -86,7 +87,7 @@ def create():
             flash(f'Record {doi or sid} has been created.', category='success')
             return redirect(url_for('.view', id=record['id']))
 
-        except api.ODPAPIError as e:
+        except ODPAPIError as e:
             if response := api.handle_error(e):
                 return response
 
@@ -94,7 +95,7 @@ def create():
 
 
 @bp.route('/<id>/edit', methods=('GET', 'POST'))
-@api.client(ODPScope.RECORD_ADMIN, ODPScope.RECORD_WRITE)
+@api.view(ODPScope.RECORD_ADMIN, ODPScope.RECORD_WRITE)
 def edit(id):
     record = api.get(f'/record/{id}')
 
@@ -118,7 +119,7 @@ def edit(id):
             flash(f'Record {doi or sid} has been updated.', category='success')
             return redirect(url_for('.view', id=id))
 
-        except api.ODPAPIError as e:
+        except ODPAPIError as e:
             if response := api.handle_error(e):
                 return response
 
@@ -126,7 +127,7 @@ def edit(id):
 
 
 @bp.route('/<id>/delete', methods=('POST',))
-@api.client(ODPScope.RECORD_ADMIN, ODPScope.RECORD_WRITE)
+@api.view(ODPScope.RECORD_ADMIN, ODPScope.RECORD_WRITE)
 def delete(id):
     api_route = '/record/'
     if ODPScope.RECORD_ADMIN in g.user_permissions:
@@ -138,7 +139,7 @@ def delete(id):
 
 
 @bp.route('/<id>/tag/qc', methods=('GET', 'POST'))
-@api.client(ODPScope.RECORD_QC)
+@api.view(ODPScope.RECORD_QC)
 def tag_qc(id):
     record = api.get(f'/record/{id}')
 
@@ -162,7 +163,7 @@ def tag_qc(id):
             flash(f'{ODPRecordTag.QC} tag has been set.', category='success')
             return redirect(url_for('.view', id=id))
 
-        except api.ODPAPIError as e:
+        except ODPAPIError as e:
             if response := api.handle_error(e):
                 return response
 
@@ -170,7 +171,7 @@ def tag_qc(id):
 
 
 @bp.route('/<id>/untag/qc/<tag_instance_id>', methods=('POST',))
-@api.client(ODPScope.RECORD_QC, ODPScope.RECORD_ADMIN, fallback_to_referrer=True)
+@api.view(ODPScope.RECORD_QC, ODPScope.RECORD_ADMIN, fallback_to_referrer=True)
 def untag_qc(id, tag_instance_id):
     api_route = '/record/'
     if ODPScope.RECORD_ADMIN in g.user_permissions:
@@ -182,7 +183,7 @@ def untag_qc(id, tag_instance_id):
 
 
 @bp.route('/<id>/tag/note', methods=('GET', 'POST'))
-@api.client(ODPScope.RECORD_NOTE)
+@api.view(ODPScope.RECORD_NOTE)
 def tag_note(id):
     record = api.get(f'/record/{id}')
 
@@ -203,7 +204,7 @@ def tag_note(id):
             flash(f'{ODPRecordTag.NOTE} tag has been set.', category='success')
             return redirect(url_for('.view', id=id))
 
-        except api.ODPAPIError as e:
+        except ODPAPIError as e:
             if response := api.handle_error(e):
                 return response
 
@@ -211,7 +212,7 @@ def tag_note(id):
 
 
 @bp.route('/<id>/untag/note/<tag_instance_id>', methods=('POST',))
-@api.client(ODPScope.RECORD_NOTE, ODPScope.RECORD_ADMIN, fallback_to_referrer=True)
+@api.view(ODPScope.RECORD_NOTE, ODPScope.RECORD_ADMIN, fallback_to_referrer=True)
 def untag_note(id, tag_instance_id):
     api_route = '/record/'
     if ODPScope.RECORD_ADMIN in g.user_permissions:
@@ -223,7 +224,7 @@ def untag_note(id, tag_instance_id):
 
 
 @bp.route('/<id>/tag/embargo', methods=('GET', 'POST'))
-@api.client(ODPScope.RECORD_EMBARGO)
+@api.view(ODPScope.RECORD_EMBARGO)
 def tag_embargo(id):
     record = api.get(f'/record/{id}')
 
@@ -246,7 +247,7 @@ def tag_embargo(id):
             flash(f'{ODPRecordTag.EMBARGO} tag has been set.', category='success')
             return redirect(url_for('.view', id=id))
 
-        except api.ODPAPIError as e:
+        except ODPAPIError as e:
             if response := api.handle_error(e):
                 return response
 
@@ -254,7 +255,7 @@ def tag_embargo(id):
 
 
 @bp.route('/<id>/untag/embargo/<tag_instance_id>', methods=('POST',))
-@api.client(ODPScope.RECORD_EMBARGO, ODPScope.RECORD_ADMIN, fallback_to_referrer=True)
+@api.view(ODPScope.RECORD_EMBARGO, ODPScope.RECORD_ADMIN, fallback_to_referrer=True)
 def untag_embargo(id, tag_instance_id):
     api_route = '/record/'
     if ODPScope.RECORD_ADMIN in g.user_permissions:
@@ -266,7 +267,7 @@ def untag_embargo(id, tag_instance_id):
 
 
 @bp.route('/<id>/tag/notindexed', methods=('POST',))
-@api.client(ODPScope.RECORD_NOINDEX, fallback_to_referrer=True)
+@api.view(ODPScope.RECORD_NOINDEX, fallback_to_referrer=True)
 def tag_notindexed(id):
     api.post(f'/record/{id}/tag', dict(
         tag_id=ODPRecordTag.NOTINDEXED,
@@ -277,7 +278,7 @@ def tag_notindexed(id):
 
 
 @bp.route('/<id>/untag/notindexed', methods=('POST',))
-@api.client(ODPScope.RECORD_NOINDEX, ODPScope.RECORD_ADMIN, fallback_to_referrer=True)
+@api.view(ODPScope.RECORD_NOINDEX, ODPScope.RECORD_ADMIN, fallback_to_referrer=True)
 def untag_notindexed(id):
     api_route = '/record/'
     if ODPScope.RECORD_ADMIN in g.user_permissions:
@@ -292,7 +293,7 @@ def untag_notindexed(id):
 
 
 @bp.route('/<id>/tag/retracted', methods=('POST',))
-@api.client(ODPScope.RECORD_RETRACT, fallback_to_referrer=True)
+@api.view(ODPScope.RECORD_RETRACT, fallback_to_referrer=True)
 def tag_retracted(id):
     api.post(f'/record/{id}/tag', dict(
         tag_id=ODPRecordTag.RETRACTED,
@@ -303,7 +304,7 @@ def tag_retracted(id):
 
 
 @bp.route('/<id>/untag/retracted', methods=('POST',))
-@api.client(ODPScope.RECORD_RETRACT, ODPScope.RECORD_ADMIN, fallback_to_referrer=True)
+@api.view(ODPScope.RECORD_RETRACT, ODPScope.RECORD_ADMIN, fallback_to_referrer=True)
 def untag_retracted(id):
     api_route = '/record/'
     if ODPScope.RECORD_ADMIN in g.user_permissions:
@@ -318,21 +319,21 @@ def untag_retracted(id):
 
 
 @bp.route('/<id>/catalog/<catalog_id>')
-@api.client(ODPScope.RECORD_READ)
+@api.view(ODPScope.RECORD_READ)
 def view_catalog_record(id, catalog_id):
     catalog_record = api.get(f'/record/{id}/catalog/{catalog_id}')
     return render_template('catalog_record_view.html', catalog_record=catalog_record)
 
 
 @bp.route('/<id>/audit/<record_audit_id>')
-@api.client(ODPScope.RECORD_READ)
+@api.view(ODPScope.RECORD_READ)
 def view_audit_detail(id, record_audit_id):
     audit_detail = api.get(f'/record/{id}/record_audit/{record_audit_id}')
     return render_template('record_audit_view.html', audit=audit_detail)
 
 
 @bp.route('/<id>/tag_audit/<record_tag_audit_id>')
-@api.client(ODPScope.RECORD_READ)
+@api.view(ODPScope.RECORD_READ)
 def view_tag_audit_detail(id, record_tag_audit_id):
     audit_detail = api.get(f'/record/{id}/record_tag_audit/{record_tag_audit_id}')
     return render_template('record_tag_audit_view.html', audit=audit_detail)

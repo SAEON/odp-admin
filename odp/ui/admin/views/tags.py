@@ -7,7 +7,7 @@ bp = Blueprint('tags', __name__)
 
 
 @bp.route('/')
-@api.client(ODPScope.TAG_READ)
+@api.view(ODPScope.TAG_READ)
 def index():
     page = request.args.get('page', 1)
     tags = api.get(f'/tag/?page={page}')
@@ -15,7 +15,7 @@ def index():
 
 
 @bp.route('/<id>')
-@api.client(ODPScope.TAG_READ)
+@api.view(ODPScope.TAG_READ)
 def view(id):
     tag = api.get(f'/tag/{id}')
     return render_template('tag_view.html', tag=tag)

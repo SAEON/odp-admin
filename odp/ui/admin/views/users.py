@@ -1,5 +1,6 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
+from odp.client import ODPAPIError
 from odp.const import ODPScope
 from odp.ui.admin.forms import UserForm
 from odp.ui.admin.views import utils
@@ -9,7 +10,7 @@ bp = Blueprint('users', __name__)
 
 
 @bp.route('/')
-@api.client(ODPScope.USER_READ)
+@api.view(ODPScope.USER_READ)
 def index():
     page = request.args.get('page', 1)
     users = api.get(f'/user/?page={page}')
@@ -17,14 +18,14 @@ def index():
 
 
 @bp.route('/<id>')
-@api.client(ODPScope.USER_READ)
+@api.view(ODPScope.USER_READ)
 def view(id):
     user = api.get(f'/user/{id}')
     return render_template('user_view.html', user=user)
 
 
 @bp.route('/<id>/edit', methods=('GET', 'POST'))
-@api.client(ODPScope.USER_ADMIN)
+@api.view(ODPScope.USER_ADMIN)
 def edit(id):
     user = api.get(f'/user/{id}')
 
@@ -47,7 +48,7 @@ def edit(id):
             flash(f'User {id} has been updated.', category='success')
             return redirect(url_for('.view', id=id))
 
-        except api.ODPAPIError as e:
+        except ODPAPIError as e:
             if response := api.handle_error(e):
                 return response
 
@@ -55,7 +56,7 @@ def edit(id):
 
 
 @bp.route('/<id>/delete', methods=('POST',))
-@api.client(ODPScope.USER_ADMIN)
+@api.view(ODPScope.USER_ADMIN)
 def delete(id):
     api.delete(f'/user/{id}')
     flash(f'User {id} has been deleted.', category='success')
