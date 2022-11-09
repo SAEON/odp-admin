@@ -5,7 +5,7 @@ from odp.const import ODPCollectionTag, ODPScope, ODPVocabulary
 from odp.ui.admin.forms import CollectionForm, CollectionTagInfrastructureForm, CollectionTagProjectForm
 from odp.ui.admin.views import utils
 from odp.ui.base import api
-from odp.ui.base.templates import create_btn
+from odp.ui.base.templates import Button, ButtonTheme, create_btn, delete_btn, edit_btn
 
 bp = Blueprint('collections', __name__)
 
@@ -30,15 +30,79 @@ def view(id):
     collection = api.get(f'/collection/{id}')
     audit_records = api.get(f'/collection/{id}/audit')
 
+    if ready_tag := utils.get_tag_instance(collection, ODPCollectionTag.READY):
+        ready_btn = Button(
+            label='Un-ready',
+            endpoint='.untag_ready',
+            theme=ButtonTheme.warning,
+            prompt='Are you sure you want to remove the ready for publication tag?',
+            object_id=id,
+            enabled=ODPScope.COLLECTION_ADMIN in g.user_permissions,
+        )
+    else:
+        ready_btn = Button(
+            label='Ready',
+            endpoint='.tag_ready',
+            theme=ButtonTheme.success,
+            prompt='Are you sure you want to tag the collection as ready for publication?',
+            object_id=id,
+            enabled=ODPScope.COLLECTION_ADMIN in g.user_permissions,
+        )
+
+    if frozen_tag := utils.get_tag_instance(collection, ODPCollectionTag.FROZEN):
+        freeze_btn = Button(
+            label='Un-freeze',
+            endpoint='.untag_frozen',
+            theme=ButtonTheme.success,
+            prompt='Are you sure you want to un-freeze the collection?',
+            object_id=id,
+            enabled=ODPScope.COLLECTION_ADMIN in g.user_permissions,
+        )
+    else:
+        freeze_btn = Button(
+            label='Freeze',
+            endpoint='.tag_frozen',
+            theme=ButtonTheme.warning,
+            prompt='Are you sure you want to freeze the collection?',
+            object_id=id,
+            enabled=ODPScope.COLLECTION_ADMIN in g.user_permissions,
+        )
+
+    if notindexed_tag := utils.get_tag_instance(collection, ODPCollectionTag.NOTINDEXED):
+        noindex_btn = Button(
+            label='Index',
+            endpoint='.untag_notindexed',
+            theme=ButtonTheme.success,
+            prompt='Are you sure you want the collection to be searchable?',
+            object_id=id,
+            enabled=bool({ODPScope.COLLECTION_NOINDEX, ODPScope.COLLECTION_ADMIN} & set(g.user_permissions)),
+        )
+    else:
+        noindex_btn = Button(
+            label='Un-index',
+            endpoint='.tag_notindexed',
+            theme=ButtonTheme.warning,
+            prompt='Are you sure you want to tag the collection as not searchable?',
+            object_id=id,
+            enabled=ODPScope.COLLECTION_NOINDEX in g.user_permissions,
+        )
+
     return render_template(
         'collection_view.html',
         collection=collection,
-        ready_tag=utils.get_tag_instance(collection, ODPCollectionTag.READY),
-        frozen_tag=utils.get_tag_instance(collection, ODPCollectionTag.FROZEN),
-        notindexed_tag=utils.get_tag_instance(collection, ODPCollectionTag.NOTINDEXED),
+        ready_tag=ready_tag,
+        frozen_tag=frozen_tag,
+        notindexed_tag=notindexed_tag,
         infrastructure_tags=utils.get_tag_instances(collection, ODPCollectionTag.INFRASTRUCTURE),
         project_tags=utils.get_tag_instances(collection, ODPCollectionTag.PROJECT),
         audit_records=audit_records,
+        buttons=[
+            edit_btn(object_id=id, enabled=ODPScope.COLLECTION_ADMIN in g.user_permissions),
+            ready_btn,
+            freeze_btn,
+            noindex_btn,
+            delete_btn(object_id=id, enabled=ODPScope.COLLECTION_ADMIN in g.user_permissions, prompt_args=(id,)),
+        ],
     )
 
 

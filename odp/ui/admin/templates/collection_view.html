@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from 'macros.html' import render_info, render_buttons, render_button_prompt_form,
+{% from 'macros.html' import render_info, render_buttons_2, render_button_prompt_form,
     render_table, render_tag_table, render_audit_table, render_item_delete_form, obj_link %}
 
 {% block web_title %}
@@ -69,47 +69,7 @@
                 {% endif %}
             {% endcall %}
 
-            {% if ready_tag %}
-                {% set ready_btn = ['unready'] %}
-            {% else %}
-                {% set ready_btn = ['ready'] %}
-            {% endif %}
-
-            {% if frozen_tag %}
-                {% set freeze_btn = ['unfreeze'] %}
-            {% else %}
-                {% set freeze_btn = ['freeze'] %}
-            {% endif %}
-
-            {% if notindexed_tag %}
-                {% set noindex_btn = ['index'] %}
-            {% else %}
-                {% set noindex_btn = ['unindex'] %}
-            {% endif %}
-
-            {% call(btn) render_buttons(collection, edit=True, delete=True, custom=ready_btn + freeze_btn + noindex_btn) %}
-                {% if btn == 'ready' %}
-                    {{ render_button_prompt_form('.tag_ready', collection.id, 'Ready', 'success',
-                        'Are you sure you want to tag the collection as ready for publication?') }}
-                {% elif btn == 'unready' %}
-                    {{ render_button_prompt_form('.untag_ready', collection.id, 'Un-ready', 'warning',
-                        'Are you sure you want to remove the ready for publication tag?') }}
-
-                {% elif btn == 'freeze' %}
-                    {{ render_button_prompt_form('.tag_frozen', collection.id, 'Freeze', 'warning',
-                        'Are you sure you want to freeze the collection?') }}
-                {% elif btn == 'unfreeze' %}
-                    {{ render_button_prompt_form('.untag_frozen', collection.id, 'Un-freeze', 'success',
-                        'Are you sure you want to un-freeze the collection?') }}
-
-                {% elif btn == 'unindex' %}
-                    {{ render_button_prompt_form('.tag_notindexed', collection.id, 'Un-index', 'warning',
-                        'Are you sure you want to tag the collection as not searchable?') }}
-                {% elif btn == 'index' %}
-                    {{ render_button_prompt_form('.untag_notindexed', collection.id, 'Index', 'success',
-                        'Are you sure you want the collection to be searchable?') }}
-                {% endif %}
-            {% endcall %}
+            {{ render_buttons_2(buttons) }}
         </div>
         <div id="projects" class="tab-pane fade" role="tabpanel">
             {{ render_tag_table(collection, project_tags, '.tag_project', '.untag_project',
