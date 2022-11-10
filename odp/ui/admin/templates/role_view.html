@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from 'macros.html' import render_info, render_buttons_2, obj_link %}
+{% from 'macros.html' import render_info, render_buttons, obj_link %}
 
 {% block web_title %}
     {{ super() }} |
@@ -16,5 +16,5 @@
             {{ role.scope_ids|sort|join('<br/>')|safe }}
         {% endif %}
     {% endcall %}
-    {{ render_buttons_2(buttons) }}
+    {{ render_buttons(buttons) }}
 {% endblock %}

@@ -33,15 +33,8 @@ def view(id):
         'client_view.html',
         client=client,
         buttons=[
-            edit_btn(
-                object_id=id,
-                enabled=ODPScope.CLIENT_ADMIN in g.user_permissions,
-            ),
-            delete_btn(
-                object_id=id,
-                enabled=ODPScope.CLIENT_ADMIN in g.user_permissions,
-                prompt_args=(id,),
-            ),
+            edit_btn(object_id=id, enabled=ODPScope.CLIENT_ADMIN in g.user_permissions),
+            delete_btn(object_id=id, enabled=ODPScope.CLIENT_ADMIN in g.user_permissions, prompt_args=(id,)),
         ]
     )
 

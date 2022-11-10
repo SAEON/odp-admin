@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from 'macros.html' import render_table, render_buttons_2, obj_link, obj_links %}
+{% from 'macros.html' import render_table, render_buttons, obj_link, obj_links %}
 
 {% block web_title %}
     {{ super() }} |
@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block content %}
-    {{ render_buttons_2(buttons) }}
+    {{ render_buttons(buttons) }}
     {% call(collection) render_table(collections, 'Name', 'Provider', 'Records') %}
         <td>{{ collection.name }}</td>
         <td>{{ obj_link('providers', collection.provider_id) }}</td>

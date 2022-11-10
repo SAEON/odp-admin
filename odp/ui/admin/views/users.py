@@ -26,15 +26,8 @@ def view(id):
         'user_view.html',
         user=user,
         buttons=[
-            edit_btn(
-                object_id=id,
-                enabled=ODPScope.USER_ADMIN in g.user_permissions,
-            ),
-            delete_btn(
-                object_id=id,
-                enabled=ODPScope.USER_ADMIN in g.user_permissions,
-                prompt_args=(user['name'],),
-            ),
+            edit_btn(object_id=id, enabled=ODPScope.USER_ADMIN in g.user_permissions),
+            delete_btn(object_id=id, enabled=ODPScope.USER_ADMIN in g.user_permissions, prompt_args=(user['name'],)),
         ]
     )
 

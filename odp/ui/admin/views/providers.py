@@ -31,15 +31,8 @@ def view(id):
         'provider_view.html',
         provider=provider,
         buttons=[
-            edit_btn(
-                object_id=id,
-                enabled=ODPScope.PROVIDER_ADMIN in g.user_permissions,
-            ),
-            delete_btn(
-                object_id=id,
-                enabled=ODPScope.PROVIDER_ADMIN in g.user_permissions,
-                prompt_args=(id,),
-            ),
+            edit_btn(object_id=id, enabled=ODPScope.PROVIDER_ADMIN in g.user_permissions),
+            delete_btn(object_id=id, enabled=ODPScope.PROVIDER_ADMIN in g.user_permissions, prompt_args=(id,)),
         ]
     )
 

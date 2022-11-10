@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from 'macros.html' import render_info, render_buttons_2, render_button_prompt_form,
+{% from 'macros.html' import render_info, render_buttons,
     render_table, render_tag_table, render_audit_table, render_item_delete_form, obj_link %}
 
 {% block web_title %}
@@ -69,7 +69,7 @@
                 {% endif %}
             {% endcall %}
 
-            {{ render_buttons_2(buttons) }}
+            {{ render_buttons(buttons) }}
         </div>
         <div id="projects" class="tab-pane fade" role="tabpanel">
             {{ render_tag_table(collection, project_tags, '.tag_project', '.untag_project',

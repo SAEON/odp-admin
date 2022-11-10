@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-{% from 'macros.html' import render_info, render_buttons_2, render_table, render_tag_table,
-    render_audit_table, render_item_delete_form, render_button_prompt_form, obj_link %}
+{% from 'macros.html' import render_info, render_buttons, render_table, render_tag_table,
+    render_audit_table, render_item_delete_form, obj_link %}
 
 {% block web_title %}
     {{ super() }} |
@@ -95,7 +95,7 @@
                 {% endif %}
             {% endcall %}
 
-            {{ render_buttons_2(buttons) }}
+            {{ render_buttons(buttons) }}
         </div>
         <div id="metadata" class="tab-pane fade" role="tabpanel">
             <pre class="m-3">
