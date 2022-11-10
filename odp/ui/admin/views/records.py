@@ -7,8 +7,13 @@ from odp.const import ODPRecordTag, ODPScope
 from odp.ui.admin.forms import RecordFilterForm, RecordForm, RecordTagEmbargoForm, RecordTagNoteForm, RecordTagQCForm
 from odp.ui.admin.views import utils
 from odp.ui.base import api
+from odp.ui.base.templates import Button, ButtonTheme, create_btn, delete_btn, edit_btn
 
 bp = Blueprint('records', __name__)
+
+
+def _can_write_record():
+    return bool({ODPScope.RECORD_ADMIN, ODPScope.RECORD_WRITE} & set(g.user_permissions))
 
 
 @bp.route('/')
@@ -50,17 +55,61 @@ def view(id):
     catalog_records = api.get(f'/record/{id}/catalog')
     audit_records = api.get(f'/record/{id}/audit')
 
+    if notindexed_tag := utils.get_tag_instance(record, ODPRecordTag.NOTINDEXED):
+        noindex_btn = Button(
+            label='Index',
+            endpoint='.untag_notindexed',
+            theme=ButtonTheme.success,
+            prompt='Are you sure you want the record to be searchable?',
+            object_id=id,
+            enabled=bool({ODPScope.RECORD_NOINDEX, ODPScope.RECORD_ADMIN} & set(g.user_permissions)),
+        )
+    else:
+        noindex_btn = Button(
+            label='Un-index',
+            endpoint='.tag_notindexed',
+            theme=ButtonTheme.warning,
+            prompt='Are you sure you want to tag the record as not searchable?',
+            object_id=id,
+            enabled=ODPScope.RECORD_NOINDEX in g.user_permissions,
+        )
+
+    if retracted_tag := utils.get_tag_instance(record, ODPRecordTag.RETRACTED):
+        retract_btn = Button(
+            label='Un-retract',
+            endpoint='.untag_retracted',
+            theme=ButtonTheme.success,
+            prompt='Are you sure you want to cancel the record retraction?',
+            object_id=id,
+            enabled=bool({ODPScope.RECORD_RETRACT, ODPScope.RECORD_ADMIN} & set(g.user_permissions)),
+        )
+    else:
+        retract_btn = Button(
+            label='Retract',
+            endpoint='.tag_retracted',
+            theme=ButtonTheme.danger,
+            prompt='Are you sure you want to retract the record from public catalogs?',
+            object_id=id,
+            enabled=ODPScope.RECORD_RETRACT in g.user_permissions,
+        )
+
     return render_template(
         'record_view.html',
         record=record,
         migrated_tag=utils.get_tag_instance(record, ODPRecordTag.MIGRATED),
-        notindexed_tag=utils.get_tag_instance(record, ODPRecordTag.NOTINDEXED),
-        retracted_tag=utils.get_tag_instance(record, ODPRecordTag.RETRACTED),
+        notindexed_tag=notindexed_tag,
+        retracted_tag=retracted_tag,
         qc_tags=utils.get_tag_instances(record, ODPRecordTag.QC),
         embargo_tags=utils.get_tag_instances(record, ODPRecordTag.EMBARGO),
         note_tags=utils.get_tag_instances(record, ODPRecordTag.NOTE),
         catalog_records=catalog_records,
         audit_records=audit_records,
+        buttons=[
+            edit_btn(object_id=id, enabled=_can_write_record()),
+            noindex_btn,
+            retract_btn,
+            delete_btn(object_id=id, enabled=_can_write_record(), prompt_args=(record['doi'] or record['sid'],)),
+        ],
     )
 
 

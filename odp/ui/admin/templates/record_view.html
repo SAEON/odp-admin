@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from 'macros.html' import render_info, render_buttons, render_table, render_tag_table,
+{% from 'macros.html' import render_info, render_buttons_2, render_table, render_tag_table,
     render_audit_table, render_item_delete_form, render_button_prompt_form, obj_link %}
 
 {% block web_title %}
@@ -95,34 +95,7 @@
                 {% endif %}
             {% endcall %}
 
-            {% if notindexed_tag %}
-                {% set noindex_btn = ['index'] %}
-            {% else %}
-                {% set noindex_btn = ['unindex'] %}
-            {% endif %}
-
-            {% if retracted_tag %}
-                {% set retract_btn = ['unretract'] %}
-            {% else %}
-                {% set retract_btn = ['retract'] %}
-            {% endif %}
-
-            {% call(btn) render_buttons(record, edit=True, delete=True, custom=noindex_btn + retract_btn) %}
-                {% if btn == 'unindex' %}
-                    {{ render_button_prompt_form('.tag_notindexed', record.id, 'Un-index', 'warning',
-                        'Are you sure you want to tag the record as not searchable?') }}
-                {% elif btn == 'index' %}
-                    {{ render_button_prompt_form('.untag_notindexed', record.id, 'Index', 'success',
-                        'Are you sure you want the record to be searchable?') }}
-
-                {% elif btn == 'retract' %}
-                    {{ render_button_prompt_form('.tag_retracted', record.id, 'Retract', 'danger',
-                        'Are you sure you want to retract the record from public catalogs?') }}
-                {% elif btn == 'unretract' %}
-                    {{ render_button_prompt_form('.untag_retracted', record.id, 'Un-retract', 'success',
-                        'Are you sure you want to cancel the record retraction?') }}
-                {% endif %}
-            {% endcall %}
+            {{ render_buttons_2(buttons) }}
         </div>
         <div id="metadata" class="tab-pane fade" role="tabpanel">
             <pre class="m-3">
