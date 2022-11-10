@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% from 'macros.html' import render_table, render_buttons_2, render_field, obj_link %}
 
 {% block web_title %}
     {{ super() }} |
@@ -8,9 +9,8 @@
 {% endblock %}
 
 {% block content %}
-    {% from 'macros.html' import render_table, render_buttons, render_field, obj_link %}
-    {% call(btn) render_buttons(create=True, custom=['filter']) %}
-        {% if btn == 'filter' %}
+    {% call(btn) render_buttons_2(buttons) %}
+        {% if btn == 'filter_btn' %}
             <a href="#collapse-filter" data-bs-toggle="collapse" class="btn btn-outline-info btn-action">
                 Filter
             </a>

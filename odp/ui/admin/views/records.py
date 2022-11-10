@@ -45,6 +45,10 @@ def index():
         records=records,
         filter_=ui_filter,
         filter_form=filter_form,
+        buttons=[
+            create_btn(enabled=_can_write_record()),
+            'filter_btn',
+        ]
     )
 
 
