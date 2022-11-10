@@ -75,7 +75,7 @@ def view(id):
             theme=ButtonTheme.success,
             prompt='Are you sure you want the collection to be searchable?',
             object_id=id,
-            enabled=bool({ODPScope.COLLECTION_NOINDEX, ODPScope.COLLECTION_ADMIN} & set(g.user_permissions)),
+            enabled=ODPScope.COLLECTION_NOINDEX in g.user_permissions,
         )
     else:
         noindex_btn = Button(
@@ -220,7 +220,7 @@ def tag_notindexed(id):
 
 
 @bp.route('/<id>/untag/notindexed', methods=('POST',))
-@api.view(ODPScope.COLLECTION_NOINDEX, ODPScope.COLLECTION_ADMIN, fallback_to_referrer=True)
+@api.view(ODPScope.COLLECTION_NOINDEX, fallback_to_referrer=True)
 def untag_notindexed(id):
     api_route = '/collection/'
     if ODPScope.COLLECTION_ADMIN in g.user_permissions:
@@ -246,7 +246,7 @@ def tag_project(id):
 
 
 @bp.route('/<id>/untag/project/<tag_instance_id>', methods=('POST',))
-@api.view(ODPScope.COLLECTION_PROJECT, ODPScope.COLLECTION_ADMIN, fallback_to_referrer=True)
+@api.view(ODPScope.COLLECTION_PROJECT, fallback_to_referrer=True)
 def untag_project(id, tag_instance_id):
     return _untag_vocabulary_term(
         id,

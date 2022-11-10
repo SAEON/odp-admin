@@ -12,10 +12,6 @@ from odp.ui.base.templates import Button, ButtonTheme, create_btn, delete_btn, e
 bp = Blueprint('records', __name__)
 
 
-def _can_write_record():
-    return bool({ODPScope.RECORD_ADMIN, ODPScope.RECORD_WRITE} & set(g.user_permissions))
-
-
 @bp.route('/')
 @api.view(ODPScope.RECORD_READ)
 def index():
@@ -46,7 +42,7 @@ def index():
         filter_=ui_filter,
         filter_form=filter_form,
         buttons=[
-            create_btn(enabled=_can_write_record()),
+            create_btn(enabled=ODPScope.RECORD_WRITE in g.user_permissions),
             'filter_btn',
         ]
     )
@@ -66,7 +62,7 @@ def view(id):
             theme=ButtonTheme.success,
             prompt='Are you sure you want the record to be searchable?',
             object_id=id,
-            enabled=bool({ODPScope.RECORD_NOINDEX, ODPScope.RECORD_ADMIN} & set(g.user_permissions)),
+            enabled=ODPScope.RECORD_NOINDEX in g.user_permissions,
         )
     else:
         noindex_btn = Button(
@@ -85,7 +81,7 @@ def view(id):
             theme=ButtonTheme.success,
             prompt='Are you sure you want to cancel the record retraction?',
             object_id=id,
-            enabled=bool({ODPScope.RECORD_RETRACT, ODPScope.RECORD_ADMIN} & set(g.user_permissions)),
+            enabled=ODPScope.RECORD_RETRACT in g.user_permissions,
         )
     else:
         retract_btn = Button(
@@ -109,16 +105,16 @@ def view(id):
         catalog_records=catalog_records,
         audit_records=audit_records,
         buttons=[
-            edit_btn(object_id=id, enabled=_can_write_record()),
+            edit_btn(object_id=id, enabled=ODPScope.RECORD_WRITE in g.user_permissions),
             noindex_btn,
             retract_btn,
-            delete_btn(object_id=id, enabled=_can_write_record(), prompt_args=(record['doi'] or record['sid'],)),
+            delete_btn(object_id=id, enabled=ODPScope.RECORD_WRITE in g.user_permissions, prompt_args=(record['doi'] or record['sid'],)),
         ],
     )
 
 
 @bp.route('/new', methods=('GET', 'POST'))
-@api.view(ODPScope.RECORD_ADMIN, ODPScope.RECORD_WRITE)
+@api.view(ODPScope.RECORD_WRITE)
 def create():
     form = RecordForm(request.form)
     utils.populate_collection_choices(form.collection_id, include_none=True)
@@ -148,7 +144,7 @@ def create():
 
 
 @bp.route('/<id>/edit', methods=('GET', 'POST'))
-@api.view(ODPScope.RECORD_ADMIN, ODPScope.RECORD_WRITE)
+@api.view(ODPScope.RECORD_WRITE)
 def edit(id):
     record = api.get(f'/record/{id}')
 
@@ -180,7 +176,7 @@ def edit(id):
 
 
 @bp.route('/<id>/delete', methods=('POST',))
-@api.view(ODPScope.RECORD_ADMIN, ODPScope.RECORD_WRITE)
+@api.view(ODPScope.RECORD_WRITE)
 def delete(id):
     api_route = '/record/'
     if ODPScope.RECORD_ADMIN in g.user_permissions:
@@ -224,7 +220,7 @@ def tag_qc(id):
 
 
 @bp.route('/<id>/untag/qc/<tag_instance_id>', methods=('POST',))
-@api.view(ODPScope.RECORD_QC, ODPScope.RECORD_ADMIN, fallback_to_referrer=True)
+@api.view(ODPScope.RECORD_QC, fallback_to_referrer=True)
 def untag_qc(id, tag_instance_id):
     api_route = '/record/'
     if ODPScope.RECORD_ADMIN in g.user_permissions:
@@ -265,7 +261,7 @@ def tag_note(id):
 
 
 @bp.route('/<id>/untag/note/<tag_instance_id>', methods=('POST',))
-@api.view(ODPScope.RECORD_NOTE, ODPScope.RECORD_ADMIN, fallback_to_referrer=True)
+@api.view(ODPScope.RECORD_NOTE, fallback_to_referrer=True)
 def untag_note(id, tag_instance_id):
     api_route = '/record/'
     if ODPScope.RECORD_ADMIN in g.user_permissions:
@@ -308,7 +304,7 @@ def tag_embargo(id):
 
 
 @bp.route('/<id>/untag/embargo/<tag_instance_id>', methods=('POST',))
-@api.view(ODPScope.RECORD_EMBARGO, ODPScope.RECORD_ADMIN, fallback_to_referrer=True)
+@api.view(ODPScope.RECORD_EMBARGO, fallback_to_referrer=True)
 def untag_embargo(id, tag_instance_id):
     api_route = '/record/'
     if ODPScope.RECORD_ADMIN in g.user_permissions:
@@ -331,7 +327,7 @@ def tag_notindexed(id):
 
 
 @bp.route('/<id>/untag/notindexed', methods=('POST',))
-@api.view(ODPScope.RECORD_NOINDEX, ODPScope.RECORD_ADMIN, fallback_to_referrer=True)
+@api.view(ODPScope.RECORD_NOINDEX, fallback_to_referrer=True)
 def untag_notindexed(id):
     api_route = '/record/'
     if ODPScope.RECORD_ADMIN in g.user_permissions:
@@ -357,7 +353,7 @@ def tag_retracted(id):
 
 
 @bp.route('/<id>/untag/retracted', methods=('POST',))
-@api.view(ODPScope.RECORD_RETRACT, ODPScope.RECORD_ADMIN, fallback_to_referrer=True)
+@api.view(ODPScope.RECORD_RETRACT, fallback_to_referrer=True)
 def untag_retracted(id):
     api_route = '/record/'
     if ODPScope.RECORD_ADMIN in g.user_permissions:
