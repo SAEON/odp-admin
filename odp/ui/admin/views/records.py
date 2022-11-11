@@ -55,43 +55,33 @@ def view(id):
     catalog_records = api.get(f'/record/{id}/catalog')
     audit_records = api.get(f'/record/{id}/audit')
 
+    noindex_btn = Button(
+        label='Un-index',
+        endpoint='.tag_notindexed',
+        theme=ButtonTheme.warning,
+        prompt='Are you sure you want to tag the record as not searchable?',
+        object_id=id,
+        enabled=ODPScope.RECORD_NOINDEX in g.user_permissions,
+    )
     if notindexed_tag := utils.get_tag_instance(record, ODPRecordTag.NOTINDEXED):
-        noindex_btn = Button(
-            label='Index',
-            endpoint='.untag_notindexed',
-            theme=ButtonTheme.success,
-            prompt='Are you sure you want the record to be searchable?',
-            object_id=id,
-            enabled=ODPScope.RECORD_NOINDEX in g.user_permissions,
-        )
-    else:
-        noindex_btn = Button(
-            label='Un-index',
-            endpoint='.tag_notindexed',
-            theme=ButtonTheme.warning,
-            prompt='Are you sure you want to tag the record as not searchable?',
-            object_id=id,
-            enabled=ODPScope.RECORD_NOINDEX in g.user_permissions,
-        )
+        noindex_btn.label = 'Index'
+        noindex_btn.endpoint = '.untag_notindexed'
+        noindex_btn.theme = ButtonTheme.success
+        noindex_btn.prompt = 'Are you sure you want the record to be searchable?'
 
+    retract_btn = Button(
+        label='Retract',
+        endpoint='.tag_retracted',
+        theme=ButtonTheme.danger,
+        prompt='Are you sure you want to retract the record from public catalogs?',
+        object_id=id,
+        enabled=ODPScope.RECORD_RETRACT in g.user_permissions,
+    )
     if retracted_tag := utils.get_tag_instance(record, ODPRecordTag.RETRACTED):
-        retract_btn = Button(
-            label='Un-retract',
-            endpoint='.untag_retracted',
-            theme=ButtonTheme.success,
-            prompt='Are you sure you want to cancel the record retraction?',
-            object_id=id,
-            enabled=ODPScope.RECORD_RETRACT in g.user_permissions,
-        )
-    else:
-        retract_btn = Button(
-            label='Retract',
-            endpoint='.tag_retracted',
-            theme=ButtonTheme.danger,
-            prompt='Are you sure you want to retract the record from public catalogs?',
-            object_id=id,
-            enabled=ODPScope.RECORD_RETRACT in g.user_permissions,
-        )
+        retract_btn.label = 'Un-retract'
+        retract_btn.endpoint = '.untag_retracted'
+        retract_btn.theme = ButtonTheme.success
+        retract_btn.prompt = 'Are you sure you want to cancel the record retraction?'
 
     return render_template(
         'record_view.html',
