@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, g, redirect, render_template, request, url_for
 
 from odp.client import ODPAPIError
 from odp.const import ODPScope, ODPVocabulary
@@ -28,6 +28,7 @@ def view(id):
         vocabulary=vocabulary,
         terms=utils.pagify(vocabulary['terms']),
         audit_records=audit_records,
+        enable_buttons=vocabulary['scope_id'] in g.user_permissions,
     )
 
 
