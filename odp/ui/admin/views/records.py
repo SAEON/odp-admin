@@ -210,7 +210,7 @@ def tag_qc(id):
 
 
 @bp.route('/<id>/untag/qc/<tag_instance_id>', methods=('POST',))
-@api.view(ODPScope.RECORD_QC, fallback_to_referrer=True)
+@api.view(ODPScope.RECORD_QC)
 def untag_qc(id, tag_instance_id):
     api_route = '/record/'
     if ODPScope.RECORD_ADMIN in g.user_permissions:
@@ -251,7 +251,7 @@ def tag_note(id):
 
 
 @bp.route('/<id>/untag/note/<tag_instance_id>', methods=('POST',))
-@api.view(ODPScope.RECORD_NOTE, fallback_to_referrer=True)
+@api.view(ODPScope.RECORD_NOTE)
 def untag_note(id, tag_instance_id):
     api_route = '/record/'
     if ODPScope.RECORD_ADMIN in g.user_permissions:
@@ -294,7 +294,7 @@ def tag_embargo(id):
 
 
 @bp.route('/<id>/untag/embargo/<tag_instance_id>', methods=('POST',))
-@api.view(ODPScope.RECORD_EMBARGO, fallback_to_referrer=True)
+@api.view(ODPScope.RECORD_EMBARGO)
 def untag_embargo(id, tag_instance_id):
     api_route = '/record/'
     if ODPScope.RECORD_ADMIN in g.user_permissions:
@@ -306,7 +306,7 @@ def untag_embargo(id, tag_instance_id):
 
 
 @bp.route('/<id>/tag/notindexed', methods=('POST',))
-@api.view(ODPScope.RECORD_NOINDEX, fallback_to_referrer=True)
+@api.view(ODPScope.RECORD_NOINDEX)
 def tag_notindexed(id):
     api.post(f'/record/{id}/tag', dict(
         tag_id=ODPRecordTag.NOTINDEXED,
@@ -317,7 +317,7 @@ def tag_notindexed(id):
 
 
 @bp.route('/<id>/untag/notindexed', methods=('POST',))
-@api.view(ODPScope.RECORD_NOINDEX, fallback_to_referrer=True)
+@api.view(ODPScope.RECORD_NOINDEX)
 def untag_notindexed(id):
     api_route = '/record/'
     if ODPScope.RECORD_ADMIN in g.user_permissions:
@@ -332,7 +332,7 @@ def untag_notindexed(id):
 
 
 @bp.route('/<id>/tag/retracted', methods=('POST',))
-@api.view(ODPScope.RECORD_RETRACT, fallback_to_referrer=True)
+@api.view(ODPScope.RECORD_RETRACT)
 def tag_retracted(id):
     api.post(f'/record/{id}/tag', dict(
         tag_id=ODPRecordTag.RETRACTED,
@@ -343,7 +343,7 @@ def tag_retracted(id):
 
 
 @bp.route('/<id>/untag/retracted', methods=('POST',))
-@api.view(ODPScope.RECORD_RETRACT, fallback_to_referrer=True)
+@api.view(ODPScope.RECORD_RETRACT)
 def untag_retracted(id):
     api_route = '/record/'
     if ODPScope.RECORD_ADMIN in g.user_permissions:

@@ -51,7 +51,7 @@ def edit_infrastructure_term(id):
 
 
 @bp.route(f'/{ODPVocabulary.INFRASTRUCTURE}/<id>/delete', methods=('POST',))
-@api.view(ODPScope.VOCABULARY_INFRASTRUCTURE, fallback_to_referrer=True)
+@api.view(ODPScope.VOCABULARY_INFRASTRUCTURE)
 def delete_infrastructure_term(id):
     return _delete_term(ODPVocabulary.INFRASTRUCTURE.value, id)
 
@@ -69,7 +69,7 @@ def edit_project_term(id):
 
 
 @bp.route(f'/{ODPVocabulary.PROJECT}/<id>/delete', methods=('POST',))
-@api.view(ODPScope.VOCABULARY_PROJECT, fallback_to_referrer=True)
+@api.view(ODPScope.VOCABULARY_PROJECT)
 def delete_project_term(id):
     return _delete_term(ODPVocabulary.PROJECT.value, id)
 

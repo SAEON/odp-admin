@@ -150,7 +150,7 @@ def delete(id):
 
 
 @bp.route('/<id>/tag/ready', methods=('POST',))
-@api.view(ODPScope.COLLECTION_ADMIN, fallback_to_referrer=True)
+@api.view(ODPScope.COLLECTION_ADMIN)
 def tag_ready(id):
     api.post(f'/collection/{id}/tag', dict(
         tag_id=ODPCollectionTag.READY,
@@ -161,7 +161,7 @@ def tag_ready(id):
 
 
 @bp.route('/<id>/untag/ready', methods=('POST',))
-@api.view(ODPScope.COLLECTION_ADMIN, fallback_to_referrer=True)
+@api.view(ODPScope.COLLECTION_ADMIN)
 def untag_ready(id):
     collection = api.get(f'/collection/{id}')
     if ready_tag := utils.get_tag_instance(collection, ODPCollectionTag.READY):
@@ -172,7 +172,7 @@ def untag_ready(id):
 
 
 @bp.route('/<id>/tag/frozen', methods=('POST',))
-@api.view(ODPScope.COLLECTION_ADMIN, fallback_to_referrer=True)
+@api.view(ODPScope.COLLECTION_ADMIN)
 def tag_frozen(id):
     api.post(f'/collection/{id}/tag', dict(
         tag_id=ODPCollectionTag.FROZEN,
@@ -183,7 +183,7 @@ def tag_frozen(id):
 
 
 @bp.route('/<id>/untag/frozen', methods=('POST',))
-@api.view(ODPScope.COLLECTION_ADMIN, fallback_to_referrer=True)
+@api.view(ODPScope.COLLECTION_ADMIN)
 def untag_frozen(id):
     collection = api.get(f'/collection/{id}')
     if frozen_tag := utils.get_tag_instance(collection, ODPCollectionTag.FROZEN):
@@ -194,7 +194,7 @@ def untag_frozen(id):
 
 
 @bp.route('/<id>/tag/notindexed', methods=('POST',))
-@api.view(ODPScope.COLLECTION_NOINDEX, fallback_to_referrer=True)
+@api.view(ODPScope.COLLECTION_NOINDEX)
 def tag_notindexed(id):
     api.post(f'/collection/{id}/tag', dict(
         tag_id=ODPCollectionTag.NOTINDEXED,
@@ -205,7 +205,7 @@ def tag_notindexed(id):
 
 
 @bp.route('/<id>/untag/notindexed', methods=('POST',))
-@api.view(ODPScope.COLLECTION_NOINDEX, fallback_to_referrer=True)
+@api.view(ODPScope.COLLECTION_NOINDEX)
 def untag_notindexed(id):
     api_route = '/collection/'
     if ODPScope.COLLECTION_ADMIN in g.user_permissions:
@@ -220,7 +220,7 @@ def untag_notindexed(id):
 
 
 @bp.route('/<id>/tag/project', methods=('GET', 'POST',))
-@api.view(ODPScope.COLLECTION_PROJECT, fallback_to_referrer=True)
+@api.view(ODPScope.COLLECTION_PROJECT)
 def tag_project(id):
     return _tag_vocabulary_term(
         id,
@@ -231,7 +231,7 @@ def tag_project(id):
 
 
 @bp.route('/<id>/untag/project/<tag_instance_id>', methods=('POST',))
-@api.view(ODPScope.COLLECTION_PROJECT, fallback_to_referrer=True)
+@api.view(ODPScope.COLLECTION_PROJECT)
 def untag_project(id, tag_instance_id):
     return _untag_vocabulary_term(
         id,
@@ -241,7 +241,7 @@ def untag_project(id, tag_instance_id):
 
 
 @bp.route('/<id>/tag/infrastructure', methods=('GET', 'POST',))
-@api.view(ODPScope.COLLECTION_ADMIN, fallback_to_referrer=True)
+@api.view(ODPScope.COLLECTION_ADMIN)
 def tag_infrastructure(id):
     return _tag_vocabulary_term(
         id,
@@ -252,7 +252,7 @@ def tag_infrastructure(id):
 
 
 @bp.route('/<id>/untag/infrastructure/<tag_instance_id>', methods=('POST',))
-@api.view(ODPScope.COLLECTION_ADMIN, fallback_to_referrer=True)
+@api.view(ODPScope.COLLECTION_ADMIN)
 def untag_infrastructure(id, tag_instance_id):
     return _untag_vocabulary_term(
         id,
