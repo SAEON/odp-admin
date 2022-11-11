@@ -79,7 +79,9 @@ def view(id):
         frozen_tag=frozen_tag,
         notindexed_tag=notindexed_tag,
         infrastructure_tags=utils.get_tag_instances(collection, ODPCollectionTag.INFRASTRUCTURE),
+        infrastructure_tag_enabled=ODPScope.COLLECTION_ADMIN in g.user_permissions,
         project_tags=utils.get_tag_instances(collection, ODPCollectionTag.PROJECT),
+        project_tag_enabled=ODPScope.COLLECTION_PROJECT in g.user_permissions,
         audit_records=audit_records,
         buttons=[
             edit_btn(object_id=id, enabled=ODPScope.COLLECTION_ADMIN in g.user_permissions),

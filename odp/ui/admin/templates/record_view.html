@@ -108,15 +108,15 @@
             </pre>
         </div>
         <div id="tag-qc" class="tab-pane fade" role="tabpanel">
-            {{ render_tag_table(record, qc_tags, '.tag_qc', '.untag_qc',
+            {{ render_tag_table(record, qc_tags, '.tag_qc', '.untag_qc', qc_tag_enabled,
                pass_='Pass', comment='Comment') }}
         </div>
         <div id="tag-embargo" class="tab-pane fade" role="tabpanel">
-            {{ render_tag_table(record, embargo_tags, '.tag_embargo', '.untag_embargo',
+            {{ render_tag_table(record, embargo_tags, '.tag_embargo', '.untag_embargo', embargo_tag_enabled,
                start='Start date', end='End date', comment='Comment') }}
         </div>
         <div id="tag-notes" class="tab-pane fade" role="tabpanel">
-            {{ render_tag_table(record, note_tags, '.tag_note', '.untag_note',
+            {{ render_tag_table(record, note_tags, '.tag_note', '.untag_note', note_tag_enabled,
                comment='Note') }}
         </div>
         <div id="catalog-records" class="tab-pane fade" role="tabpanel">

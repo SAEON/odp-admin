@@ -72,11 +72,11 @@
             {{ render_buttons(buttons) }}
         </div>
         <div id="projects" class="tab-pane fade" role="tabpanel">
-            {{ render_tag_table(collection, project_tags, '.tag_project', '.untag_project',
+            {{ render_tag_table(collection, project_tags, '.tag_project', '.untag_project', project_tag_enabled,
                project='Project', comment='Comment') }}
         </div>
         <div id="infrastructures" class="tab-pane fade" role="tabpanel">
-            {{ render_tag_table(collection, infrastructure_tags, '.tag_infrastructure', '.untag_infrastructure',
+            {{ render_tag_table(collection, infrastructure_tags, '.tag_infrastructure', '.untag_infrastructure', infrastructure_tag_enabled,
                infrastructure='Infrastructure', comment='Comment') }}
         </div>
         <div id="audit-log" class="tab-pane fade" role="tabpanel">

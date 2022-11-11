@@ -90,8 +90,11 @@ def view(id):
         notindexed_tag=notindexed_tag,
         retracted_tag=retracted_tag,
         qc_tags=utils.get_tag_instances(record, ODPRecordTag.QC),
+        qc_tag_enabled=ODPScope.RECORD_QC in g.user_permissions,
         embargo_tags=utils.get_tag_instances(record, ODPRecordTag.EMBARGO),
+        embargo_tag_enabled=ODPScope.RECORD_EMBARGO in g.user_permissions,
         note_tags=utils.get_tag_instances(record, ODPRecordTag.NOTE),
+        note_tag_enabled=ODPScope.RECORD_NOTE in g.user_permissions,
         catalog_records=catalog_records,
         audit_records=audit_records,
         buttons=[
