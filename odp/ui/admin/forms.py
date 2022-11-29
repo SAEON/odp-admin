@@ -19,8 +19,11 @@ class ClientForm(BaseForm):
     secret = StringField(
         label='Client secret',
     )
-    collection_id = SelectField(
-        label='Collection',
+    collection_specific = BooleanField(
+        label='Collection-specific',
+    )
+    collection_ids = MultiCheckboxField(
+        label='Collections',
     )
     scope_ids = MultiCheckboxField(
         label='Scope',

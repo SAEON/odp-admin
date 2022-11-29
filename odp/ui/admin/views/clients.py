@@ -44,7 +44,7 @@ def view(id):
 def create():
     form = ClientForm(request.form)
     form.secret.validators = [input_required()]
-    utils.populate_collection_choices(form.collection_id, include_none=True)
+    utils.populate_collection_choices(form.collection_ids)
     utils.populate_scope_choices(form.scope_ids)
 
     if request.method == 'POST' and form.validate():
@@ -53,7 +53,8 @@ def create():
                 id=(id := form.id.data),
                 name=form.name.data,
                 secret=form.secret.data,
-                collection_id=form.collection_id.data or None,
+                collection_specific=form.collection_specific.data,
+                collection_ids=form.collection_ids.data,
                 scope_ids=form.scope_ids.data,
                 grant_types=form.grant_types.data,
                 response_types=form.response_types.data,
@@ -85,7 +86,7 @@ def edit(id):
         form = ClientForm(data=client)
 
     form.secret.description = 'Client secret will remain unchanged if left blank.'
-    utils.populate_collection_choices(form.collection_id, include_none=True)
+    utils.populate_collection_choices(form.collection_ids)
     utils.populate_scope_choices(form.scope_ids)
 
     if request.method == 'POST' and form.validate():
@@ -94,7 +95,8 @@ def edit(id):
                 id=id,
                 name=form.name.data,
                 secret=form.secret.data or None,
-                collection_id=form.collection_id.data or None,
+                collection_specific=form.collection_specific.data,
+                collection_ids=form.collection_ids.data,
                 scope_ids=form.scope_ids.data,
                 grant_types=form.grant_types.data,
                 response_types=form.response_types.data,
