@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from 'macros.html' import render_table, render_buttons, obj_link %}
+{% from 'macros.html' import render_table, render_buttons, obj_links %}
 
 {% block web_title %}
     {{ super() }} |
@@ -10,7 +10,7 @@
 
 {% block content %}
     {{ render_buttons(buttons) }}
-    {% call(role) render_table(roles, 'Collection') %}
-        <td>{{ obj_link('collections', role.collection_id) }}</td>
+    {% call(role) render_table(roles, 'Collections') %}
+        <td>{{ obj_links('collections', role.collection_ids) if role.collection_specific else '(All)' }}</td>
     {% endcall %}
 {% endblock %}

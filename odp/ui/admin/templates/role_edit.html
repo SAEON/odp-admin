@@ -13,5 +13,5 @@
 
 {% block content %}
     {% from 'macros.html' import render_form %}
-    {{ render_form(form, role) }}
+    {{ render_form(form, role, ['collection_specific', 'collection_ids']) }}
 {% endblock %}

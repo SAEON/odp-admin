@@ -14,7 +14,7 @@
         {% if prop == 'Name' %}
             {{ client.name }}
         {% elif prop == 'Collections' %}
-            {{ obj_links('collections', client.collection_ids) if client.collection_specific else '(All)' }}
+            {{ obj_links('collections', client.collection_ids, newlines=True) if client.collection_specific else '(All)' }}
         {% elif prop == 'Scope' %}
             {{ client.scope_ids|sort|join('<br/>')|safe }}
         {% elif prop == 'Grant types' %}

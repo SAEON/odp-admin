@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from 'macros.html' import render_info, render_buttons, obj_link %}
+{% from 'macros.html' import render_info, render_buttons, obj_links %}
 
 {% block web_title %}
     {{ super() }} |
@@ -9,9 +9,9 @@
 {% endblock %}
 
 {% block content %}
-    {% call(prop) render_info(role, 'Collection', 'Scope') %}
-        {% if prop == 'Collection' %}
-            {{ obj_link('collections', role.collection_id) }}
+    {% call(prop) render_info(role, 'Scope', 'Collections') %}
+        {% if prop == 'Collections' %}
+            {{ obj_links('collections', role.collection_ids, newlines=True) if role.collection_specific else '(All)' }}
         {% elif prop == 'Scope' %}
             {{ role.scope_ids|sort|join('<br/>')|safe }}
         {% endif %}

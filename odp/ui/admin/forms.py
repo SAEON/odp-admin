@@ -193,8 +193,11 @@ class RoleForm(BaseForm):
         filters=[lambda s: s.strip() if s else s],
         validators=[data_required(), length(min=2)],
     )
-    collection_id = SelectField(
-        label='Collection',
+    collection_specific = BooleanField(
+        label='Collection-specific',
+    )
+    collection_ids = MultiCheckboxField(
+        label='Collections',
     )
     scope_ids = MultiCheckboxField(
         label='Scope',
