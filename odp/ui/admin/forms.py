@@ -63,6 +63,10 @@ class ClientForm(BaseForm):
 class CollectionForm(BaseForm):
     id = StringField(
         label='Collection id',
+        render_kw={'readonly': ''},
+    )
+    key = StringField(
+        label='Collection key',
         filters=[lambda s: s.strip() if s else s],
         validators=[data_required(), length(min=2)],
     )

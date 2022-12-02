@@ -10,9 +10,10 @@
 
 {% block content %}
     {{ render_buttons(buttons) }}
-    {% call(collection) render_table(collections, 'Name', 'Provider', 'Records') %}
+    {% call(collection) render_table(collections, 'Key', 'Name', 'Provider', 'Records', hide_id=True) %}
+        <th scope="row">{{ obj_link('', collection.id, collection.key) }}</th>
         <td>{{ collection.name }}</td>
-        <td>{{ obj_link('providers', collection.provider_id) }}</td>
+        <td>{{ obj_link('providers', collection.provider_id, collection.provider_key) }}</td>
         <td>
             <a href="{{ url_for('records.index', collection=collection.id) }}" class="text-decoration-none">
                 {{ collection.record_count }}

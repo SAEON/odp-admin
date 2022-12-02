@@ -14,7 +14,7 @@ bp = Blueprint('collections', __name__)
 @api.view(ODPScope.COLLECTION_READ)
 def index():
     page = request.args.get('page', 1)
-    collections = api.get(f'/collection/?page={page}')
+    collections = api.get('/collection/', page=page, sort='key')
     return render_template(
         'collection_list.html',
         collections=collections,
@@ -101,14 +101,14 @@ def create():
 
     if request.method == 'POST' and form.validate():
         try:
-            api.post('/collection/', dict(
-                id=(id := form.id.data),
+            collection = api.post('/collection/', dict(
+                key=(key := form.key.data),
                 name=form.name.data,
                 provider_id=form.provider_id.data,
                 doi_key=form.doi_key.data or None,
             ))
-            flash(f'Collection {id} has been created.', category='success')
-            return redirect(url_for('.view', id=id))
+            flash(f'Collection {key} has been created.', category='success')
+            return redirect(url_for('.view', id=collection['id']))
 
         except ODPAPIError as e:
             if response := api.handle_error(e):
@@ -127,13 +127,13 @@ def edit(id):
 
     if request.method == 'POST' and form.validate():
         try:
-            api.put('/collection/', dict(
-                id=id,
+            api.put(f'/collection/{id}', dict(
+                key=(key := form.key.data),
                 name=form.name.data,
                 provider_id=form.provider_id.data,
                 doi_key=form.doi_key.data or None,
             ))
-            flash(f'Collection {id} has been updated.', category='success')
+            flash(f'Collection {key} has been updated.', category='success')
             return redirect(url_for('.view', id=id))
 
         except ODPAPIError as e:
