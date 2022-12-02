@@ -48,7 +48,7 @@
                 {{ record.metadata.title }}
             {% endif %}
         </td>
-        <td>{{ obj_link('collections', record.collection_id) }}</td>
+        <td>{{ obj_link('collections', record.collection_id, record.collection_key) }}</td>
         <td>{{ obj_link('schemas', record.schema_id) }}</td>
         <td>{{ '&#9989;'|safe if record.validity.valid else '&#10060;'|safe }}</td>
         <td>

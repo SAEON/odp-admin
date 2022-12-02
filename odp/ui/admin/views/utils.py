@@ -36,25 +36,25 @@ def pagify(item_list):
 
 
 def populate_collection_choices(field, include_none=False):
-    collections = api.get('/collection/')['items']
+    collections = api.get('/collection/', sort='key')['items']
     field.choices = [('', '(None)')] if include_none else []
     field.choices += [
-        (collection['id'], Markup(f"{collection['id']} &mdash; {collection['name']}"))
+        (collection['id'], Markup(f"{collection['key']} &mdash; {collection['name']}"))
         for collection in collections
     ]
 
 
 def populate_provider_choices(field, include_none=False):
-    providers = api.get('/provider/')['items']
+    providers = api.get('/provider/', sort='key')['items']
     field.choices = [('', '(None)')] if include_none else []
     field.choices += [
-        (provider['id'], Markup(f"{provider['id']} &mdash; {provider['name']}"))
+        (provider['id'], Markup(f"{provider['key']} &mdash; {provider['name']}"))
         for provider in providers
     ]
 
 
 def populate_schema_choices(field, schema_type):
-    schemas = api.get(f'/schema/?schema_type={schema_type}')['items']
+    schemas = api.get('/schema/', schema_type=schema_type)['items']
     field.choices = [
         (schema['id'], schema['id'])
         for schema in schemas
