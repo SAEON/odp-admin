@@ -102,6 +102,10 @@ class CollectionTagProjectForm(BaseForm):
 class ProviderForm(BaseForm):
     id = StringField(
         label='Provider id',
+        render_kw={'readonly': ''},
+    )
+    key = StringField(
+        label='Provider key',
         filters=[lambda s: s.strip() if s else s],
         validators=[data_required(), length(min=2)],
     )

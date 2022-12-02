@@ -9,11 +9,13 @@
 {% endblock %}
 
 {% block content %}
-    {% call(prop) render_info(provider, 'Name', 'Collections') %}
-        {% if prop == 'Name' %}
+    {% call(prop) render_info(provider, 'Key', 'Name', 'Collections') %}
+        {% if prop == 'Key' %}
+            {{ provider.key }}
+        {% elif prop == 'Name' %}
             {{ provider.name }}
         {% elif prop == 'Collections' %}
-            {{ obj_links('collections', provider.collection_ids, newlines=True) }}
+            {{ obj_links('collections', provider.collection_keys, newlines=True) }}
         {% endif %}
     {% endcall %}
     {{ render_buttons(buttons) }}

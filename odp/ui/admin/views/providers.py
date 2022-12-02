@@ -13,7 +13,7 @@ bp = Blueprint('providers', __name__)
 @api.view(ODPScope.PROVIDER_READ)
 def index():
     page = request.args.get('page', 1)
-    providers = api.get(f'/provider/?page={page}')
+    providers = api.get('/provider/', page=page, sort='key')
     return render_template(
         'provider_list.html',
         providers=providers,
@@ -44,12 +44,12 @@ def create():
 
     if request.method == 'POST' and form.validate():
         try:
-            api.post('/provider/', dict(
-                id=(id := form.id.data),
+            provider = api.post('/provider/', dict(
+                key=(key := form.key.data),
                 name=form.name.data,
             ))
-            flash(f'Provider {id} has been created.', category='success')
-            return redirect(url_for('.view', id=id))
+            flash(f'Provider {key} has been created.', category='success')
+            return redirect(url_for('.view', id=provider['id']))
 
         except ODPAPIError as e:
             if response := api.handle_error(e):
@@ -66,11 +66,11 @@ def edit(id):
 
     if request.method == 'POST' and form.validate():
         try:
-            api.put('/provider/', dict(
-                id=id,
+            api.put(f'/provider/{id}', dict(
+                key=(key := form.key.data),
                 name=form.name.data,
             ))
-            flash(f'Provider {id} has been updated.', category='success')
+            flash(f'Provider {key} has been updated.', category='success')
             return redirect(url_for('.view', id=id))
 
         except ODPAPIError as e:
