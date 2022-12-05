@@ -36,7 +36,7 @@ def view(id):
         theme=ButtonTheme.success,
         prompt='Are you sure you want to tag the collection as ready for publication?',
         object_id=id,
-        enabled=ODPScope.COLLECTION_ADMIN in g.user_permissions,
+        enabled=ODPScope.COLLECTION_READY in g.user_permissions,
     )
     if ready_tag := utils.get_tag_instance(collection, ODPCollectionTag.READY):
         ready_btn.label = 'Un-ready'
@@ -50,7 +50,7 @@ def view(id):
         theme=ButtonTheme.warning,
         prompt='Are you sure you want to freeze the collection?',
         object_id=id,
-        enabled=ODPScope.COLLECTION_ADMIN in g.user_permissions,
+        enabled=ODPScope.COLLECTION_FREEZE in g.user_permissions,
     )
     if frozen_tag := utils.get_tag_instance(collection, ODPCollectionTag.FROZEN):
         freeze_btn.label = 'Un-freeze'
@@ -79,7 +79,7 @@ def view(id):
         frozen_tag=frozen_tag,
         notindexed_tag=notindexed_tag,
         infrastructure_tags=utils.get_tag_instances(collection, ODPCollectionTag.INFRASTRUCTURE),
-        infrastructure_tag_enabled=ODPScope.COLLECTION_ADMIN in g.user_permissions,
+        infrastructure_tag_enabled=ODPScope.COLLECTION_INFRASTRUCTURE in g.user_permissions,
         project_tags=utils.get_tag_instances(collection, ODPCollectionTag.PROJECT),
         project_tag_enabled=ODPScope.COLLECTION_PROJECT in g.user_permissions,
         audit_records=audit_records,
@@ -152,83 +152,58 @@ def delete(id):
 
 
 @bp.route('/<id>/tag/ready', methods=('POST',))
-@api.view(ODPScope.COLLECTION_ADMIN)
+@api.view(ODPScope.COLLECTION_READY)
 def tag_ready(id):
-    api.post(f'/collection/{id}/tag', dict(
-        tag_id=ODPCollectionTag.READY,
-        data={},
-    ))
-    flash(f'{ODPCollectionTag.READY} tag has been set.', category='success')
-    return redirect(url_for('.view', id=id))
+    return _tag_singleton(
+        id, ODPCollectionTag.READY
+    )
 
 
 @bp.route('/<id>/untag/ready', methods=('POST',))
-@api.view(ODPScope.COLLECTION_ADMIN)
+@api.view(ODPScope.COLLECTION_READY)
 def untag_ready(id):
-    collection = api.get(f'/collection/{id}')
-    if ready_tag := utils.get_tag_instance(collection, ODPCollectionTag.READY):
-        api.delete(f'/collection/admin/{id}/tag/{ready_tag["id"]}')
-        flash(f'{ODPCollectionTag.READY} tag has been removed.', category='success')
-
-    return redirect(url_for('.view', id=id))
+    return _untag_singleton(
+        id, ODPCollectionTag.READY
+    )
 
 
 @bp.route('/<id>/tag/frozen', methods=('POST',))
-@api.view(ODPScope.COLLECTION_ADMIN)
+@api.view(ODPScope.COLLECTION_FREEZE)
 def tag_frozen(id):
-    api.post(f'/collection/{id}/tag', dict(
-        tag_id=ODPCollectionTag.FROZEN,
-        data={},
-    ))
-    flash(f'{ODPCollectionTag.FROZEN} tag has been set.', category='success')
-    return redirect(url_for('.view', id=id))
+    return _tag_singleton(
+        id, ODPCollectionTag.FROZEN
+    )
 
 
 @bp.route('/<id>/untag/frozen', methods=('POST',))
-@api.view(ODPScope.COLLECTION_ADMIN)
+@api.view(ODPScope.COLLECTION_FREEZE)
 def untag_frozen(id):
-    collection = api.get(f'/collection/{id}')
-    if frozen_tag := utils.get_tag_instance(collection, ODPCollectionTag.FROZEN):
-        api.delete(f'/collection/admin/{id}/tag/{frozen_tag["id"]}')
-        flash(f'{ODPCollectionTag.FROZEN} tag has been removed.', category='success')
-
-    return redirect(url_for('.view', id=id))
+    return _untag_singleton(
+        id, ODPCollectionTag.FROZEN
+    )
 
 
 @bp.route('/<id>/tag/notindexed', methods=('POST',))
 @api.view(ODPScope.COLLECTION_NOINDEX)
 def tag_notindexed(id):
-    api.post(f'/collection/{id}/tag', dict(
-        tag_id=ODPCollectionTag.NOTINDEXED,
-        data={},
-    ))
-    flash(f'{ODPCollectionTag.NOTINDEXED} tag has been set.', category='success')
-    return redirect(url_for('.view', id=id))
+    return _tag_singleton(
+        id, ODPCollectionTag.NOTINDEXED
+    )
 
 
 @bp.route('/<id>/untag/notindexed', methods=('POST',))
 @api.view(ODPScope.COLLECTION_NOINDEX)
 def untag_notindexed(id):
-    api_route = '/collection/'
-    if ODPScope.COLLECTION_ADMIN in g.user_permissions:
-        api_route += 'admin/'
-
-    collection = api.get(f'/collection/{id}')
-    if notindexed_tag := utils.get_tag_instance(collection, ODPCollectionTag.NOTINDEXED):
-        api.delete(f'{api_route}{id}/tag/{notindexed_tag["id"]}')
-        flash(f'{ODPCollectionTag.NOTINDEXED} tag has been removed.', category='success')
-
-    return redirect(url_for('.view', id=id))
+    return _untag_singleton(
+        id, ODPCollectionTag.NOTINDEXED
+    )
 
 
 @bp.route('/<id>/tag/project', methods=('GET', 'POST',))
 @api.view(ODPScope.COLLECTION_PROJECT)
 def tag_project(id):
     return _tag_vocabulary_term(
-        id,
-        ODPCollectionTag.PROJECT,
-        ODPVocabulary.PROJECT,
-        CollectionTagProjectForm,
+        id, ODPCollectionTag.PROJECT, ODPVocabulary.PROJECT, CollectionTagProjectForm
     )
 
 
@@ -236,30 +211,23 @@ def tag_project(id):
 @api.view(ODPScope.COLLECTION_PROJECT)
 def untag_project(id, tag_instance_id):
     return _untag_vocabulary_term(
-        id,
-        ODPCollectionTag.PROJECT,
-        tag_instance_id,
+        id, ODPCollectionTag.PROJECT, tag_instance_id
     )
 
 
 @bp.route('/<id>/tag/infrastructure', methods=('GET', 'POST',))
-@api.view(ODPScope.COLLECTION_ADMIN)
+@api.view(ODPScope.COLLECTION_INFRASTRUCTURE)
 def tag_infrastructure(id):
     return _tag_vocabulary_term(
-        id,
-        ODPCollectionTag.INFRASTRUCTURE,
-        ODPVocabulary.INFRASTRUCTURE,
-        CollectionTagInfrastructureForm,
+        id, ODPCollectionTag.INFRASTRUCTURE, ODPVocabulary.INFRASTRUCTURE, CollectionTagInfrastructureForm
     )
 
 
 @bp.route('/<id>/untag/infrastructure/<tag_instance_id>', methods=('POST',))
-@api.view(ODPScope.COLLECTION_ADMIN)
+@api.view(ODPScope.COLLECTION_INFRASTRUCTURE)
 def untag_infrastructure(id, tag_instance_id):
     return _untag_vocabulary_term(
-        id,
-        ODPCollectionTag.INFRASTRUCTURE,
-        tag_instance_id,
+        id, ODPCollectionTag.INFRASTRUCTURE, tag_instance_id
     )
 
 
@@ -284,6 +252,28 @@ def view_audit_detail(id, collection_audit_id):
 def view_tag_audit_detail(id, collection_tag_audit_id):
     audit_detail = api.get(f'/collection/{id}/collection_tag_audit/{collection_tag_audit_id}')
     return render_template('collection_tag_audit_view.html', audit=audit_detail)
+
+
+def _tag_singleton(collection_id, tag_id):
+    api.post(f'/collection/{collection_id}/tag', dict(
+        tag_id=tag_id,
+        data={},
+    ))
+    flash(f'{tag_id} tag has been set.', category='success')
+    return redirect(url_for('.view', id=collection_id))
+
+
+def _untag_singleton(collection_id, tag_id):
+    api_route = '/collection/'
+    if ODPScope.COLLECTION_ADMIN in g.user_permissions:
+        api_route += 'admin/'
+
+    collection = api.get(f'/collection/{collection_id}')
+    if tag_instance := utils.get_tag_instance(collection, tag_id):
+        api.delete(f'{api_route}{collection_id}/tag/{tag_instance["id"]}')
+        flash(f'{tag_id} tag has been removed.', category='success')
+
+    return redirect(url_for('.view', id=collection_id))
 
 
 def _tag_vocabulary_term(collection_id, tag_id, vocab_id, form_cls):
