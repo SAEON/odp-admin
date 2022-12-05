@@ -83,7 +83,7 @@ def edit(id):
     if request.method == 'POST':
         form = ClientForm(request.form)
     else:
-        form = ClientForm(data=client)
+        form = ClientForm(data=client | {'collection_ids': list(client['collection_keys'].values())})
 
     form.secret.description = 'Client secret will remain unchanged if left blank.'
     utils.populate_collection_choices(form.collection_ids)

@@ -73,7 +73,7 @@ def edit(id):
     if request.method == 'POST':
         form = RoleForm(request.form)
     else:
-        form = RoleForm(data=role)
+        form = RoleForm(data=role | {'collection_ids': list(role['collection_keys'].values())})
 
     utils.populate_collection_choices(form.collection_ids)
     utils.populate_scope_choices(form.scope_ids, ('odp', 'client'))
