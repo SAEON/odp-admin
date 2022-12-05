@@ -53,11 +53,12 @@ def populate_provider_choices(field, include_none=False):
     ]
 
 
-def populate_schema_choices(field, schema_type):
-    schemas = api.get('/schema/', schema_type=schema_type)['items']
+def populate_metadata_schema_choices(field):
+    schemas = api.get('/schema/', schema_type='metadata')['items']
     field.choices = [
         (schema['id'], schema['id'])
         for schema in schemas
+        if schema['id'].startswith('SAEON')
     ]
 
 

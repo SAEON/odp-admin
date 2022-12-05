@@ -111,7 +111,7 @@ def view(id):
 def create():
     form = RecordForm(request.form)
     utils.populate_collection_choices(form.collection_id, include_none=True)
-    utils.populate_schema_choices(form.schema_id, 'metadata')
+    utils.populate_metadata_schema_choices(form.schema_id)
 
     if request.method == 'POST' and form.validate():
         api_route = '/record/'
@@ -143,7 +143,7 @@ def edit(id):
 
     form = RecordForm(request.form, data=record)
     utils.populate_collection_choices(form.collection_id)
-    utils.populate_schema_choices(form.schema_id, 'metadata')
+    utils.populate_metadata_schema_choices(form.schema_id)
 
     if request.method == 'POST' and form.validate():
         api_route = '/record/'
