@@ -18,9 +18,11 @@
         {% set action = 'Deleted' %}
     {% endif %}
 
-    {% call(prop) render_info(audit, 'Id', 'Name', 'Provider', 'DOI key', action, hide_id=True) %}
+    {% call(prop) render_info(audit, 'Id', 'Key', 'Name', 'Provider', 'DOI key', action, hide_id=True) %}
         {% if prop == 'Id' %}
             {{ audit.collection_id }}
+        {% elif prop == 'Key' %}
+            {{ audit.collection_key if audit.collection_key }}
         {% elif prop == 'Name' %}
             {{ audit.collection_name if audit.collection_name }}
         {% elif prop == 'Provider' %}
