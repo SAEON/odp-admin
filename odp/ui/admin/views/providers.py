@@ -27,14 +27,23 @@ def index():
 @api.view(ODPScope.PROVIDER_READ)
 def view(id):
     provider = api.get(f'/provider/{id}')
+    audit_records = api.get(f'/provider/{id}/audit')
     return render_template(
         'provider_view.html',
         provider=provider,
+        audit_records=audit_records,
         buttons=[
             edit_btn(object_id=id, enabled=ODPScope.PROVIDER_ADMIN in g.user_permissions),
             delete_btn(object_id=id, enabled=ODPScope.PROVIDER_ADMIN in g.user_permissions, prompt_args=(id,)),
         ]
     )
+
+
+@bp.route('/<id>/audit/<audit_id>')
+@api.view(ODPScope.PROVIDER_READ)
+def view_audit_detail(id, audit_id):
+    audit_detail = api.get(f'/provider/{id}/audit/{audit_id}')
+    return render_template('provider_audit_view.html', audit=audit_detail)
 
 
 @bp.route('/new', methods=('GET', 'POST'))

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from 'macros.html' import render_info, render_buttons, obj_links %}
+{% from 'macros.html' import render_info, render_buttons, obj_links, render_audit_table %}
 
 {% block web_title %}
     {{ super() }} |
@@ -9,14 +9,37 @@
 {% endblock %}
 
 {% block content %}
-    {% call(prop) render_info(provider, 'Key', 'Name', 'Collections') %}
-        {% if prop == 'Key' %}
-            {{ provider.key }}
-        {% elif prop == 'Name' %}
-            {{ provider.name }}
-        {% elif prop == 'Collections' %}
-            {{ obj_links('collections', provider.collection_keys, newlines=True) }}
-        {% endif %}
-    {% endcall %}
-    {{ render_buttons(buttons) }}
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">
+                Info
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#audit-log" type="button" role="tab">
+                Audit Log
+            </button>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div id="info" class="tab-pane fade show active" role="tabpanel">
+            {% call(prop) render_info(provider, 'Key', 'Name', 'Collections') %}
+                {% if prop == 'Key' %}
+                    {{ provider.key }}
+                {% elif prop == 'Name' %}
+                    {{ provider.name }}
+                {% elif prop == 'Collections' %}
+                    {{ obj_links('collections', provider.collection_keys, newlines=True) }}
+                {% endif %}
+            {% endcall %}
+            {{ render_buttons(buttons) }}
+        </div>
+        <div id="audit-log" class="tab-pane fade" role="tabpanel">
+            {% call(audit_record) render_audit_table(audit_records) %}
+                <a href="{{ url_for('.view_audit_detail', id=provider.id, audit_id=audit_record.audit_id) }}" class="text-decoration-none">
+                    Provider
+                </a>
+            {% endcall %}
+        </div>
+    </div>
 {% endblock %}
