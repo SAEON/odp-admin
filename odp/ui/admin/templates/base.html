@@ -21,14 +21,16 @@
 {% endblock %}
 
 {% block main %}
-    <p class="h1">
-        {% block heading %}
-        {% endblock %}
-    </p>
-    <div class="mt-4">
-        {% block content %}
-        {% endblock %}
-    </div>
+    <main class="flex-grow-1 mx-4">
+        <p class="h1">
+            {% block heading %}
+            {% endblock %}
+        </p>
+        <div class="mt-4">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
 {% endblock %}
 
 {% block scripts %}
