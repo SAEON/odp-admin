@@ -58,6 +58,8 @@
                         <img src="{{ url_for('static', filename='nrf-favicon.ico') }}" height="20">
                     {% elif catalog_id == 'DataCite' %}
                         <img src="{{ url_for('static', filename='datacite-logo.svg') }}" height="20">
+                    {% elif catalog_id == 'MIMS' %}
+                        &#127754;
                     {% endif %}
                 </a>
             {% endfor %}
