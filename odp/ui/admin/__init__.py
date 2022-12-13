@@ -15,10 +15,10 @@ def create_app():
     """
     app = Flask(__name__)
     app.config.update(
-        SECRET_KEY=config.ODP.UI.ADMIN.FLASK_KEY,
-        UI_CLIENT_ID=config.ODP.UI.ADMIN.CLIENT_ID,
-        UI_CLIENT_SECRET=config.ODP.UI.ADMIN.CLIENT_SECRET,
+        UI_CLIENT_ID=config.ODP.ADMIN.UI_CLIENT_ID,
+        UI_CLIENT_SECRET=config.ODP.ADMIN.UI_CLIENT_SECRET,
         UI_CLIENT_SCOPE=[HydraScope.OPENID, HydraScope.OFFLINE_ACCESS] + [s.value for s in ODPScope],
+        SECRET_KEY=config.ODP.ADMIN.FLASK_SECRET,
     )
 
     base.init_app(app, user_api=True, template_dir=Path(__file__).parent / 'templates')
