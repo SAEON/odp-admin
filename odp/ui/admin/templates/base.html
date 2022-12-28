@@ -1,4 +1,5 @@
 {% extends 'layout.html' %}
+{% from 'libraries.html' import jquery_js, bootswatch_spacelab_css %}
 
 {% block web_title %}
     SAEON | ODP Admin
@@ -16,14 +17,16 @@
     {% from 'macros.html' import nav_menu %}
     {{ nav_menu(request.blueprint,
         ('collections', 'providers', 'schemas', 'catalogs', 'roles'),
-        ('records', 'tags', 'vocabularies', 'clients', 'users'),
+        ('records', 'tags', 'vocabularies', 'clients', 'users')
     ) }}
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    {{ bootswatch_spacelab_css() }}
 {% endblock %}
 
 {% block scripts %}
     {{ super() }}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <script>
-        $SCRIPT_ROOT = {{ request.script_root|tojson }};
-    </script>
+    {{ jquery_js() }}
 {% endblock %}
