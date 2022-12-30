@@ -1,24 +1,22 @@
 {% extends 'layout.html' %}
-{% from 'libraries.html' import jquery_js, bootswatch_spacelab_css %}
+{% from 'lib.j2' import jquery_js, bootswatch_spacelab_css %}
+{% from 'nav.j2' import navbar, navbar_menu %}
 
 {% block web_title %}
     SAEON | ODP Admin
 {% endblock %}
 
-{% block nav_title %}
-    SAEON | Open Data Platform
-{% endblock %}
-
-{% block navbar_bg %}
-    bg-dark
-{% endblock %}
-
-{% block nav_menu %}
-    {% from 'macros.html' import nav_menu %}
-    {{ nav_menu(request.blueprint,
-        ('collections', 'providers', 'schemas', 'catalogs', 'roles'),
-        ('records', 'tags', 'vocabularies', 'clients', 'users')
-    ) }}
+{% block header %}
+    {% call navbar(current_user, color='dark') %}
+        {% if current_user.is_authenticated %}
+            <div class="mx-5 mt-1">
+                {{ navbar_menu(request.blueprint,
+                    ('collections', 'providers', 'schemas', 'catalogs', 'roles'),
+                    ('records', 'tags', 'vocabularies', 'clients', 'users')
+                ) }}
+            </div>
+        {% endif %}
+    {% endcall %}
 {% endblock %}
 
 {% block styles %}
