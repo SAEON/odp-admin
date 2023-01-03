@@ -1,22 +1,44 @@
 {% extends 'layout.html' %}
 {% from 'lib.j2' import jquery_js, bootswatch_spacelab_css %}
-{% from 'nav.j2' import navbar, navbar_menu %}
+{% from 'nav.j2' import nav_logo, nav_title, nav_menu, nav_views %}
 
 {% block web_title %}
-    SAEON | ODP Admin
+    ODP Admin
 {% endblock %}
 
 {% block header %}
-    {% call navbar(current_user, color='dark') %}
-        {% if current_user.is_authenticated %}
-            <div class="mx-5 mt-1">
-                {{ navbar_menu(request.blueprint,
-                    ('collections', 'providers', 'schemas', 'catalogs', 'roles'),
-                    ('records', 'tags', 'vocabularies', 'clients', 'users')
-                ) }}
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark p-2">
+        <div class="container-fluid">
+            <div class="navbar-nav justify-content-start" style="flex-basis:0; flex-grow:1">
+                {{ nav_logo() }}
             </div>
-        {% endif %}
-    {% endcall %}
+            <div class="d-flex flex-column navbar-nav justify-content-center align-items-center">
+                {{ nav_title() }}
+                {% if current_user.is_authenticated %}
+                    <div class="d-flex flex-row">
+                        {{ nav_views('Metadata Management', request.blueprint,
+                            records='Records',
+                            collections='Collections',
+                            providers='Providers',
+                            _='',
+                            catalogs='Catalogs',
+                            schemas='Schemas',
+                            tags='Tags',
+                            vocabularies='Vocabularies'
+                        ) }}
+                        {{ nav_views('Access Control', request.blueprint,
+                            clients='Clients',
+                            roles='Roles',
+                            users='Users'
+                        ) }}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="navbar-nav justify-content-end" style="flex-basis:0; flex-grow:1">
+                {{ nav_menu(user=current_user) }}
+            </div>
+        </div>
+    </nav>
 {% endblock %}
 
 {% block styles %}
