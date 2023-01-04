@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% from 'content.j2' import render_info %}
 
 {% block web_title %}
     {{ super() }} |
@@ -8,7 +9,6 @@
 {% endblock %}
 
 {% block content %}
-    {% from 'macros.html' import render_info %}
     {% call(prop) render_info(catalog, 'Published records') %}
         {% if prop == 'Published records' %}
             {{ catalog.record_count }}

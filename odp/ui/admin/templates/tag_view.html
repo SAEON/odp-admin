@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% from 'content.j2' import render_info %}
 
 {% block web_title %}
     {{ super() }} |
@@ -22,7 +23,6 @@
     </ul>
     <div class="tab-content">
         <div id="info" class="tab-pane fade show active" role="tabpanel">
-            {% from 'macros.html' import render_info %}
             {% call(prop) render_info(tag, 'Cardinality', 'Public', 'Scope', 'Schema URI') %}
                 {% if prop == 'Cardinality' %}
                     {{ tag.cardinality }}
