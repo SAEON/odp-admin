@@ -1,3 +1,3 @@
 # ODP Admin
 
-Source code for the SAEON Open Data Platform (ODP) administrative interface.
+Administrative interface to the SAEON Open Data Platform.
