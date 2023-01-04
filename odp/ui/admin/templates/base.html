@@ -1,13 +1,14 @@
 {% extends 'layout.html' %}
 {% from 'lib.j2' import jquery_js, bootswatch_spacelab_css %}
 {% from 'nav.j2' import nav_logo, nav_title, nav_menu, nav_views %}
+{% from 'foot.j2' import footer %}
 
 {% block web_title %}
     ODP Admin
 {% endblock %}
 
 {% block header %}
-    <nav class="navbar navbar-expand-lg bg-dark navbar-dark p-2">
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark p-3">
         <div class="container-fluid">
             <div class="navbar-nav justify-content-start" style="flex-basis:0; flex-grow:1">
                 {{ nav_logo() }}
@@ -39,6 +40,10 @@
             </div>
         </div>
     </nav>
+{% endblock %}
+
+{% block footer %}
+    {{ footer() }}
 {% endblock %}
 
 {% block styles %}
