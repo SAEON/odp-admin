@@ -14,5 +14,6 @@
 
 {% block content %}
     {{ render_form(form, client, ['scope_ids', 'grant_types', 'response_types', 'redirect_uris',
-        'post_logout_redirect_uris', 'token_endpoint_auth_method', 'allowed_cors_origins']) }}
+        'post_logout_redirect_uris', 'client_credentials_grant_access_token_lifespan',
+        'token_endpoint_auth_method', 'allowed_cors_origins']) }}
 {% endblock %}

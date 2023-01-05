@@ -42,6 +42,10 @@ class ClientForm(BaseForm):
     post_logout_redirect_uris = StringListField(
         label='Post-logout redirect URIs',
     )
+    client_credentials_grant_access_token_lifespan = StringField(
+        label='Access token lifespan (client_credentials)',
+        description='Leave blank for the system default.',
+    )
     token_endpoint_auth_method = RadioField(
         label='Token endpoint auth method',
         choices=[(tm.value, tm.value) for tm in TokenEndpointAuthMethod],

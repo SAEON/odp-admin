@@ -62,6 +62,7 @@ def create():
                 post_logout_redirect_uris=form.post_logout_redirect_uris.data.split(),
                 token_endpoint_auth_method=form.token_endpoint_auth_method.data,
                 allowed_cors_origins=form.allowed_cors_origins.data.split(),
+                client_credentials_grant_access_token_lifespan=form.client_credentials_grant_access_token_lifespan.data or None,
             ))
             flash(f'Client {id} has been created.', category='success')
             return redirect(url_for('.view', id=id))
@@ -104,6 +105,7 @@ def edit(id):
                 post_logout_redirect_uris=form.post_logout_redirect_uris.data.split(),
                 token_endpoint_auth_method=form.token_endpoint_auth_method.data,
                 allowed_cors_origins=form.allowed_cors_origins.data.split(),
+                client_credentials_grant_access_token_lifespan=form.client_credentials_grant_access_token_lifespan.data or None,
             ))
             flash(f'Client {id} has been updated.', category='success')
             return redirect(url_for('.view', id=id))
