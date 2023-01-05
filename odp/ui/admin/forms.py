@@ -43,7 +43,7 @@ class ClientForm(BaseForm):
         label='Post-logout redirect URIs',
     )
     client_credentials_grant_access_token_lifespan = StringField(
-        label='Access token lifespan (client_credentials)',
+        label='Access token lifespan (client credentials)',
         description='Leave blank for the system default.',
     )
     token_endpoint_auth_method = RadioField(
