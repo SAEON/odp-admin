@@ -9,7 +9,7 @@
 {% block header %}
     <nav class="navbar navbar-expand-lg bg-dark navbar-dark p-3">
         <div class="container-fluid">
-            <div class="navbar-nav justify-content-start" style="flex-basis:0; flex-grow:1">
+            <div class="navbar-nav justify-content-start flex-grow-evenly">
                 {{ nav_logo() }}
             </div>
             <div class="d-flex flex-column navbar-nav justify-content-center align-items-center">
@@ -34,7 +34,7 @@
                     </div>
                 {% endif %}
             </div>
-            <div class="navbar-nav justify-content-end" style="flex-basis:0; flex-grow:1">
+            <div class="navbar-nav justify-content-end flex-grow-evenly">
                 {{ nav_menu(user=current_user) }}
             </div>
         </div>
