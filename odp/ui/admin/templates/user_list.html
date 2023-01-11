@@ -9,11 +9,9 @@
 {% endblock %}
 
 {% block content %}
-    {% call(user) render_table(users, 'Name', 'Email', 'Verified', 'Active', 'Roles', hide_id=True) %}
-        <th scope="row">{{ obj_link('users', user.id, user.name) }}</th>
-        <td>{{ user.email }}</td>
-        <td>{{ user.verified }}</td>
-        <td>{{ user.active }}</td>
+    {% call(user) render_table(users, 'Email', 'Name', 'Roles', hide_id=True) %}
+        <th scope="row">{{ obj_link('users', user.id, user.email) }}</th>
+        <td>{{ user.name }}</td>
         <td>{{ obj_links('roles', user.role_ids) }}</td>
     {% endcall %}
 {% endblock %}
