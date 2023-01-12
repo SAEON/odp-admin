@@ -9,8 +9,10 @@
 {% endblock %}
 
 {% block content %}
-    {% call(prop) render_info(catalog, 'Published records') %}
-        {% if prop == 'Published records' %}
+    {% call(prop) render_info(catalog, 'URL', 'Published records') %}
+        {% if prop == 'URL' %}
+            {{ catalog.url }}
+        {% elif prop == 'Published records' %}
             {{ catalog.record_count }}
         {% endif %}
     {% endcall %}

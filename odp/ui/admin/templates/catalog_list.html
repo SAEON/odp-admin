@@ -9,7 +9,8 @@
 {% endblock %}
 
 {% block content %}
-    {% call(catalog) render_table(catalogs, 'Published records') %}
+    {% call(catalog) render_table(catalogs, 'URL', 'Published records') %}
+        <td>{{ catalog.url }}</td>
         <td>{{ catalog.record_count }}</td>
     {% endcall %}
 {% endblock %}
