@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for
 
-from odp.client import ODPAPIError
 from odp.const import ODPCollectionTag, ODPScope, ODPVocabulary
+from odp.lib.client import ODPAPIError
 from odp.ui.admin.forms import CollectionForm, CollectionTagInfrastructureForm, CollectionTagProjectForm
 from odp.ui.admin.views import utils
 from odp.ui.base import api

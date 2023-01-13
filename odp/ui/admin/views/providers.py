@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for
 
-from odp.client import ODPAPIError
 from odp.const import ODPScope
+from odp.lib.client import ODPAPIError
 from odp.ui.admin.forms import ProviderForm
 from odp.ui.base import api
 from odp.ui.base.templates import create_btn, delete_btn, edit_btn

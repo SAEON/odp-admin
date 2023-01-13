@@ -1,8 +1,8 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for
 from wtforms.validators import input_required
 
-from odp.client import ODPAPIError
 from odp.const import ODPScope
+from odp.lib.client import ODPAPIError
 from odp.ui.admin.forms import ClientForm
 from odp.ui.admin.views import utils
 from odp.ui.base import api
