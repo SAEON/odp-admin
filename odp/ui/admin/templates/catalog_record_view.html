@@ -4,7 +4,7 @@
 {% block web_title %}
     {{ super() }} |
     {% block heading %}
-        Catalog Record: {{ catalog_record.catalog_id }} / {{ catalog_record.record_id }}
+        Catalogue Record: {{ catalog_record.catalog_id }} / {{ catalog_record.record_id }}
     {% endblock %}
 {% endblock %}
 
@@ -23,8 +23,8 @@
     </ul>
     <div class="tab-content">
         <div id="info" class="tab-pane fade show active" role="tabpanel">
-            {% call(prop) render_info(catalog_record, 'Catalog', 'Record id', 'Published', 'Reason', 'Timestamp', hide_id=True) %}
-                {% if prop == 'Catalog' %}
+            {% call(prop) render_info(catalog_record, 'Catalogue', 'Record id', 'Published', 'Reason', 'Timestamp', hide_id=True) %}
+                {% if prop == 'Catalogue' %}
                     {{ obj_link('catalogs', catalog_record.catalog_id) }}
                 {% elif prop == 'Record id' %}
                     {{ obj_link('records', catalog_record.record_id) }}

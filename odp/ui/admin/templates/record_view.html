@@ -43,7 +43,7 @@
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#catalog-records" type="button" role="tab">
-                Catalog Records
+                Catalogue Records
             </button>
         </li>
         <li class="nav-item" role="presentation">
@@ -120,7 +120,7 @@
                comment='Note') }}
         </div>
         <div id="catalog-records" class="tab-pane fade" role="tabpanel">
-            {% call(catalog_record) render_table(catalog_records, 'Catalog', 'Published', 'Reason', 'Timestamp', hide_id=True) %}
+            {% call(catalog_record) render_table(catalog_records, 'Catalogue', 'Published', 'Reason', 'Timestamp', hide_id=True) %}
                 <td>{{ obj_link('catalogs', catalog_record.catalog_id) }}</td>
                 <td>
                     <a href="{{ url_for('.view_catalog_record', id=record.id, catalog_id=catalog_record.catalog_id) }}" class="text-decoration-none">
