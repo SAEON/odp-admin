@@ -55,9 +55,9 @@
             {% for catalog_id in record.published_catalog_ids %}
                 <a href="{{ url_for('.view_catalog_record', id=record.id, catalog_id=catalog_id) }}">
                     {% if catalog_id == 'SAEON' %}
-                        <img src="{{ url_for('static', filename='nrf-favicon.ico') }}" height="20">
+                        <img src="{{ url_for('static', filename='images/nrf-favicon.ico') }}" height="20">
                     {% elif catalog_id == 'DataCite' %}
-                        <img src="{{ url_for('static', filename='datacite-logo.svg') }}" height="20">
+                        <img src="{{ url_for('static', filename='images/datacite-logo.svg') }}" height="20">
                     {% elif catalog_id == 'MIMS' %}
                         &#127754;
                     {% endif %}
