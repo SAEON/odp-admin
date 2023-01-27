@@ -15,12 +15,30 @@
                 Info
             </button>
         </li>
+
         <li class="nav-item" role="presentation">
             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#published-record" type="button" role="tab">
                 Published Record
             </button>
         </li>
+
+        {% if catalog_record.catalog_id in ('SAEON', 'MIMS') %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#index-data" type="button" role="tab">
+                    Indexing Data
+                </button>
+            </li>
+        {% endif %}
+
+        {% if catalog_record.catalog_id == 'DataCite' %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#external-sync" type="button" role="tab">
+                    External Sync
+                </button>
+            </li>
+        {% endif %}
     </ul>
+
     <div class="tab-content">
         <div id="info" class="tab-pane fade show active" role="tabpanel">
             {% call(prop) render_info(catalog_record, 'Catalogue', 'Record id', 'Published', 'Reason', 'Timestamp', hide_id=True) %}
@@ -37,10 +55,52 @@
                 {% endif %}
             {% endcall %}
         </div>
+
         <div id="published-record" class="tab-pane fade" role="tabpanel">
             <pre class="m-3">
                 {{- catalog_record.published_record|format_json -}}
             </pre>
         </div>
+
+        {% if catalog_record.catalog_id in ('SAEON', 'MIMS') %}
+            <div id="index-data" class="tab-pane fade" role="tabpanel">
+                {% call(prop) render_info(catalog_record,
+                        'Searchable', 'North', 'East', 'South', 'West',
+                        'Start', 'End', 'Full text search', hide_id=True) %}
+                    {% if prop == 'Searchable' %}
+                        {{ catalog_record.index_searchable }}
+                    {% elif prop == 'North' %}
+                        {{ catalog_record.index_spatial_north }}
+                    {% elif prop == 'East' %}
+                        {{ catalog_record.index_spatial_east }}
+                    {% elif prop == 'South' %}
+                        {{ catalog_record.index_spatial_south }}
+                    {% elif prop == 'West' %}
+                        {{ catalog_record.index_spatial_west }}
+                    {% elif prop == 'Start' %}
+                        {{ catalog_record.index_temporal_start | date if catalog_record.index_temporal_start }}
+                    {% elif prop == 'End' %}
+                        {{ catalog_record.index_temporal_end | date if catalog_record.index_temporal_end }}
+                    {% elif prop == 'Full text search' %}
+                        {{ catalog_record.index_full_text }}
+                    {% endif %}
+                {% endcall %}
+            </div>
+        {% endif %}
+
+        {% if catalog_record.catalog_id == 'DataCite' %}
+            <div id="external-sync" class="tab-pane fade" role="tabpanel">
+                {% call(prop) render_info(catalog_record,
+                        'Synced', 'Last error', 'Error count', hide_id=True) %}
+                    {% if prop == 'Synced' %}
+                        {{ catalog_record.external_synced }}
+                    {% elif prop == 'Last error' %}
+                        {{ catalog_record.external_error }}
+                    {% elif prop == 'Error count' %}
+                        {{ catalog_record.external_error_count }}
+                    {% endif %}
+                {% endcall %}
+            </div>
+        {% endif %}
     </div>
 {% endblock %}
