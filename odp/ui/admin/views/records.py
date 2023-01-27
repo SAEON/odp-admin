@@ -55,19 +55,19 @@ def view(id):
     catalog_records = api.get(f'/record/{id}/catalog')
     audit_records = api.get(f'/record/{id}/audit')
 
-    noindex_btn = Button(
-        label='Un-index',
-        endpoint='.tag_notindexed',
+    nosearch_btn = Button(
+        label='No search',
+        endpoint='.tag_notsearchable',
         theme=ButtonTheme.warning,
         prompt='Are you sure you want to tag the record as not searchable?',
         object_id=id,
-        enabled=ODPScope.RECORD_NOINDEX in g.user_permissions,
+        enabled=ODPScope.RECORD_NOSEARCH in g.user_permissions,
     )
-    if notindexed_tag := utils.get_tag_instance(record, ODPRecordTag.NOTINDEXED):
-        noindex_btn.label = 'Index'
-        noindex_btn.endpoint = '.untag_notindexed'
-        noindex_btn.theme = ButtonTheme.success
-        noindex_btn.prompt = 'Are you sure you want the record to be searchable?'
+    if notsearchable_tag := utils.get_tag_instance(record, ODPRecordTag.NOTSEARCHABLE):
+        nosearch_btn.label = 'Searchable'
+        nosearch_btn.endpoint = '.untag_notsearchable'
+        nosearch_btn.theme = ButtonTheme.success
+        nosearch_btn.prompt = 'Are you sure you want the record to be searchable?'
 
     retract_btn = Button(
         label='Retract',
@@ -87,7 +87,7 @@ def view(id):
         'record_view.html',
         record=record,
         migrated_tag=utils.get_tag_instance(record, ODPRecordTag.MIGRATED),
-        notindexed_tag=notindexed_tag,
+        notsearchable_tag=notsearchable_tag,
         retracted_tag=retracted_tag,
         qc_tags=utils.get_tag_instances(record, ODPRecordTag.QC),
         qc_tag_enabled=ODPScope.RECORD_QC in g.user_permissions,
@@ -99,7 +99,7 @@ def view(id):
         audit_records=audit_records,
         buttons=[
             edit_btn(object_id=id, enabled=ODPScope.RECORD_WRITE in g.user_permissions),
-            noindex_btn,
+            nosearch_btn,
             retract_btn,
             delete_btn(object_id=id, enabled=ODPScope.RECORD_WRITE in g.user_permissions, prompt_args=(record['doi'] or record['sid'],)),
         ],
@@ -308,28 +308,28 @@ def untag_embargo(id, tag_instance_id):
     return redirect(url_for('.view', id=id))
 
 
-@bp.route('/<id>/tag/notindexed', methods=('POST',))
-@api.view(ODPScope.RECORD_NOINDEX)
-def tag_notindexed(id):
+@bp.route('/<id>/tag/notsearchable', methods=('POST',))
+@api.view(ODPScope.RECORD_NOSEARCH)
+def tag_notsearchable(id):
     api.post(f'/record/{id}/tag', dict(
-        tag_id=ODPRecordTag.NOTINDEXED,
+        tag_id=ODPRecordTag.NOTSEARCHABLE,
         data={},
     ))
-    flash(f'{ODPRecordTag.NOTINDEXED} tag has been set.', category='success')
+    flash(f'{ODPRecordTag.NOTSEARCHABLE} tag has been set.', category='success')
     return redirect(url_for('.view', id=id))
 
 
-@bp.route('/<id>/untag/notindexed', methods=('POST',))
-@api.view(ODPScope.RECORD_NOINDEX)
-def untag_notindexed(id):
+@bp.route('/<id>/untag/notsearchable', methods=('POST',))
+@api.view(ODPScope.RECORD_NOSEARCH)
+def untag_notsearchable(id):
     api_route = '/record/'
     if ODPScope.RECORD_ADMIN in g.user_permissions:
         api_route += 'admin/'
 
     record = api.get(f'/record/{id}')
-    if notindexed_tag := utils.get_tag_instance(record, ODPRecordTag.NOTINDEXED):
-        api.delete(f'{api_route}{id}/tag/{notindexed_tag["id"]}')
-        flash(f'{ODPRecordTag.NOTINDEXED} tag has been removed.', category='success')
+    if notsearchable_tag := utils.get_tag_instance(record, ODPRecordTag.NOTSEARCHABLE):
+        api.delete(f'{api_route}{id}/tag/{notsearchable_tag["id"]}')
+        flash(f'{ODPRecordTag.NOTSEARCHABLE} tag has been removed.', category='success')
 
     return redirect(url_for('.view', id=id))
 

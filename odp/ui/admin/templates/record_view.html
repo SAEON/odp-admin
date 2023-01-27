@@ -54,7 +54,7 @@
     </ul>
     <div class="tab-content">
         <div id="info" class="tab-pane fade show active" role="tabpanel">
-            {% call(prop) render_info(record, 'DOI', 'SID', 'Collection', 'Schema', 'Migrated', 'Indexed',
+            {% call(prop) render_info(record, 'DOI', 'SID', 'Collection', 'Schema', 'Migrated', 'Searchable',
                     'Quality Control', 'Dataset Embargo', 'Retracted', 'Timestamp') %}
                 {% if prop == 'DOI' %}
                     {{ record.doi if record.doi }}
@@ -69,9 +69,9 @@
                         {{ migrated_tag.timestamp|timestamp }} from ODP v1 with a status of
                         {{ 'Published' if migrated_tag.data.published else 'Not Published' }}
                     {% endif %}
-                {% elif prop == 'Indexed' %}
-                    {% if notindexed_tag %}
-                        False: tagged as not searchable at {{ notindexed_tag.timestamp|timestamp }} by {{ obj_link('users', notindexed_tag.user_id, notindexed_tag.user_name) }}
+                {% elif prop == 'Searchable' %}
+                    {% if notsearchable_tag %}
+                        False: tagged as not searchable at {{ notsearchable_tag.timestamp|timestamp }} by {{ obj_link('users', notsearchable_tag.user_id, notsearchable_tag.user_name) }}
                     {% else %}
                         True
                     {% endif %}

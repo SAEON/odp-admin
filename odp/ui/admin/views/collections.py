@@ -58,26 +58,26 @@ def view(id):
         freeze_btn.theme = ButtonTheme.success
         freeze_btn.prompt = 'Are you sure you want to un-freeze the collection?'
 
-    noindex_btn = Button(
-        label='Un-index',
-        endpoint='.tag_notindexed',
+    nosearch_btn = Button(
+        label='No search',
+        endpoint='.tag_notsearchable',
         theme=ButtonTheme.warning,
         prompt='Are you sure you want to tag the collection as not searchable?',
         object_id=id,
-        enabled=ODPScope.COLLECTION_NOINDEX in g.user_permissions,
+        enabled=ODPScope.COLLECTION_NOSEARCH in g.user_permissions,
     )
-    if notindexed_tag := utils.get_tag_instance(collection, ODPCollectionTag.NOTINDEXED):
-        noindex_btn.label = 'Index'
-        noindex_btn.endpoint = '.untag_notindexed'
-        noindex_btn.theme = ButtonTheme.success
-        noindex_btn.prompt = 'Are you sure you want the collection to be searchable?'
+    if notsearchable_tag := utils.get_tag_instance(collection, ODPCollectionTag.NOTSEARCHABLE):
+        nosearch_btn.label = 'Searchable'
+        nosearch_btn.endpoint = '.untag_notsearchable'
+        nosearch_btn.theme = ButtonTheme.success
+        nosearch_btn.prompt = 'Are you sure you want the collection to be searchable?'
 
     return render_template(
         'collection_view.html',
         collection=collection,
         ready_tag=ready_tag,
         frozen_tag=frozen_tag,
-        notindexed_tag=notindexed_tag,
+        notsearchable_tag=notsearchable_tag,
         infrastructure_tags=utils.get_tag_instances(collection, ODPCollectionTag.INFRASTRUCTURE),
         infrastructure_tag_enabled=ODPScope.COLLECTION_INFRASTRUCTURE in g.user_permissions,
         project_tags=utils.get_tag_instances(collection, ODPCollectionTag.PROJECT),
@@ -87,7 +87,7 @@ def view(id):
             edit_btn(object_id=id, enabled=ODPScope.COLLECTION_ADMIN in g.user_permissions),
             ready_btn,
             freeze_btn,
-            noindex_btn,
+            nosearch_btn,
             delete_btn(object_id=id, enabled=ODPScope.COLLECTION_ADMIN in g.user_permissions, prompt_args=(id,)),
         ],
     )
@@ -183,19 +183,19 @@ def untag_frozen(id):
     )
 
 
-@bp.route('/<id>/tag/notindexed', methods=('POST',))
-@api.view(ODPScope.COLLECTION_NOINDEX)
-def tag_notindexed(id):
+@bp.route('/<id>/tag/notsearchable', methods=('POST',))
+@api.view(ODPScope.COLLECTION_NOSEARCH)
+def tag_notsearchable(id):
     return _tag_singleton(
-        id, ODPCollectionTag.NOTINDEXED
+        id, ODPCollectionTag.NOTSEARCHABLE
     )
 
 
-@bp.route('/<id>/untag/notindexed', methods=('POST',))
-@api.view(ODPScope.COLLECTION_NOINDEX)
-def untag_notindexed(id):
+@bp.route('/<id>/untag/notsearchable', methods=('POST',))
+@api.view(ODPScope.COLLECTION_NOSEARCH)
+def untag_notsearchable(id):
     return _untag_singleton(
-        id, ODPCollectionTag.NOTINDEXED
+        id, ODPCollectionTag.NOTSEARCHABLE
     )
 
 
