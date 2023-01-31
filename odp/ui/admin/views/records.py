@@ -2,7 +2,7 @@ import json
 
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for
 
-from odp.const import ODPRecordTag, ODPScope
+from odp.const import ODPCollectionTag, ODPRecordTag, ODPScope
 from odp.lib.client import ODPAPIError
 from odp.ui.admin.forms import RecordFilterForm, RecordForm, RecordTagEmbargoForm, RecordTagNoteForm, RecordTagQCForm
 from odp.ui.admin.views import utils
@@ -88,6 +88,7 @@ def view(id):
         record=record,
         migrated_tag=utils.get_tag_instance(record, ODPRecordTag.MIGRATED),
         notsearchable_tag=notsearchable_tag,
+        collection_notsearchable_tag=utils.get_tag_instance(record, ODPCollectionTag.NOTSEARCHABLE),
         retracted_tag=retracted_tag,
         qc_tags=utils.get_tag_instances(record, ODPRecordTag.QC),
         qc_tag_enabled=ODPScope.RECORD_QC in g.user_permissions,

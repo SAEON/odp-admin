@@ -70,7 +70,9 @@
                         {{ 'Published' if migrated_tag.data.published else 'Not Published' }}
                     {% endif %}
                 {% elif prop == 'Searchable' %}
-                    {% if notsearchable_tag %}
+                    {% if collection_notsearchable_tag %}
+                        False: the collection is tagged as not searchable
+                    {% elif notsearchable_tag %}
                         False: tagged as not searchable at {{ notsearchable_tag.timestamp|timestamp }} by {{ obj_link('users', notsearchable_tag.user_id, notsearchable_tag.user_name) }}
                     {% else %}
                         True
