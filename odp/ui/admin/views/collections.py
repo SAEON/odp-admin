@@ -78,6 +78,7 @@ def view(id):
         ready_tag=ready_tag,
         frozen_tag=frozen_tag,
         notsearchable_tag=notsearchable_tag,
+        harvested_tag=utils.get_tag_instance(collection, ODPCollectionTag.HARVESTED),
         infrastructure_tags=utils.get_tag_instances(collection, ODPCollectionTag.INFRASTRUCTURE),
         infrastructure_tag_enabled=ODPScope.COLLECTION_INFRASTRUCTURE in g.user_permissions,
         project_tags=utils.get_tag_instances(collection, ODPCollectionTag.PROJECT),

@@ -35,7 +35,7 @@
     <div class="tab-content">
         <div id="info" class="tab-pane fade show active" role="tabpanel">
             {% call(prop) render_info(collection, 'Key', 'Name', 'Provider', 'DOI key', 'Records',
-                    'Ready', 'Frozen', 'Searchable', 'Projects', 'Infrastructures', 'Timestamp') %}
+                    'Ready', 'Frozen', 'Harvested', 'Searchable', 'Projects', 'Infrastructures', 'Timestamp') %}
                 {% if prop == 'Key' %}
                     {{ collection.key }}
                 {% elif prop == 'Name' %}
@@ -56,6 +56,8 @@
                     {% if frozen_tag %}
                         {{ frozen_tag.timestamp|timestamp }} by {{ obj_link('users', frozen_tag.user_id, frozen_tag.user_name) }}
                     {% endif %}
+                {% elif prop == 'Harvested' %}
+                    {{ 'True (ignore record QC when publishing)' if harvested_tag else 'False' }}
                 {% elif prop == 'Searchable' %}
                     {% if notsearchable_tag %}
                         False: tagged as not searchable at {{ notsearchable_tag.timestamp|timestamp }} by {{ obj_link('users', notsearchable_tag.user_id, notsearchable_tag.user_name) }}
