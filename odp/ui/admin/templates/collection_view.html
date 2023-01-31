@@ -50,7 +50,10 @@
                     </a>
                 {% elif prop == 'Ready' %}
                     {% if ready_tag %}
-                        {{ ready_tag.timestamp|timestamp }} by {{ obj_link('users', ready_tag.user_id, ready_tag.user_name) }}
+                        {{ ready_tag.timestamp|timestamp }}
+                        {% if ready_tag.user_id %}
+                            by {{ obj_link('users', ready_tag.user_id, ready_tag.user_name) }}
+                        {% endif %}
                     {% endif %}
                 {% elif prop == 'Frozen' %}
                     {% if frozen_tag %}
