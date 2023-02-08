@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% from 'content.j2' import render_info, obj_link, obj_links %}
+
+{% block web_title %}
+    {{ super() }} |
+    {% block heading %}
+        Identity Audit Record: {{ audit.user_email }}
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% call(prop) render_info(audit, 'Action', 'Completed', 'Id', 'Email', 'Active', 'Roles', hide_id=True) %}
+        {% if prop == 'Action' %}
+            {{ audit.command }}
+            at {{ audit.timestamp|timestamp }}
+            {% if audit.client_user_id %}
+                by {{ obj_link('users', audit.client_user_id, audit.client_user_name) }}
+            {% endif %}
+            via {{ obj_link('clients', audit.client_id) }}
+        {% elif prop == 'Completed' %}
+            {% if audit.completed %}
+                {{ '&#9989;'|safe }}
+            {% else %}
+                {{ '&#10060;'|safe }}
+                {{ audit.error }}
+            {% endif %}
+        {% elif prop == 'Id' %}
+            {{ audit.user_id }}
+        {% elif prop == 'Email' %}
+            {{ audit.user_email }}
+        {% elif prop == 'Active' %}
+            {{ audit.user_active }}
+        {% elif prop == 'Roles' %}
+            {{ obj_links('roles', audit.user_roles, newlines=True) }}
+        {% endif %}
+    {% endcall %}
+{% endblock %}
