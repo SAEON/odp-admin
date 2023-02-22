@@ -65,10 +65,10 @@
         {% if catalog_record.catalog_id in ('SAEON', 'MIMS') %}
             <div id="index-data" class="tab-pane fade" role="tabpanel">
                 {% call(prop) render_info(catalog_record,
-                        'Searchable', 'North', 'East', 'South', 'West',
-                        'Start', 'End', 'Full text search', hide_id=True) %}
-                    {% if prop == 'Searchable' %}
-                        {{ catalog_record.index_searchable }}
+                        'Keywords', 'North', 'East', 'South', 'West',
+                        'Start', 'End', 'Full text search', 'Searchable', hide_id=True) %}
+                    {% if prop == 'Keywords' %}
+                        {{ catalog_record.index_keywords | join('<br/>') | safe }}
                     {% elif prop == 'North' %}
                         {{ catalog_record.index_spatial_north }}
                     {% elif prop == 'East' %}
@@ -83,6 +83,8 @@
                         {{ catalog_record.index_temporal_end | date if catalog_record.index_temporal_end }}
                     {% elif prop == 'Full text search' %}
                         {{ catalog_record.index_full_text }}
+                    {% elif prop == 'Searchable' %}
+                        {{ catalog_record.index_searchable }}
                     {% endif %}
                 {% endcall %}
             </div>
