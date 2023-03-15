@@ -37,7 +37,7 @@
         </form>
     </div>
     {% call(record) render_table(records, 'Identifier', 'Title', 'Collection', 'Schema', 'Valid',
-            'Published', hide_id=True, filter_=filter_) %}
+            'Published', hide_id=true, query=filter_) %}
         <th scope="row">{{ obj_link('records', record.id, record.doi or record.sid) }}</th>
         <td>
             {% if record.schema_id == 'SAEON.DataCite4' %}
