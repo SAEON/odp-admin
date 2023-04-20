@@ -30,19 +30,19 @@ def view(id):
     collection = api.get(f'/collection/{id}')
     audit_records = api.get(f'/collection/{id}/audit')
 
-    ready_btn = Button(
-        label='Ready',
-        endpoint='.tag_ready',
+    publish_btn = Button(
+        label='Publish',
+        endpoint='.tag_published',
         theme=ButtonTheme.success,
-        prompt='Are you sure you want to tag the collection as ready for publication?',
+        prompt='Are you sure you want to publish the collection?',
         object_id=id,
-        enabled=ODPScope.COLLECTION_READY in g.user_permissions,
+        enabled=ODPScope.COLLECTION_PUBLISH in g.user_permissions,
     )
-    if ready_tag := utils.get_tag_instance(collection, ODPCollectionTag.READY):
-        ready_btn.label = 'Un-ready'
-        ready_btn.endpoint = '.untag_ready'
-        ready_btn.theme = ButtonTheme.warning
-        ready_btn.prompt = 'Are you sure you want to remove the ready for publication tag?'
+    if published_tag := utils.get_tag_instance(collection, ODPCollectionTag.PUBLISHED):
+        publish_btn.label = 'Un-publish'
+        publish_btn.endpoint = '.untag_published'
+        publish_btn.theme = ButtonTheme.warning
+        publish_btn.prompt = 'Are you sure you want to un-publish the collection?'
 
     freeze_btn = Button(
         label='Freeze',
@@ -75,7 +75,7 @@ def view(id):
     return render_template(
         'collection_view.html',
         collection=collection,
-        ready_tag=ready_tag,
+        published_tag=published_tag,
         frozen_tag=frozen_tag,
         notsearchable_tag=notsearchable_tag,
         harvested_tag=utils.get_tag_instance(collection, ODPCollectionTag.HARVESTED),
@@ -86,7 +86,7 @@ def view(id):
         audit_records=audit_records,
         buttons=[
             edit_btn(object_id=id, enabled=ODPScope.COLLECTION_ADMIN in g.user_permissions),
-            ready_btn,
+            publish_btn,
             freeze_btn,
             nosearch_btn,
             delete_btn(object_id=id, enabled=ODPScope.COLLECTION_ADMIN in g.user_permissions, prompt_args=(id,)),
@@ -152,19 +152,19 @@ def delete(id):
     return redirect(url_for('.index'))
 
 
-@bp.route('/<id>/tag/ready', methods=('POST',))
-@api.view(ODPScope.COLLECTION_READY)
-def tag_ready(id):
+@bp.route('/<id>/tag/published', methods=('POST',))
+@api.view(ODPScope.COLLECTION_PUBLISH)
+def tag_published(id):
     return _tag_singleton(
-        id, ODPCollectionTag.READY
+        id, ODPCollectionTag.PUBLISHED
     )
 
 
-@bp.route('/<id>/untag/ready', methods=('POST',))
-@api.view(ODPScope.COLLECTION_READY)
-def untag_ready(id):
+@bp.route('/<id>/untag/published', methods=('POST',))
+@api.view(ODPScope.COLLECTION_PUBLISH)
+def untag_published(id):
     return _untag_singleton(
-        id, ODPCollectionTag.READY
+        id, ODPCollectionTag.PUBLISHED
     )
 
 

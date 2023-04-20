@@ -35,7 +35,7 @@
     <div class="tab-content">
         <div id="info" class="tab-pane fade show active" role="tabpanel">
             {% call(prop) render_info(collection, 'Key', 'Name', 'Provider', 'DOI key', 'Records',
-                    'Ready', 'Frozen', 'Harvested', 'Searchable', 'Projects', 'Infrastructures', 'Timestamp') %}
+                    'Published', 'Frozen', 'Harvested', 'Searchable', 'Projects', 'Infrastructures', 'Timestamp') %}
                 {% if prop == 'Key' %}
                     {{ collection.key }}
                 {% elif prop == 'Name' %}
@@ -48,11 +48,11 @@
                     <a href="{{ url_for('records.index', collection=collection.id) }}" class="text-decoration-none">
                         {{ collection.record_count }}
                     </a>
-                {% elif prop == 'Ready' %}
-                    {% if ready_tag %}
-                        {{ ready_tag.timestamp|timestamp }}
-                        {% if ready_tag.user_id %}
-                            by {{ obj_link('users', ready_tag.user_id, ready_tag.user_name) }}
+                {% elif prop == 'Published' %}
+                    {% if published_tag %}
+                        {{ published_tag.timestamp|timestamp }}
+                        {% if published_tag.user_id %}
+                            by {{ obj_link('users', published_tag.user_id, published_tag.user_name) }}
                         {% endif %}
                     {% endif %}
                 {% elif prop == 'Frozen' %}
