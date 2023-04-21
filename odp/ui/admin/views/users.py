@@ -22,24 +22,14 @@ def index():
 @api.view(ODPScope.USER_READ)
 def view(id):
     user = api.get(f'/user/{id}')
-    audit_records = api.get(f'/user/{id}/audit')
-
     return render_template(
         'user_view.html',
         user=user,
-        audit_records=audit_records,
         buttons=[
             edit_btn(object_id=id, enabled=ODPScope.USER_ADMIN in g.user_permissions),
             delete_btn(object_id=id, enabled=ODPScope.USER_ADMIN in g.user_permissions, prompt_args=(user['name'],)),
         ]
     )
-
-
-@bp.route('/<id>/audit/<audit_id>')
-@api.view(ODPScope.USER_READ)
-def view_audit_detail(id, audit_id):
-    audit_detail = api.get(f'/user/{id}/audit/{audit_id}')
-    return render_template('user_audit_view.html', audit=audit_detail)
 
 
 @bp.route('/<id>/edit', methods=('GET', 'POST'))
