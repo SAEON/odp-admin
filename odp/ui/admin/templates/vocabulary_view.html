@@ -39,6 +39,9 @@
             {% elif vocabulary.id == 'Project' %}
                 {{ render_terms(terms, '.create_project_term', '.edit_project_term', '.delete_project_term',
                    title='Title', description='Description') }}
+            {% elif vocabulary.id == 'SDG' %}
+                {{ render_terms(terms,
+                   title='Title', goal='Goal') }}
             {% endif %}
         </div>
         <div id="info" class="tab-pane fade" role="tabpanel">
@@ -68,22 +71,36 @@
 {% macro render_terms(terms, create_view, edit_view, delete_view) %}
     {% set cols = ['Id'] + kwargs.values()|list + [''] %}
     {% set fields = kwargs.keys() %}
+
     {% call(term) render_table(terms, columns=cols, hide_id=True) %}
         <th>
-            <a href="{{ url_for(edit_view, id=term.id) }}" class="text-decoration-none">
-                {{ term.id }}
-            </a>
+            {% if edit_view %}
+                <a href="{{ url_for(edit_view, id=term.id) }}" class="text-decoration-none">
+                    {{ term.id }}
+                </a>
+            {% else %}
+                <span class="text-info">
+                    {{ term.id }}
+                </span>
+            {% endif %}
         </th>
+
         {% for field in fields %}
             <td>{{ term.data[field] }}</td>
         {% endfor %}
-        <td class="text-end">
-            {{ render_item_delete_form(delete_view, 'term', enable_buttons, id=term.id) }}
-        </td>
+
+        {% if delete_view %}
+            <td class="text-end">
+                {{ render_item_delete_form(delete_view, 'term', enable_buttons, id=term.id) }}
+            </td>
+        {% endif %}
     {% endcall %}
-    <div class="btn-toolbar justify-content-between mt-4">
-        <a href="{{ url_for(create_view) }}" class="btn btn-outline-success btn-action {{ 'disabled' if not enable_buttons }}">
-            Add
-        </a>
-    </div>
+
+    {% if create_view %}
+        <div class="btn-toolbar justify-content-between mt-4">
+            <a href="{{ url_for(create_view) }}" class="btn btn-outline-success btn-action {{ 'disabled' if not enable_buttons }}">
+                Add
+            </a>
+        </div>
+    {% endif %}
 {% endmacro %}
