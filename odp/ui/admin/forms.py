@@ -157,10 +157,10 @@ class RecordForm(BaseForm):
 
 class RecordFilterForm(BaseForm):
     id_q = StringField(
-        label='Search identifiers (Id, DOI and SID)',
+        label='Record ID / DOI / SID',
     )
     title_q = StringField(
-        label='Search titles',
+        label='Record title',
     )
     collection = MultiCheckboxField(
         label='Filter by collection(s)',

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from 'content.j2' import render_table, render_buttons, render_field, obj_link %}
+{% from 'content.j2' import render_table, render_button, obj_link %}
 
 {% block web_title %}
     {{ super() }} |
@@ -9,33 +9,37 @@
 {% endblock %}
 
 {% block content %}
-    {% call(btn) render_buttons(buttons) %}
-        {% if btn == 'filter_btn' %}
-            <a href="#collapse-filter" data-bs-toggle="collapse" class="btn btn-outline-info btn-action">
-                Filter
-            </a>
-        {% endif %}
-    {% endcall %}
-    <div id="collapse-filter" class="container-fluid collapse">
-        <form action="{{ url_for('.index') }}" method="get">
-            <div class="row">
-                <div class="col">
-                    {% for field in filter_form if field.id in ('id_q', 'title_q') %}
-                        <div class="row">
-                            {{ render_field(field) }}
-                        </div>
-                    {% endfor %}
-                </div>
-                <div class="col">
-                    {% set field = filter_form | selectattr('id', '==', 'collection') | first %}
-                    {{ render_field(field) }}
-                </div>
+    <div class="container-fluid my-4">
+        <div class="row">
+            <div class="col p-0">
+                {{ render_button(buttons[0]) }}
             </div>
-            <button type="submit" class="btn btn-outline-info btn-action">
-                Apply
-            </button>
-        </form>
+            <div class="col-11 p-0">
+                <form action="{{ url_for('.index') }}" method="get">
+                    <div class="row">
+                        <div class="col-1 text-end">
+                            {{ filter_form.title_q.label(class='col-form-label') }}
+                        </div>
+                        <div class="col-4">
+                            {{ filter_form.title_q(class='form-control', placeholder='Enter title search terms...') }}
+                        </div>
+                        <div class="col-2 text-end">
+                            {{ filter_form.id_q.label(class='col-form-label') }}
+                        </div>
+                        <div class="col-4">
+                            {{ filter_form.id_q(class='form-control', placeholder='Enter record identifiers...') }}
+                        </div>
+                        <div class="col">
+                            <button type="submit" class="btn btn-outline-info btn-action">
+                                Find
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
+
     {% call(record) render_table(records, 'Identifier', 'Title', 'Collection', 'Schema', 'Valid',
             'Published', hide_id=true, query=filter_) %}
         <th scope="row">{{ obj_link('records', record.id, record.doi or record.sid) }}</th>

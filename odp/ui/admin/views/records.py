@@ -43,7 +43,6 @@ def index():
         filter_form=filter_form,
         buttons=[
             create_btn(enabled=ODPScope.RECORD_WRITE in g.user_permissions),
-            'filter_btn',
         ]
     )
 
