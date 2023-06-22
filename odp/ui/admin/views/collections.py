@@ -155,49 +155,55 @@ def delete(id):
 @bp.route('/<id>/tag/published', methods=('POST',))
 @api.view(ODPScope.COLLECTION_PUBLISH)
 def tag_published(id):
-    return _tag_singleton(
-        id, ODPCollectionTag.PUBLISHED
+    utils.tag_singleton(
+        'collection', id, ODPCollectionTag.PUBLISHED
     )
+    return redirect(url_for('.view', id=id))
 
 
 @bp.route('/<id>/untag/published', methods=('POST',))
 @api.view(ODPScope.COLLECTION_PUBLISH)
 def untag_published(id):
-    return _untag_singleton(
-        id, ODPCollectionTag.PUBLISHED
+    utils.untag_singleton(
+        'collection', id, ODPCollectionTag.PUBLISHED
     )
+    return redirect(url_for('.view', id=id))
 
 
 @bp.route('/<id>/tag/frozen', methods=('POST',))
 @api.view(ODPScope.COLLECTION_FREEZE)
 def tag_frozen(id):
-    return _tag_singleton(
-        id, ODPCollectionTag.FROZEN
+    utils.tag_singleton(
+        'collection', id, ODPCollectionTag.FROZEN
     )
+    return redirect(url_for('.view', id=id))
 
 
 @bp.route('/<id>/untag/frozen', methods=('POST',))
 @api.view(ODPScope.COLLECTION_FREEZE)
 def untag_frozen(id):
-    return _untag_singleton(
-        id, ODPCollectionTag.FROZEN
+    utils.untag_singleton(
+        'collection', id, ODPCollectionTag.FROZEN
     )
+    return redirect(url_for('.view', id=id))
 
 
 @bp.route('/<id>/tag/notsearchable', methods=('POST',))
 @api.view(ODPScope.COLLECTION_NOSEARCH)
 def tag_notsearchable(id):
-    return _tag_singleton(
-        id, ODPCollectionTag.NOTSEARCHABLE
+    utils.tag_singleton(
+        'collection', id, ODPCollectionTag.NOTSEARCHABLE
     )
+    return redirect(url_for('.view', id=id))
 
 
 @bp.route('/<id>/untag/notsearchable', methods=('POST',))
 @api.view(ODPScope.COLLECTION_NOSEARCH)
 def untag_notsearchable(id):
-    return _untag_singleton(
-        id, ODPCollectionTag.NOTSEARCHABLE
+    utils.untag_singleton(
+        'collection', id, ODPCollectionTag.NOTSEARCHABLE
     )
+    return redirect(url_for('.view', id=id))
 
 
 @bp.route('/<id>/tag/project', methods=('GET', 'POST',))
@@ -253,28 +259,6 @@ def view_audit_detail(id, collection_audit_id):
 def view_tag_audit_detail(id, collection_tag_audit_id):
     audit_detail = api.get(f'/collection/{id}/collection_tag_audit/{collection_tag_audit_id}')
     return render_template('collection_tag_audit_view.html', audit=audit_detail)
-
-
-def _tag_singleton(collection_id, tag_id):
-    api.post(f'/collection/{collection_id}/tag', dict(
-        tag_id=tag_id,
-        data={},
-    ))
-    flash(f'{tag_id} tag has been set.', category='success')
-    return redirect(url_for('.view', id=collection_id))
-
-
-def _untag_singleton(collection_id, tag_id):
-    api_route = '/collection/'
-    if ODPScope.COLLECTION_ADMIN in g.user_permissions:
-        api_route += 'admin/'
-
-    collection = api.get(f'/collection/{collection_id}')
-    if tag_instance := utils.get_tag_instance(collection, tag_id):
-        api.delete(f'{api_route}{collection_id}/tag/{tag_instance["id"]}')
-        flash(f'{tag_id} tag has been removed.', category='success')
-
-    return redirect(url_for('.view', id=collection_id))
 
 
 def _tag_vocabulary_term(collection_id, tag_id, vocab_id, form_cls):

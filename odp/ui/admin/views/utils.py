@@ -1,10 +1,12 @@
+from flask import flash, g
 from flask_login import current_user
 from markupsafe import Markup
 
+from odp.const import ODPScope
 from odp.ui.base import api
 
 
-def get_tag_instance(obj, tag_id, user=False):
+def get_tag_instance(obj: dict, tag_id: str, user: bool = False) -> dict | None:
     """Get a single tag instance for a record or collection.
 
     The tag should have cardinality 'one' or 'user'; if 'user',
@@ -17,7 +19,7 @@ def get_tag_instance(obj, tag_id, user=False):
     )
 
 
-def get_tag_instances(obj, tag_id):
+def get_tag_instances(obj: dict, tag_id: str) -> dict:
     """Get a page result of tag instances (with cardinality
     'user' or 'multi') for a record or collection."""
     return pagify(
@@ -25,7 +27,33 @@ def get_tag_instances(obj, tag_id):
     )
 
 
-def pagify(item_list):
+def tag_singleton(obj_type: str, obj_id: str, tag_id: str) -> None:
+    """Set a singleton tag (cardinality 'one') on a record or collection."""
+    api.post(f'/{obj_type}/{obj_id}/tag', dict(
+        tag_id=tag_id,
+        data={},
+    ))
+    flash(f'{tag_id} tag has been set.', category='success')
+
+
+def untag_singleton(obj_type: str, obj_id: str, tag_id: str) -> None:
+    """Remove a singleton tag (cardinality 'one') from a record or collection."""
+    api_route = f'/{obj_type}/'
+    if obj_type == 'collection':
+        admin_scope = ODPScope.COLLECTION_ADMIN
+    elif obj_type == 'record':
+        admin_scope = ODPScope.RECORD_ADMIN
+
+    if admin_scope in g.user_permissions:
+        api_route += 'admin/'
+
+    obj = api.get(f'/{obj_type}/{obj_id}')
+    if tag_instance := get_tag_instance(obj, tag_id):
+        api.delete(f'{api_route}{obj_id}/tag/{tag_instance["id"]}')
+        flash(f'{tag_id} tag has been removed.', category='success')
+
+
+def pagify(item_list: list) -> dict:
     """Convert a flat object list to a page result."""
     return {
         'items': item_list,

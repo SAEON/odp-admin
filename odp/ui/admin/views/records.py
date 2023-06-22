@@ -311,52 +311,36 @@ def untag_embargo(id, tag_instance_id):
 @bp.route('/<id>/tag/notsearchable', methods=('POST',))
 @api.view(ODPScope.RECORD_NOSEARCH)
 def tag_notsearchable(id):
-    api.post(f'/record/{id}/tag', dict(
-        tag_id=ODPRecordTag.NOTSEARCHABLE,
-        data={},
-    ))
-    flash(f'{ODPRecordTag.NOTSEARCHABLE} tag has been set.', category='success')
+    utils.tag_singleton(
+        'record', id, ODPRecordTag.NOTSEARCHABLE
+    )
     return redirect(url_for('.view', id=id))
 
 
 @bp.route('/<id>/untag/notsearchable', methods=('POST',))
 @api.view(ODPScope.RECORD_NOSEARCH)
 def untag_notsearchable(id):
-    api_route = '/record/'
-    if ODPScope.RECORD_ADMIN in g.user_permissions:
-        api_route += 'admin/'
-
-    record = api.get(f'/record/{id}')
-    if notsearchable_tag := utils.get_tag_instance(record, ODPRecordTag.NOTSEARCHABLE):
-        api.delete(f'{api_route}{id}/tag/{notsearchable_tag["id"]}')
-        flash(f'{ODPRecordTag.NOTSEARCHABLE} tag has been removed.', category='success')
-
+    utils.untag_singleton(
+        'record', id, ODPRecordTag.NOTSEARCHABLE
+    )
     return redirect(url_for('.view', id=id))
 
 
 @bp.route('/<id>/tag/retracted', methods=('POST',))
 @api.view(ODPScope.RECORD_RETRACT)
 def tag_retracted(id):
-    api.post(f'/record/{id}/tag', dict(
-        tag_id=ODPRecordTag.RETRACTED,
-        data={},
-    ))
-    flash(f'{ODPRecordTag.RETRACTED} tag has been set.', category='success')
+    utils.tag_singleton(
+        'record', id, ODPRecordTag.RETRACTED
+    )
     return redirect(url_for('.view', id=id))
 
 
 @bp.route('/<id>/untag/retracted', methods=('POST',))
 @api.view(ODPScope.RECORD_RETRACT)
 def untag_retracted(id):
-    api_route = '/record/'
-    if ODPScope.RECORD_ADMIN in g.user_permissions:
-        api_route += 'admin/'
-
-    record = api.get(f'/record/{id}')
-    if retracted_tag := utils.get_tag_instance(record, ODPRecordTag.RETRACTED):
-        api.delete(f'{api_route}{id}/tag/{retracted_tag["id"]}')
-        flash(f'{ODPRecordTag.RETRACTED} tag has been removed.', category='success')
-
+    utils.untag_singleton(
+        'record', id, ODPRecordTag.RETRACTED
+    )
     return redirect(url_for('.view', id=id))
 
 
