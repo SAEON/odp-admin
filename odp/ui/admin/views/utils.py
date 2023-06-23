@@ -1,9 +1,13 @@
-from flask import flash, g
+from typing import Type
+
+from flask import Response, flash, g, redirect, render_template, request, url_for
 from flask_login import current_user
 from markupsafe import Markup
 
 from odp.const import ODPScope
+from odp.lib.client import ODPAPIError
 from odp.ui.base import api
+from odp.ui.base.forms import BaseForm
 
 
 def get_tag_instance(obj: dict, tag_id: str, user: bool = False) -> dict | None:
@@ -51,6 +55,75 @@ def untag_singleton(obj_type: str, obj_id: str, tag_id: str) -> None:
     if tag_instance := get_tag_instance(obj, tag_id):
         api.delete(f'{api_route}{obj_id}/tag/{tag_instance["id"]}')
         flash(f'{tag_id} tag has been removed.', category='success')
+
+
+def tag_vocabulary_term(
+        obj_type: str,
+        obj_id: str,
+        tag_id: str,
+        vocab_id: str,
+        form_cls: Type[BaseForm],
+) -> Response | str:
+    """Set a vocabulary keyword tag on a record or collection.
+
+    This is a view function and returns either a redirect or a rendered template;
+    a template named {collection|record}_tag_{vocab}.html must exist.
+    """
+    obj = api.get(f'/{obj_type}/{obj_id}')
+    vocab_field = vocab_id.lower()
+
+    if request.method == 'POST':
+        form = form_cls(request.form)
+    else:
+        # vocabulary tags have cardinality 'multi', so this will
+        # always be an insert - i.e. don't populate form for update
+        form = form_cls()
+
+    populate_vocabulary_term_choices(form[vocab_field], vocab_id, include_none=True)
+
+    if request.method == 'POST' and form.validate():
+        try:
+            api.post(f'/{obj_type}/{obj_id}/tag', dict(
+                tag_id=tag_id,
+                data={
+                    vocab_field: form[vocab_field].data,
+                    'comment': form.comment.data,
+                },
+            ))
+            flash(f'{tag_id} tag has been set.', category='success')
+            return redirect(url_for('.view', id=obj_id))
+
+        except ODPAPIError as e:
+            if response := api.handle_error(e):
+                return response
+
+    return render_template(f'{obj_type}_tag_{vocab_field}.html', **{f'{obj_type}': obj}, form=form)
+
+
+def untag_vocabulary_term(
+        obj_type: str,
+        obj_id: str,
+        tag_id: str,
+        tag_instance_id: str,
+) -> Response:
+    """Remove a vocabulary keyword tag from a record or collection.
+
+    This is a view function and returns a redirect to the record or
+    collection view page.
+    """
+    api_route = f'/{obj_type}/'
+    if obj_type == 'collection':
+        admin_scope = ODPScope.COLLECTION_ADMIN
+    elif obj_type == 'record':
+        admin_scope = ODPScope.RECORD_ADMIN
+
+    if admin_scope in g.user_permissions:
+        api_route += 'admin/'
+
+    api.delete(f'{api_route}{obj_id}/tag/{tag_instance_id}')
+    flash(f'{tag_id} tag has been removed.', category='success')
+
+    return redirect(url_for('.view', id=obj_id))
 
 
 def pagify(item_list: list) -> dict:
