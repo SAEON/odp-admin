@@ -31,17 +31,24 @@ def get_tag_instances(obj: dict, tag_id: str) -> dict:
     )
 
 
-def tag_singleton(obj_type: str, obj_id: str, tag_id: str) -> None:
-    """Set a singleton tag (cardinality 'one') on a record or collection."""
+def tag_singleton(obj_type: str, obj_id: str, tag_id: str) -> Response:
+    """Set a singleton tag (cardinality 'one') on a record or collection.
+
+    This is a view function and returns a redirect to the record or
+    collection view page."""
     api.post(f'/{obj_type}/{obj_id}/tag', dict(
         tag_id=tag_id,
         data={},
     ))
     flash(f'{tag_id} tag has been set.', category='success')
+    return redirect(url_for('.view', id=obj_id))
 
 
-def untag_singleton(obj_type: str, obj_id: str, tag_id: str) -> None:
-    """Remove a singleton tag (cardinality 'one') from a record or collection."""
+def untag_singleton(obj_type: str, obj_id: str, tag_id: str) -> Response:
+    """Remove a singleton tag (cardinality 'one') from a record or collection.
+
+    This is a view function and returns a redirect to the record or
+    collection view page."""
     api_route = f'/{obj_type}/'
     if obj_type == 'collection':
         admin_scope = ODPScope.COLLECTION_ADMIN
@@ -55,6 +62,8 @@ def untag_singleton(obj_type: str, obj_id: str, tag_id: str) -> None:
     if tag_instance := get_tag_instance(obj, tag_id):
         api.delete(f'{api_route}{obj_id}/tag/{tag_instance["id"]}')
         flash(f'{tag_id} tag has been removed.', category='success')
+
+    return redirect(url_for('.view', id=obj_id))
 
 
 def tag_vocabulary_term(

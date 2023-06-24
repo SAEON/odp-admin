@@ -155,55 +155,49 @@ def delete(id):
 @bp.route('/<id>/tag/published', methods=('POST',))
 @api.view(ODPScope.COLLECTION_PUBLISH)
 def tag_published(id):
-    utils.tag_singleton(
+    return utils.tag_singleton(
         'collection', id, ODPCollectionTag.PUBLISHED
     )
-    return redirect(url_for('.view', id=id))
 
 
 @bp.route('/<id>/untag/published', methods=('POST',))
 @api.view(ODPScope.COLLECTION_PUBLISH)
 def untag_published(id):
-    utils.untag_singleton(
+    return utils.untag_singleton(
         'collection', id, ODPCollectionTag.PUBLISHED
     )
-    return redirect(url_for('.view', id=id))
 
 
 @bp.route('/<id>/tag/frozen', methods=('POST',))
 @api.view(ODPScope.COLLECTION_FREEZE)
 def tag_frozen(id):
-    utils.tag_singleton(
+    return utils.tag_singleton(
         'collection', id, ODPCollectionTag.FROZEN
     )
-    return redirect(url_for('.view', id=id))
 
 
 @bp.route('/<id>/untag/frozen', methods=('POST',))
 @api.view(ODPScope.COLLECTION_FREEZE)
 def untag_frozen(id):
-    utils.untag_singleton(
+    return utils.untag_singleton(
         'collection', id, ODPCollectionTag.FROZEN
     )
-    return redirect(url_for('.view', id=id))
 
 
 @bp.route('/<id>/tag/notsearchable', methods=('POST',))
 @api.view(ODPScope.COLLECTION_NOSEARCH)
 def tag_notsearchable(id):
-    utils.tag_singleton(
+    return utils.tag_singleton(
         'collection', id, ODPCollectionTag.NOTSEARCHABLE
     )
-    return redirect(url_for('.view', id=id))
 
 
 @bp.route('/<id>/untag/notsearchable', methods=('POST',))
 @api.view(ODPScope.COLLECTION_NOSEARCH)
 def untag_notsearchable(id):
-    utils.untag_singleton(
+    return utils.untag_singleton(
         'collection', id, ODPCollectionTag.NOTSEARCHABLE
     )
-    return redirect(url_for('.view', id=id))
 
 
 @bp.route('/<id>/tag/project', methods=('GET', 'POST',))

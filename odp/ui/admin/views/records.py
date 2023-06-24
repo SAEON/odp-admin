@@ -311,37 +311,33 @@ def untag_embargo(id, tag_instance_id):
 @bp.route('/<id>/tag/notsearchable', methods=('POST',))
 @api.view(ODPScope.RECORD_NOSEARCH)
 def tag_notsearchable(id):
-    utils.tag_singleton(
+    return utils.tag_singleton(
         'record', id, ODPRecordTag.NOTSEARCHABLE
     )
-    return redirect(url_for('.view', id=id))
 
 
 @bp.route('/<id>/untag/notsearchable', methods=('POST',))
 @api.view(ODPScope.RECORD_NOSEARCH)
 def untag_notsearchable(id):
-    utils.untag_singleton(
+    return utils.untag_singleton(
         'record', id, ODPRecordTag.NOTSEARCHABLE
     )
-    return redirect(url_for('.view', id=id))
 
 
 @bp.route('/<id>/tag/retracted', methods=('POST',))
 @api.view(ODPScope.RECORD_RETRACT)
 def tag_retracted(id):
-    utils.tag_singleton(
+    return utils.tag_singleton(
         'record', id, ODPRecordTag.RETRACTED
     )
-    return redirect(url_for('.view', id=id))
 
 
 @bp.route('/<id>/untag/retracted', methods=('POST',))
 @api.view(ODPScope.RECORD_RETRACT)
 def untag_retracted(id):
-    utils.untag_singleton(
+    return utils.untag_singleton(
         'record', id, ODPRecordTag.RETRACTED
     )
-    return redirect(url_for('.view', id=id))
 
 
 @bp.route('/<id>/catalog/<catalog_id>')
