@@ -199,6 +199,16 @@ class RecordTagEmbargoForm(BaseForm):
             raise ValidationError('The end date cannot be earlier than the start date.')
 
 
+class RecordTagSDGForm(BaseForm):
+    sdg = SelectField(
+        label='SDG',
+        validators=[input_required()],
+    )
+    comment = StringField(
+        label='Comment',
+    )
+
+
 class RoleForm(BaseForm):
     id = StringField(
         label='Role id',

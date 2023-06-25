@@ -203,7 +203,7 @@ def untag_notsearchable(id):
 @bp.route('/<id>/tag/project', methods=('GET', 'POST',))
 @api.view(ODPScope.COLLECTION_PROJECT)
 def tag_project(id):
-    return utils.tag_vocabulary_term(
+    return utils.tag_keyword(
         'collection', id, ODPCollectionTag.PROJECT, ODPVocabulary.PROJECT, CollectionTagProjectForm
     )
 
@@ -211,7 +211,7 @@ def tag_project(id):
 @bp.route('/<id>/untag/project/<tag_instance_id>', methods=('POST',))
 @api.view(ODPScope.COLLECTION_PROJECT)
 def untag_project(id, tag_instance_id):
-    return utils.untag_vocabulary_term(
+    return utils.untag_keyword(
         'collection', id, ODPCollectionTag.PROJECT, tag_instance_id
     )
 
@@ -219,7 +219,7 @@ def untag_project(id, tag_instance_id):
 @bp.route('/<id>/tag/infrastructure', methods=('GET', 'POST',))
 @api.view(ODPScope.COLLECTION_INFRASTRUCTURE)
 def tag_infrastructure(id):
-    return utils.tag_vocabulary_term(
+    return utils.tag_keyword(
         'collection', id, ODPCollectionTag.INFRASTRUCTURE, ODPVocabulary.INFRASTRUCTURE, CollectionTagInfrastructureForm
     )
 
@@ -227,7 +227,7 @@ def tag_infrastructure(id):
 @bp.route('/<id>/untag/infrastructure/<tag_instance_id>', methods=('POST',))
 @api.view(ODPScope.COLLECTION_INFRASTRUCTURE)
 def untag_infrastructure(id, tag_instance_id):
-    return utils.untag_vocabulary_term(
+    return utils.untag_keyword(
         'collection', id, ODPCollectionTag.INFRASTRUCTURE, tag_instance_id
     )
 

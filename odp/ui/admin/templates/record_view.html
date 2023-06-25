@@ -32,6 +32,11 @@
             </button>
         </li>
         <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tag-sdg" type="button" role="tab">
+                SDG
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tag-embargo" type="button" role="tab">
                 Embargo
             </button>
@@ -55,7 +60,7 @@
     <div class="tab-content">
         <div id="info" class="tab-pane fade show active" role="tabpanel">
             {% call(prop) render_info(record, 'DOI', 'SID', 'Collection', 'Schema', 'Migrated', 'Searchable',
-                    'Quality Control', 'Dataset Embargo', 'Retracted', 'Timestamp') %}
+                    'QC', 'SDG', 'Dataset Embargo', 'Retracted', 'Timestamp') %}
                 {% if prop == 'DOI' %}
                     {{ record.doi if record.doi }}
                 {% elif prop == 'SID' %}
@@ -77,10 +82,15 @@
                     {% else %}
                         True
                     {% endif %}
-                {% elif prop == 'Quality Control' %}
+                {% elif prop == 'QC' %}
                     {% for qc_tag in qc_tags['items'] %}
                         {{ qc_tag.data.pass_|replace('True', 'Passed')|replace('False', 'Failed') }}
                         by {{ obj_link('users', qc_tag.user_id, qc_tag.user_name) }}<br/>
+                    {% endfor %}
+                {% elif prop == 'SDG' %}
+                    {% for sdg_tag in sdg_tags['items'] | sort(attribute='data.sdg') %}
+                        {{ sdg_tag.data.sdg | int }}
+                        {%- if not loop.last %}, {% endif %}
                     {% endfor %}
                 {% elif prop == 'Dataset Embargo' %}
                     {% for embargo_tag in embargo_tags['items'] %}
@@ -120,6 +130,10 @@
         <div id="tag-notes" class="tab-pane fade" role="tabpanel">
             {{ render_tag_table(record, note_tags, '.tag_note', '.untag_note', note_tag_enabled,
                comment='Note') }}
+        </div>
+        <div id="tag-sdg" class="tab-pane fade" role="tabpanel">
+            {{ render_tag_table(record, sdg_tags, '.tag_sdg', '.untag_sdg', sdg_tag_enabled,
+               sdg='SDG', comment='Comment') }}
         </div>
         <div id="catalog-records" class="tab-pane fade" role="tabpanel">
             {% call(catalog_record) render_table(catalog_records, 'Catalogue', 'Published', 'Reason', 'Timestamp', hide_id=True) %}

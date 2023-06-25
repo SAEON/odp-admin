@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Callable, Type
 
 from flask import Response, flash, g, redirect, render_template, request, url_for
 from flask_login import current_user
@@ -66,17 +66,27 @@ def untag_singleton(obj_type: str, obj_id: str, tag_id: str) -> Response:
     return redirect(url_for('.view', id=obj_id))
 
 
-def tag_vocabulary_term(
+def tag_keyword(
         obj_type: str,
         obj_id: str,
         tag_id: str,
         vocab_id: str,
         form_cls: Type[BaseForm],
+        keyword_choices_fn: Callable = None,
 ) -> Response | str:
-    """Set a vocabulary keyword tag on a record or collection.
+    """Set a keyword tag on a record or collection.
 
     This is a view function and returns either a redirect or a rendered template;
     a template named {collection|record}_tag_{vocab}.html must exist.
+
+    :param obj_type: 'collection' | 'record'
+    :param obj_id: collection id or record id
+    :param tag_id: tag id
+    :param vocab_id: vocabulary id
+    :param form_cls: form for tag instance data
+    :param keyword_choices_fn: function for populating the choices for the
+        keyword select field; must have the same signature as (the default)
+        populate_keyword_choices
     """
     obj = api.get(f'/{obj_type}/{obj_id}')
     vocab_field = vocab_id.lower()
@@ -84,11 +94,15 @@ def tag_vocabulary_term(
     if request.method == 'POST':
         form = form_cls(request.form)
     else:
-        # vocabulary tags have cardinality 'multi', so this will
+        # (existing) vocabulary tags have cardinality 'multi', so this will
         # always be an insert - i.e. don't populate form for update
+        # todo: generalize; a vocabulary tag may have any cardinality
         form = form_cls()
 
-    populate_vocabulary_term_choices(form[vocab_field], vocab_id, include_none=True)
+    if not keyword_choices_fn:
+        keyword_choices_fn = populate_keyword_choices
+
+    keyword_choices_fn(form[vocab_field], vocab_id, include_none=True)
 
     if request.method == 'POST' and form.validate():
         try:
@@ -109,7 +123,7 @@ def tag_vocabulary_term(
     return render_template(f'{obj_type}_tag_{vocab_field}.html', **{f'{obj_type}': obj}, form=form)
 
 
-def untag_vocabulary_term(
+def untag_keyword(
         obj_type: str,
         obj_id: str,
         tag_id: str,
@@ -189,10 +203,19 @@ def populate_role_choices(field):
     ]
 
 
-def populate_vocabulary_term_choices(field, vocabulary_id, include_none=False):
+def populate_keyword_choices(field, vocabulary_id, include_none=False):
     vocabulary = api.get(f'/vocabulary/{vocabulary_id}')
     field.choices = [('', '(None)')] if include_none else []
     field.choices += [
         (term['id'], term['id'])
+        for term in vocabulary['terms']
+    ]
+
+
+def populate_sdg_choices(field, vocabulary_id, include_none=False):
+    vocabulary = api.get(f'/vocabulary/{vocabulary_id}')
+    field.choices = [('', '(None)')] if include_none else []
+    field.choices += [
+        (term['id'], f"{term['id']} - {term['data']['title']}")
         for term in vocabulary['terms']
     ]

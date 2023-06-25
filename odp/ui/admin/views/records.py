@@ -2,9 +2,9 @@ import json
 
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for
 
-from odp.const import ODPCollectionTag, ODPRecordTag, ODPScope
+from odp.const import ODPCollectionTag, ODPRecordTag, ODPScope, ODPVocabulary
 from odp.lib.client import ODPAPIError
-from odp.ui.admin.forms import RecordFilterForm, RecordForm, RecordTagEmbargoForm, RecordTagNoteForm, RecordTagQCForm
+from odp.ui.admin.forms import RecordFilterForm, RecordForm, RecordTagEmbargoForm, RecordTagNoteForm, RecordTagQCForm, RecordTagSDGForm
 from odp.ui.admin.views import utils
 from odp.ui.base import api
 from odp.ui.base.templates import Button, ButtonTheme, create_btn, delete_btn, edit_btn
@@ -95,6 +95,8 @@ def view(id):
         embargo_tag_enabled=ODPScope.RECORD_EMBARGO in g.user_permissions,
         note_tags=utils.get_tag_instances(record, ODPRecordTag.NOTE),
         note_tag_enabled=ODPScope.RECORD_NOTE in g.user_permissions,
+        sdg_tags=utils.get_tag_instances(record, ODPRecordTag.SDG),
+        sdg_tag_enabled=ODPScope.RECORD_SDG in g.user_permissions,
         catalog_records=catalog_records,
         audit_records=audit_records,
         buttons=[
@@ -337,6 +339,23 @@ def tag_retracted(id):
 def untag_retracted(id):
     return utils.untag_singleton(
         'record', id, ODPRecordTag.RETRACTED
+    )
+
+
+@bp.route('/<id>/tag/sdg', methods=('GET', 'POST',))
+@api.view(ODPScope.RECORD_SDG)
+def tag_sdg(id):
+    return utils.tag_keyword(
+        'record', id, ODPRecordTag.SDG, ODPVocabulary.SDG, RecordTagSDGForm,
+        keyword_choices_fn=utils.populate_sdg_choices
+    )
+
+
+@bp.route('/<id>/untag/sdg/<tag_instance_id>', methods=('POST',))
+@api.view(ODPScope.RECORD_SDG)
+def untag_sdg(id, tag_instance_id):
+    return utils.untag_keyword(
+        'record', id, ODPRecordTag.SDG, tag_instance_id
     )
 
 
