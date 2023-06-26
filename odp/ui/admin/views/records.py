@@ -4,7 +4,7 @@ from flask import Blueprint, flash, g, redirect, render_template, request, url_f
 
 from odp.const import ODPCollectionTag, ODPRecordTag, ODPScope, ODPVocabulary
 from odp.lib.client import ODPAPIError
-from odp.ui.admin.forms import RecordFilterForm, RecordForm, RecordTagEmbargoForm, RecordTagNoteForm, RecordTagQCForm, RecordTagSDGForm
+from odp.ui.admin.forms import RecordFilterForm, RecordForm, RecordTagEmbargoForm, RecordTagNoteForm, RecordTagQCForm
 from odp.ui.admin.views import utils
 from odp.ui.base import api
 from odp.ui.base.templates import Button, ButtonTheme, create_btn, delete_btn, edit_btn
@@ -54,6 +54,11 @@ def view(id):
     catalog_records = api.get(f'/record/{id}/catalog')
     audit_records = api.get(f'/record/{id}/audit')
 
+    sdg_vocab = {
+        keyword_obj['id']: keyword_obj['data']
+        for keyword_obj in api.get(f'/vocabulary/SDG')['terms']
+    }
+
     nosearch_btn = Button(
         label='No search',
         endpoint='.tag_notsearchable',
@@ -97,6 +102,7 @@ def view(id):
         note_tag_enabled=ODPScope.RECORD_NOTE in g.user_permissions,
         sdg_tags=utils.get_tag_instances(record, ODPRecordTag.SDG),
         sdg_tag_enabled=ODPScope.RECORD_SDG in g.user_permissions,
+        sdg_vocab=sdg_vocab,
         catalog_records=catalog_records,
         audit_records=audit_records,
         buttons=[
@@ -346,8 +352,9 @@ def untag_retracted(id):
 @api.view(ODPScope.RECORD_SDG)
 def tag_sdg(id):
     return utils.tag_keyword(
-        'record', id, ODPRecordTag.SDG, ODPVocabulary.SDG, RecordTagSDGForm,
-        keyword_choices_fn=utils.populate_sdg_choices
+        'record', id, ODPRecordTag.SDG, ODPVocabulary.SDG,
+        tag_endpoint='.tag_sdg',
+        keyword_choices_fn=utils.populate_sdg_choices,
     )
 
 

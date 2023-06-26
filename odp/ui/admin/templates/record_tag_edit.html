@@ -9,5 +9,5 @@
 {% endblock %}
 
 {% block content %}
-    {{ render_form(form, record, submit_target=url_for('.tag_qc', id=record.id)) }}
+    {{ render_form(form, record, submit_target=url_for(tag_endpoint, id=record.id)) }}
 {% endblock %}

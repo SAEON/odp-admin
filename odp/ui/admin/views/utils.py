@@ -4,8 +4,9 @@ from flask import Response, flash, g, redirect, render_template, request, url_fo
 from flask_login import current_user
 from markupsafe import Markup
 
-from odp.const import ODPScope
+from odp.const import ODPCollectionTag, ODPRecordTag, ODPScope, ODPVocabulary
 from odp.lib.client import ODPAPIError
+from odp.ui.admin.forms import TagKeywordForm
 from odp.ui.base import api
 from odp.ui.base.forms import BaseForm
 
@@ -66,7 +67,7 @@ def untag_singleton(obj_type: str, obj_id: str, tag_id: str) -> Response:
     return redirect(url_for('.view', id=obj_id))
 
 
-def tag_keyword(
+def tag_keyword_deprecated(
         obj_type: str,
         obj_id: str,
         tag_id: str,
@@ -121,6 +122,65 @@ def tag_keyword(
                 return response
 
     return render_template(f'{obj_type}_tag_{vocab_field}.html', **{f'{obj_type}': obj}, form=form)
+
+
+def tag_keyword(
+        obj_type: str,
+        obj_id: str,
+        tag_id: ODPCollectionTag | ODPRecordTag,
+        vocab_id: ODPVocabulary,
+        tag_endpoint: str,
+        keyword_choices_fn: Callable = None,
+) -> Response | str:
+    """Set a keyword tag on a record or collection.
+
+    This is a view function and returns either a redirect or a rendered template.
+
+    :param obj_type: 'collection' | 'record'
+    :param obj_id: collection id or record id
+    :param tag_id: tag id
+    :param vocab_id: vocabulary id
+    :param tag_endpoint: view endpoint, e.g. '.tag_sdg'
+    :param keyword_choices_fn: function for populating the choices for the
+        keyword select field; must have the same signature as (the default)
+        populate_keyword_choices
+    """
+    obj = api.get(f'/{obj_type}/{obj_id}')
+
+    if request.method == 'POST':
+        form = TagKeywordForm(request.form)
+    else:
+        # (existing) vocabulary tags have cardinality 'multi', so this will
+        # always be an insert - i.e. don't populate form for update
+        # todo: generalize; a vocabulary tag may have any cardinality
+        form = TagKeywordForm(data=dict(vocabulary=vocab_id.value))
+
+    if not keyword_choices_fn:
+        keyword_choices_fn = populate_keyword_choices
+
+    keyword_choices_fn(form.keyword, vocab_id, include_none=True)
+
+    if request.method == 'POST' and form.validate():
+        try:
+            api.post(f'/{obj_type}/{obj_id}/tag', dict(
+                tag_id=tag_id,
+                data={
+                    'vocabulary': vocab_id,
+                    'keyword': form.keyword.data,
+                    'comment': form.comment.data,
+                },
+            ))
+            flash(f'{tag_id} tag has been set.', category='success')
+            return redirect(url_for('.view', id=obj_id))
+
+        except ODPAPIError as e:
+            if response := api.handle_error(e):
+                return response
+
+    return render_template(
+        f'{obj_type}_tag_edit.html', **{f'{obj_type}': obj},
+        tag_endpoint=tag_endpoint, form=form,
+    )
 
 
 def untag_keyword(

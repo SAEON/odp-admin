@@ -199,16 +199,6 @@ class RecordTagEmbargoForm(BaseForm):
             raise ValidationError('The end date cannot be earlier than the start date.')
 
 
-class RecordTagSDGForm(BaseForm):
-    sdg = SelectField(
-        label='SDG',
-        validators=[input_required()],
-    )
-    comment = StringField(
-        label='Comment',
-    )
-
-
 class RoleForm(BaseForm):
     id = StringField(
         label='Role id',
@@ -223,6 +213,20 @@ class RoleForm(BaseForm):
     )
     scope_ids = MultiCheckboxField(
         label='Scope',
+    )
+
+
+class TagKeywordForm(BaseForm):
+    vocabulary = StringField(
+        label='Vocabulary',
+        render_kw={'readonly': ''},
+    )
+    keyword = SelectField(
+        label='Keyword',
+        validators=[input_required()],
+    )
+    comment = StringField(
+        label='Comment',
     )
 
 

@@ -88,9 +88,10 @@
                         by {{ obj_link('users', qc_tag.user_id, qc_tag.user_name) }}<br/>
                     {% endfor %}
                 {% elif prop == 'SDG' %}
-                    {% for sdg_tag in sdg_tags['items'] | sort(attribute='data.sdg') %}
-                        {{ sdg_tag.data.sdg | int }}
-                        {%- if not loop.last %}, {% endif %}
+                    {% for sdg_tag in sdg_tags['items'] | sort(attribute='data.keyword') %}
+                        {% set sdg_keyword = sdg_vocab[sdg_tag.data.keyword] %}
+                        {{ sdg_keyword.id | int }} - {{ sdg_keyword.title }}
+                        {%- if not loop.last %}<br/>{% endif %}
                     {% endfor %}
                 {% elif prop == 'Dataset Embargo' %}
                     {% for embargo_tag in embargo_tags['items'] %}
@@ -133,7 +134,7 @@
         </div>
         <div id="tag-sdg" class="tab-pane fade" role="tabpanel">
             {{ render_tag_table(record, sdg_tags, '.tag_sdg', '.untag_sdg', sdg_tag_enabled,
-               sdg='SDG', comment='Comment') }}
+               keyword='SDG', comment='Comment') }}
         </div>
         <div id="catalog-records" class="tab-pane fade" role="tabpanel">
             {% call(catalog_record) render_table(catalog_records, 'Catalogue', 'Published', 'Reason', 'Timestamp', hide_id=True) %}
