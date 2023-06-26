@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from 'content.j2' import render_table %}
+{% from 'content.j2' import render_table, obj_link %}
 
 {% block web_title %}
     {{ super() }} |
@@ -9,9 +9,10 @@
 {% endblock %}
 
 {% block content %}
-    {% call(tag) render_table(tags, 'Cardinality', 'Public', 'Scope') %}
+    {% call(tag) render_table(tags, 'Cardinality', 'Public', 'Scope', 'Vocabulary') %}
         <td>{{ tag.cardinality }}</td>
         <td>{{ tag.public }}</td>
         <td>{{ tag.scope_id }}</td>
+        <td>{{ obj_link('vocabularies', tag.vocabulary_id) }}</td>
     {% endcall %}
 {% endblock %}
