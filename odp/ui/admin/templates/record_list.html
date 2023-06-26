@@ -40,9 +40,13 @@
         </div>
     </div>
 
-    {% call(record) render_table(records, 'Identifier', 'Title', 'Collection', 'Schema', 'Valid',
-            'Published', hide_id=true, query=filter_) %}
-        <th scope="row">{{ obj_link('records', record.id, record.doi or record.sid) }}</th>
+    {% call(record) render_table(records,
+            'Identifier', 'Title', 'Collection', 'Valid', 'QC', 'SDG', 'Published',
+            hide_id=true, query=filter_) %}
+
+        <th scope="row">
+            {{ obj_link('records', record.id, record.doi or record.sid) }}
+        </th>
         <td>
             {% if record.schema_id == 'SAEON.DataCite4' %}
                 {% if 'titles' in record.metadata %}
@@ -52,9 +56,25 @@
                 {{ record.metadata.title }}
             {% endif %}
         </td>
-        <td>{{ obj_link('collections', record.collection_id, record.collection_key) }}</td>
-        <td>{{ obj_link('schemas', record.schema_id) }}</td>
-        <td>{{ '&#9989;'|safe if record.validity.valid else '&#10060;'|safe }}</td>
+        <td>
+            {{ obj_link('collections', record.collection_id, record.collection_key) }}
+        </td>
+        <td>
+            {{ '&#9989;'|safe if record.validity.valid else '&#10060;'|safe }}
+        </td>
+        <td>
+            {% for qc_tag in record.tags | selectattr('tag_id', '==', 'Record.QC') %}
+                {{ '&#9989;'|safe if qc_tag.data.pass_ else '&#10060;'|safe }}
+            {% endfor %}
+        </td>
+        <td>
+            {% for sdg_tag in record.tags | selectattr('tag_id', '==', 'Record.SDG') | sort(attribute='data.keyword') %}
+                <strong>
+                    {{ sdg_tag.data.keyword | int }}
+                    {%- if not loop.last %}, {% endif %}
+                </strong>
+            {% endfor %}
+        </td>
         <td>
             {% for catalog_id in record.published_catalog_ids %}
                 <a href="{{ url_for('.view_catalog_record', id=record.id, catalog_id=catalog_id) }}">

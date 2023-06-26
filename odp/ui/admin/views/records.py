@@ -217,7 +217,10 @@ def tag_qc(id):
             if response := api.handle_error(e):
                 return response
 
-    return render_template('record_tag_qc.html', record=record, form=form)
+    return render_template(
+        'record_tag_edit.html',
+        record=record, form=form, tag_endpoint='.tag_qc',
+    )
 
 
 @bp.route('/<id>/untag/qc/<tag_instance_id>', methods=('POST',))
@@ -258,7 +261,10 @@ def tag_note(id):
             if response := api.handle_error(e):
                 return response
 
-    return render_template('record_tag_note.html', record=record, form=form)
+    return render_template(
+        'record_tag_edit.html',
+        record=record, form=form, tag_endpoint='.tag_note',
+    )
 
 
 @bp.route('/<id>/untag/note/<tag_instance_id>', methods=('POST',))
@@ -301,7 +307,10 @@ def tag_embargo(id):
             if response := api.handle_error(e):
                 return response
 
-    return render_template('record_tag_embargo.html', record=record, form=form)
+    return render_template(
+        'record_tag_edit.html',
+        record=record, form=form, tag_endpoint='.tag_embargo',
+    )
 
 
 @bp.route('/<id>/untag/embargo/<tag_instance_id>', methods=('POST',))
