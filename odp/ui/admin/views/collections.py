@@ -204,7 +204,8 @@ def untag_notsearchable(id):
 @api.view(ODPScope.COLLECTION_PROJECT)
 def tag_project(id):
     return utils.tag_keyword_deprecated(
-        'collection', id, ODPCollectionTag.PROJECT, ODPVocabulary.PROJECT, CollectionTagProjectForm
+        'collection', id, ODPCollectionTag.PROJECT, ODPVocabulary.PROJECT, CollectionTagProjectForm,
+        tag_endpoint='.tag_project'
     )
 
 
@@ -220,7 +221,8 @@ def untag_project(id, tag_instance_id):
 @api.view(ODPScope.COLLECTION_INFRASTRUCTURE)
 def tag_infrastructure(id):
     return utils.tag_keyword_deprecated(
-        'collection', id, ODPCollectionTag.INFRASTRUCTURE, ODPVocabulary.INFRASTRUCTURE, CollectionTagInfrastructureForm
+        'collection', id, ODPCollectionTag.INFRASTRUCTURE, ODPVocabulary.INFRASTRUCTURE, CollectionTagInfrastructureForm,
+        tag_endpoint='.tag_infrastructure'
     )
 
 

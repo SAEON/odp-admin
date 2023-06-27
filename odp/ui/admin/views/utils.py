@@ -73,21 +73,14 @@ def tag_keyword_deprecated(
         tag_id: str,
         vocab_id: str,
         form_cls: Type[BaseForm],
+        tag_endpoint: str,
         keyword_choices_fn: Callable = None,
 ) -> Response | str:
-    """Set a keyword tag on a record or collection.
+    """Set a project/infrastructure tag on a collection.
 
-    This is a view function and returns either a redirect or a rendered template;
-    a template named {collection|record}_tag_{vocab}.html must exist.
-
-    :param obj_type: 'collection' | 'record'
-    :param obj_id: collection id or record id
-    :param tag_id: tag id
-    :param vocab_id: vocabulary id
-    :param form_cls: form for tag instance data
-    :param keyword_choices_fn: function for populating the choices for the
-        keyword select field; must have the same signature as (the default)
-        populate_keyword_choices
+    This function is retained to allow project/infrastructure collection
+    tags using their existing schemas. Some API and migration work is
+    needed to align these tags with the new keyword tag structure.
     """
     obj = api.get(f'/{obj_type}/{obj_id}')
     vocab_field = vocab_id.lower()
@@ -95,9 +88,6 @@ def tag_keyword_deprecated(
     if request.method == 'POST':
         form = form_cls(request.form)
     else:
-        # (existing) vocabulary tags have cardinality 'multi', so this will
-        # always be an insert - i.e. don't populate form for update
-        # todo: generalize; a vocabulary tag may have any cardinality
         form = form_cls()
 
     if not keyword_choices_fn:
@@ -121,7 +111,10 @@ def tag_keyword_deprecated(
             if response := api.handle_error(e):
                 return response
 
-    return render_template(f'{obj_type}_tag_{vocab_field}.html', **{f'{obj_type}': obj}, form=form)
+    return render_template(
+        f'{obj_type}_tag_edit.html', **{f'{obj_type}': obj},
+        tag_endpoint=tag_endpoint, form=form,
+    )
 
 
 def tag_keyword(
