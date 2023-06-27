@@ -57,52 +57,82 @@
             </button>
         </li>
     </ul>
+
     <div class="tab-content">
         <div id="info" class="tab-pane fade show active" role="tabpanel">
-            {% call(prop) render_info(record, 'DOI', 'SID', 'Collection', 'Schema', 'Migrated', 'Searchable',
-                    'QC', 'SDG', 'Dataset Embargo', 'Retracted', 'Timestamp') %}
+            {% call(prop) render_info(record,
+                    'DOI', 'SID', 'Collection', 'Schema', 'Valid', 'QC', 'SDG', 'Embargo',
+                    'Published', 'Searchable', 'Retracted', 'Migrated', 'Timestamp') %}
+
                 {% if prop == 'DOI' %}
                     {{ record.doi if record.doi }}
+
                 {% elif prop == 'SID' %}
                     {{ record.sid if record.sid }}
+
                 {% elif prop == 'Collection' %}
                     {{ obj_link('collections', record.collection_id, record.collection_key) }}
+
                 {% elif prop == 'Schema' %}
                     {{ obj_link('schemas', record.schema_id) }}
+
+                {% elif prop == 'Valid' %}
+                    {{ '&#9989;'|safe if record.validity.valid else '&#10060;'|safe }}
+
                 {% elif prop == 'Migrated' %}
                     {% if migrated_tag %}
                         {{ migrated_tag.timestamp|timestamp }} from ODP v1 with a status of
                         {{ 'Published' if migrated_tag.data.published else 'Not Published' }}
                     {% endif %}
+
+                {% elif prop == 'Published' %}
+                    {% for catalog_id in record.published_catalog_ids %}
+                        <a href="{{ url_for('.view_catalog_record', id=record.id, catalog_id=catalog_id) }}">
+                            {% if catalog_id == 'SAEON' %}
+                                <img src="{{ url_for('static', filename='images/nrf-favicon.ico') }}" height="20">
+                            {% elif catalog_id == 'DataCite' %}
+                                <img src="{{ url_for('static', filename='images/datacite-logo.svg') }}" height="20">
+                            {% elif catalog_id == 'MIMS' %}
+                                &#127754;
+                            {% endif %}
+                        </a>
+                    {% endfor %}
+
                 {% elif prop == 'Searchable' %}
                     {% if collection_notsearchable_tag %}
-                        False: the collection is tagged as not searchable
+                        {{ '&#10060;'|safe }} - the collection is tagged as not searchable
                     {% elif notsearchable_tag %}
-                        False: tagged as not searchable at {{ notsearchable_tag.timestamp|timestamp }} by {{ obj_link('users', notsearchable_tag.user_id, notsearchable_tag.user_name) }}
+                        {{ '&#10060;'|safe }}
+                        - {{ obj_link('users', notsearchable_tag.user_id, notsearchable_tag.user_name) }}, {{ notsearchable_tag.timestamp|timestamp }}
                     {% else %}
-                        True
+                        {{ '&#9989;'|safe }}
                     {% endif %}
+
                 {% elif prop == 'QC' %}
                     {% for qc_tag in qc_tags['items'] %}
-                        {{ qc_tag.data.pass_|replace('True', 'Passed')|replace('False', 'Failed') }}
-                        by {{ obj_link('users', qc_tag.user_id, qc_tag.user_name) }}<br/>
+                        {{ qc_tag.data.pass_|replace('True', '&#9989;')|replace('False', '&#10060;') | safe }}
+                        - {{ obj_link('users', qc_tag.user_id, qc_tag.user_name) }}, {{ qc_tag.timestamp|timestamp }}<br/>
                     {% endfor %}
+
                 {% elif prop == 'SDG' %}
                     {% for sdg_tag in sdg_tags['items'] | sort(attribute='data.keyword') %}
                         {% set sdg_keyword = sdg_vocab[sdg_tag.data.keyword] %}
                         {{ sdg_keyword.id | int }} - {{ sdg_keyword.title }}
                         {%- if not loop.last %}<br/>{% endif %}
                     {% endfor %}
-                {% elif prop == 'Dataset Embargo' %}
+
+                {% elif prop == 'Embargo' %}
                     {% for embargo_tag in embargo_tags['items'] %}
                         From {{ embargo_tag.data.start|date }}
                         to {{ embargo_tag.data.end|date if embargo_tag.data.end else '(no end date)' }}
                         set by {{ obj_link('users', embargo_tag.user_id, embargo_tag.user_name) }}<br/>
                     {% endfor %}
+
                 {% elif prop == 'Retracted' %}
                     {% if retracted_tag %}
                         {{ retracted_tag.timestamp|timestamp }} by {{ obj_link('users', retracted_tag.user_id, retracted_tag.user_name) }}
                     {% endif %}
+
                 {% elif prop == 'Timestamp' %}
                     {{ record.timestamp|timestamp }}
                 {% endif %}
@@ -110,32 +140,39 @@
 
             {{ render_buttons(buttons) }}
         </div>
+
         <div id="metadata" class="tab-pane fade" role="tabpanel">
             <pre class="m-3">
                 {{- record.metadata|format_json -}}
             </pre>
         </div>
+
         <div id="validity" class="tab-pane fade" role="tabpanel">
             <pre class="m-3">
                 {{- record.validity|format_json -}}
             </pre>
         </div>
+
         <div id="tag-qc" class="tab-pane fade" role="tabpanel">
             {{ render_tag_table(record, qc_tags, '.tag_qc', '.untag_qc', qc_tag_enabled,
                pass_='Pass', comment='Comment') }}
         </div>
+
         <div id="tag-embargo" class="tab-pane fade" role="tabpanel">
             {{ render_tag_table(record, embargo_tags, '.tag_embargo', '.untag_embargo', embargo_tag_enabled,
                start='Start date', end='End date', comment='Comment') }}
         </div>
+
         <div id="tag-notes" class="tab-pane fade" role="tabpanel">
             {{ render_tag_table(record, note_tags, '.tag_note', '.untag_note', note_tag_enabled,
                comment='Note') }}
         </div>
+
         <div id="tag-sdg" class="tab-pane fade" role="tabpanel">
             {{ render_tag_table(record, sdg_tags, '.tag_sdg', '.untag_sdg', sdg_tag_enabled,
                keyword='SDG', comment='Comment') }}
         </div>
+
         <div id="catalog-records" class="tab-pane fade" role="tabpanel">
             {% call(catalog_record) render_table(catalog_records, 'Catalogue', 'Published', 'Reason', 'Timestamp', hide_id=True) %}
                 <td>{{ obj_link('catalogs', catalog_record.catalog_id) }}</td>
@@ -148,6 +185,7 @@
                 <td>{{ catalog_record.timestamp|timestamp }}</td>
             {% endcall %}
         </div>
+
         <div id="audit-log" class="tab-pane fade" role="tabpanel">
             {% call(audit_record) render_audit_table(audit_records) %}
                 {% if audit_record.table == 'record' %}
