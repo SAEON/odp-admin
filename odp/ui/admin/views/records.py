@@ -33,7 +33,7 @@ def index():
         ui_filter += f'&collection={collection_id}'
 
     filter_form = RecordFilterForm(request.args)
-    utils.populate_collection_choices(filter_form.collection)
+    # utils.populate_collection_choices(filter_form.collection)  # unused
 
     records = api.get(f'/record/?page={page}{api_filter}')
     return render_template(
@@ -111,6 +111,7 @@ def view(id):
             retract_btn,
             delete_btn(object_id=id, enabled=ODPScope.RECORD_WRITE in g.user_permissions, prompt_args=(record['doi'] or record['sid'],)),
         ],
+        filter_form=RecordFilterForm(),
     )
 
 

@@ -1,0 +1,25 @@
+{% macro record_filter(
+    form
+) %}
+    <form action="{{ url_for('records.index') }}" method="get">
+        <div class="row">
+            <div class="col-1 text-end">
+                {{ form.title_q.label(class='col-form-label') }}
+            </div>
+            <div class="col-4">
+                {{ form.title_q(class='form-control', placeholder='Enter title search terms...') }}
+            </div>
+            <div class="col-2 text-end">
+                {{ form.id_q.label(class='col-form-label') }}
+            </div>
+            <div class="col-4">
+                {{ form.id_q(class='form-control', placeholder='Enter record identifiers...') }}
+            </div>
+            <div class="col">
+                <button type="submit" class="btn btn-outline-info btn-action">
+                    Find
+                </button>
+            </div>
+        </div>
+    </form>
+{% endmacro %}
