@@ -111,6 +111,7 @@ def view(id):
             retract_btn,
             delete_btn(object_id=id, enabled=ODPScope.RECORD_WRITE in g.user_permissions, prompt_args=(record['doi'] or record['sid'],)),
         ],
+        create_btn=create_btn(enabled=ODPScope.RECORD_WRITE in g.user_permissions),
         filter_form=RecordFilterForm(),
     )
 
