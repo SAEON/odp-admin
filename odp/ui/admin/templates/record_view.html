@@ -75,7 +75,7 @@
     <div class="tab-content">
         <div id="info" class="tab-pane fade show active" role="tabpanel">
             {% call(prop) render_info(record,
-                    'DOI', 'SID', 'Parent DOI', 'Collection', 'Schema', 'Valid', 'QC', 'SDG', 'Embargo',
+                    'DOI', 'SID', 'Parent DOI', 'Child DOIs', 'Collection', 'Schema', 'Valid', 'QC', 'SDG', 'Embargo',
                     'Published', 'Searchable', 'Retracted', 'Migrated', 'Timestamp') %}
 
                 {% if prop == 'DOI' %}
@@ -86,6 +86,13 @@
 
                 {% elif prop == 'Parent DOI' %}
                     {{ obj_link('records', record.parent_id, record.parent_doi) }}
+
+                {% elif prop == 'Child DOIs' %}
+                    {% if record.child_dois %}
+                        <a href="{{ url_for('records.index', id_q=' '.join(record.child_dois)) }}" class="text-decoration-none">
+                            {{ record.child_dois | count }}
+                        </a>
+                    {% endif %}
 
                 {% elif prop == 'Collection' %}
                     {{ obj_link('collections', record.collection_id, record.collection_key) }}
