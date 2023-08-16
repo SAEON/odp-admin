@@ -89,7 +89,7 @@
 
                 {% elif prop == 'Child DOIs' %}
                     {% if record.child_dois %}
-                        <a href="{{ url_for('records.index', id_q=' '.join(record.child_dois)) }}" class="text-decoration-none">
+                        <a href="{{ url_for('records.index', parent=record.id) }}" class="text-decoration-none">
                             {{ record.child_dois | count }}
                         </a>
                     {% endif %}

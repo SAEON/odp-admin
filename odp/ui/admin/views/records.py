@@ -19,6 +19,7 @@ def index():
     id_q = request.args.get('id_q')
     title_q = request.args.get('title_q')
     collection_ids = request.args.getlist('collection')
+    parent_id = request.args.get('parent')
 
     api_filter = ''
     ui_filter = ''
@@ -31,6 +32,9 @@ def index():
     for collection_id in collection_ids:
         api_filter += f'&collection_id={collection_id}'
         ui_filter += f'&collection={collection_id}'
+    if parent_id:
+        api_filter += f'&parent_id={parent_id}'
+        ui_filter += f'&parent={parent_id}'
 
     filter_form = RecordFilterForm(request.args)
     # utils.populate_collection_choices(filter_form.collection)  # unused
