@@ -6,7 +6,7 @@
 #
 -e file:../odp-server/odp-core
     # via -r requirements.in
-async-timeout==4.0.2
+async-timeout==4.0.3
     # via redis
 authlib==1.2.1
     # via odp
@@ -18,11 +18,11 @@ cffi==1.15.1
     # via cryptography
 charset-normalizer==3.2.0
     # via requests
-click==8.1.6
+click==8.1.7
     # via flask
 cryptography==41.0.3
     # via authlib
-flask==2.3.2
+flask==2.3.3
     # via
     #   flask-login
     #   odp
@@ -53,7 +53,7 @@ python-dateutil==2.8.2
     # via ory-hydra-client
 python-dotenv==1.0.0
     # via pydantic
-redis==4.6.0
+redis==5.0.0
     # via odp
 requests==2.31.0
     # via odp
@@ -65,7 +65,7 @@ urllib3==2.0.4
     # via
     #   ory-hydra-client
     #   requests
-werkzeug==2.3.6
+werkzeug==2.3.7
     # via
     #   flask
     #   flask-login
