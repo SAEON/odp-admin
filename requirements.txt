@@ -20,7 +20,7 @@ charset-normalizer==3.2.0
     # via requests
 click==8.1.7
     # via flask
-cryptography==41.0.3
+cryptography==41.0.4
     # via authlib
 flask==2.3.3
     # via
@@ -59,9 +59,9 @@ requests==2.31.0
     # via odp
 six==1.16.0
     # via python-dateutil
-typing-extensions==4.7.1
+typing-extensions==4.8.0
     # via pydantic
-urllib3==2.0.4
+urllib3==2.0.5
     # via
     #   ory-hydra-client
     #   requests
