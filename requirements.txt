@@ -4,12 +4,16 @@
 #
 #    pip-compile
 #
--e file:../odp-server/odp-core
+-e file:../odp-core
+    # via -r requirements.in
+-e file:../odp-ui
     # via -r requirements.in
 async-timeout==4.0.3
     # via redis
 authlib==1.2.1
-    # via odp
+    # via
+    #   odp
+    #   odp-ui
 blinker==1.6.2
     # via flask
 certifi==2023.7.22
@@ -25,9 +29,9 @@ cryptography==41.0.4
 flask==2.3.3
     # via
     #   flask-login
-    #   odp
+    #   odp-ui
 flask-login==0.6.2
-    # via odp
+    # via odp-ui
 gunicorn==21.2.0
     # via -r requirements.in
 idna==3.4
@@ -54,7 +58,9 @@ python-dateutil==2.8.2
 python-dotenv==1.0.0
     # via pydantic
 redis==5.0.0
-    # via odp
+    # via
+    #   odp
+    #   odp-ui
 requests==2.31.0
     # via odp
 six==1.16.0
@@ -70,4 +76,4 @@ werkzeug==2.3.7
     #   flask
     #   flask-login
 wtforms==3.0.1
-    # via odp
+    # via odp-ui

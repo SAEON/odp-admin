@@ -1,2 +1,3 @@
--e file:../odp-server/odp-core
+-e file:../odp-ui
+-e file:../odp-core
 gunicorn
