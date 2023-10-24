@@ -14,13 +14,13 @@ authlib==1.2.1
     # via
     #   odp
     #   odp-ui
-blinker==1.6.2
+blinker==1.6.3
     # via flask
 certifi==2023.7.22
     # via requests
 cffi==1.16.0
     # via cryptography
-charset-normalizer==3.3.0
+charset-normalizer==3.3.1
     # via requests
 click==8.1.7
     # via flask
@@ -52,7 +52,9 @@ packaging==23.2
 pycparser==2.21
     # via cffi
 pydantic[dotenv]==1.10.13
-    # via odp
+    # via
+    #   odp
+    #   pydantic
 python-dateutil==2.8.2
     # via ory-hydra-client
 python-dotenv==1.0.0
@@ -67,7 +69,7 @@ six==1.16.0
     # via python-dateutil
 typing-extensions==4.8.0
     # via pydantic
-urllib3==2.0.6
+urllib3==2.0.7
     # via
     #   ory-hydra-client
     #   requests
@@ -76,5 +78,5 @@ werkzeug==2.3.7
     #   flask
     #   flask-login
     #   odp-ui
-wtforms==3.0.1
+wtforms==3.1.0
     # via odp-ui
