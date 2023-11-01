@@ -9,11 +9,37 @@
 {% endblock %}
 
 {% block content %}
-    {% call(prop) render_info(catalog, 'URL', 'Published records') %}
-        {% if prop == 'URL' %}
-            {{ catalog.url }}
-        {% elif prop == 'Published records' %}
-            {{ catalog.record_count }}
-        {% endif %}
-    {% endcall %}
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">
+                Info
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#sitemap" type="button" role="tab">
+                Sitemap
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="info" class="tab-pane fade show active" role="tabpanel">
+            {% call(prop) render_info(catalog, 'URL', 'Published records', 'Last updated') %}
+                {% if prop == 'URL' %}
+                    {{ catalog.url }}
+                {% elif prop == 'Published records' %}
+                    {{ catalog.record_count }}
+                {% elif prop == 'Last updated' %}
+                    {{ catalog.timestamp|timestamp }}
+                {% endif %}
+            {% endcall %}
+        </div>
+        <div id="sitemap" class="tab-pane fade" role="tabpanel">
+            {% if catalog.data['sitemap.xml'] %}
+                <pre class="m-3">
+                    {{- catalog.data['sitemap.xml'] -}}
+                </pre>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}
