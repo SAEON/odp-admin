@@ -23,3 +23,24 @@
         </div>
     </form>
 {% endmacro %}
+
+{% macro catalog_link(
+    catalog_urls,
+    catalog_id,
+    record_id
+) %}
+    {# Render a catalog icon, linking to the landing page for a published record.
+        catalog_urls: mapping of catalog ids to catalog urls
+        catalog_id: 'SAEON', 'MIMS' or 'DataCite'
+        record_id: record DOI or UUID
+    #}
+    <a href="{{ catalog_urls[catalog_id] }}/{{ record_id }}" target="_blank" class="text-decoration-none">
+        {% if catalog_id == 'SAEON' %}
+            <img src="{{ url_for('static', filename='images/nrf-favicon.ico') }}" height="20">
+        {% elif catalog_id == 'MIMS' %}
+            <img src="{{ url_for('static', filename='images/mims-icon-32x32.png') }}" height="18">
+        {% elif catalog_id == 'DataCite' %}
+            <img src="{{ url_for('static', filename='images/datacite-logo.svg') }}" height="18">
+        {% endif %}
+    </a>
+{% endmacro %}

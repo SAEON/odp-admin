@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% from 'content.j2' import render_info, render_buttons, render_table, render_tag_table,
     render_audit_table, obj_link, render_button %}
-{% from 'admin_macros.j2' import record_filter %}
+{% from 'admin_macros.j2' import record_filter, catalog_link %}
 
 {% block web_title %}
     {{ super() }} |
@@ -111,15 +111,7 @@
 
                 {% elif prop == 'Published' %}
                     {% for catalog_id in record.published_catalog_ids %}
-                        <a href="{{ url_for('.view_catalog_record', id=record.id, catalog_id=catalog_id) }}">
-                            {% if catalog_id == 'SAEON' %}
-                                <img src="{{ url_for('static', filename='images/nrf-favicon.ico') }}" height="20">
-                            {% elif catalog_id == 'DataCite' %}
-                                <img src="{{ url_for('static', filename='images/datacite-logo.svg') }}" height="20">
-                            {% elif catalog_id == 'MIMS' %}
-                                &#127754;
-                            {% endif %}
-                        </a>
+                        {{ catalog_link(catalog_urls, catalog_id, record.doi or record.id) }}
                     {% endfor %}
 
                 {% elif prop == 'Searchable' %}

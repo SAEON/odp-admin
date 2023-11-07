@@ -40,6 +40,8 @@ def index():
     # utils.populate_collection_choices(filter_form.collection)  # unused
 
     records = api.get(f'/record/?page={page}{api_filter}')
+    catalogs = api.get('/catalog/')
+
     return render_template(
         'record_list.html',
         records=records,
@@ -47,7 +49,10 @@ def index():
         filter_form=filter_form,
         buttons=[
             create_btn(enabled=ODPScope.RECORD_WRITE in g.user_permissions),
-        ]
+        ],
+        catalog_urls={
+            catalog['id']: catalog['url'] for catalog in catalogs['items']
+        },
     )
 
 
@@ -57,6 +62,7 @@ def view(id):
     record = api.get(f'/record/{id}')
     catalog_records = api.get(f'/record/{id}/catalog')
     audit_records = api.get(f'/record/{id}/audit')
+    catalogs = api.get('/catalog/')
 
     sdg_vocab = {
         keyword_obj['id']: keyword_obj['data']
@@ -117,6 +123,9 @@ def view(id):
         ],
         create_btn=create_btn(enabled=ODPScope.RECORD_WRITE in g.user_permissions),
         filter_form=RecordFilterForm(),
+        catalog_urls={
+            catalog['id']: catalog['url'] for catalog in catalogs['items']
+        },
     )
 
 
