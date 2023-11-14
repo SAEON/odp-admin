@@ -69,11 +69,11 @@ six==1.16.0
     # via python-dateutil
 typing-extensions==4.8.0
     # via pydantic
-urllib3==2.0.7
+urllib3==2.1.0
     # via
     #   ory-hydra-client
     #   requests
-werkzeug==2.3.7
+werkzeug==2.3.8
     # via
     #   flask
     #   flask-login
