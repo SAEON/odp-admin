@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% from 'content.j2' import render_table %}
+
+{% block web_title %}
+    {{ super() }} |
+    {% block heading %}
+        Archives
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% call(archive) render_table(archives, 'URL') %}
+        <td>{{ archive.url }}</td>
+    {% endcall %}
+{% endblock %}

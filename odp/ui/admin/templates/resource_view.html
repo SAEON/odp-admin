@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% from 'content.j2' import render_info, obj_link %}
+
+{% block web_title %}
+    {{ super() }} |
+    {% block heading %}
+        Resource: {{ resource.id }}
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% call(prop) render_info(resource, 'Provider', 'Archive', 'Path', 'Type',
+                                        'Name', 'Size', 'MD5 checksum', 'Timestamp') %}
+        {% if prop == 'Provider' %}
+            {{ obj_link('providers', resource.provider_id, resource.provider_key) }}
+        {% elif prop == 'Archive' %}
+            {{ obj_link('archives', resource.archive_id) }}
+        {% elif prop == 'Path' %}
+            {{ resource.path }}
+        {% elif prop == 'Type' %}
+            {{ resource.type }}
+        {% elif prop == 'Name' %}
+            {{ resource.name }}
+        {% elif prop == 'Size' %}
+            {{ resource.size }}
+        {% elif prop == 'MD5 checksum' %}
+            {{ resource.md5 }}
+        {% elif prop == 'Timestamp' %}
+            {{ resource.timestamp | timestamp }}
+        {% endif %}
+    {% endcall %}
+{% endblock %}

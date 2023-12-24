@@ -26,6 +26,11 @@
                             tags='Tags',
                             vocabularies='Vocabularies'
                         ) }}
+                        {{ nav_dropdown('Data Storage', request.blueprint, dark=true,
+                            archives='Archives',
+                            packages='Packages',
+                            resources='Resources'
+                        ) }}
                         {{ nav_dropdown('Access Control', request.blueprint, dark=true,
                             clients='Clients',
                             roles='Roles',
