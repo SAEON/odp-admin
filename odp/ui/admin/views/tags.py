@@ -11,11 +11,11 @@ bp = Blueprint('tags', __name__)
 def index():
     page = request.args.get('page', 1)
     tags = api.get(f'/tag/?page={page}')
-    return render_template('tag_list.html', tags=tags)
+    return render_template('tag_index.html', tags=tags)
 
 
 @bp.route('/<id>')
 @api.view(ODPScope.TAG_READ)
-def view(id):
+def detail(id):
     tag = api.get(f'/tag/{id}')
-    return render_template('tag_view.html', tag=tag)
+    return render_template('tag_detail.html', tag=tag)

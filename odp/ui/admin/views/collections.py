@@ -16,7 +16,7 @@ def index():
     page = request.args.get('page', 1)
     collections = api.get('/collection/', page=page, sort='key')
     return render_template(
-        'collection_list.html',
+        'collection_index.html',
         collections=collections,
         buttons=[
             create_btn(enabled=ODPScope.COLLECTION_ADMIN in g.user_permissions),
@@ -26,7 +26,7 @@ def index():
 
 @bp.route('/<id>')
 @api.view(ODPScope.COLLECTION_READ)
-def view(id):
+def detail(id):
     collection = api.get(f'/collection/{id}')
     audit_records = api.get(f'/collection/{id}/audit')
 
@@ -73,7 +73,7 @@ def view(id):
         nosearch_btn.prompt = 'Are you sure you want the collection to be searchable?'
 
     return render_template(
-        'collection_view.html',
+        'collection_detail.html',
         collection=collection,
         published_tag=published_tag,
         frozen_tag=frozen_tag,
@@ -109,7 +109,7 @@ def create():
                 doi_key=form.doi_key.data or None,
             ))
             flash(f'Collection {key} has been created.', category='success')
-            return redirect(url_for('.view', id=collection['id']))
+            return redirect(url_for('.detail', id=collection['id']))
 
         except ODPAPIError as e:
             if response := api.handle_error(e):
@@ -135,7 +135,7 @@ def edit(id):
                 doi_key=form.doi_key.data or None,
             ))
             flash(f'Collection {key} has been updated.', category='success')
-            return redirect(url_for('.view', id=id))
+            return redirect(url_for('.detail', id=id))
 
         except ODPAPIError as e:
             if response := api.handle_error(e):
@@ -245,13 +245,13 @@ def get_new_doi(id):
 
 @bp.route('/<id>/audit/<collection_audit_id>')
 @api.view(ODPScope.COLLECTION_READ)
-def view_audit_detail(id, collection_audit_id):
-    audit_detail = api.get(f'/collection/{id}/collection_audit/{collection_audit_id}')
-    return render_template('collection_audit_view.html', audit=audit_detail)
+def audit_detail(id, collection_audit_id):
+    collection_audit = api.get(f'/collection/{id}/collection_audit/{collection_audit_id}')
+    return render_template('collection_audit_detail.html', audit=collection_audit)
 
 
 @bp.route('/<id>/tag_audit/<collection_tag_audit_id>')
 @api.view(ODPScope.COLLECTION_READ)
-def view_tag_audit_detail(id, collection_tag_audit_id):
-    audit_detail = api.get(f'/collection/{id}/collection_tag_audit/{collection_tag_audit_id}')
-    return render_template('collection_tag_audit_view.html', audit=audit_detail)
+def tag_audit_detail(id, collection_tag_audit_id):
+    collection_tag_audit = api.get(f'/collection/{id}/collection_tag_audit/{collection_tag_audit_id}')
+    return render_template('collection_tag_audit_detail.html', audit=collection_tag_audit)

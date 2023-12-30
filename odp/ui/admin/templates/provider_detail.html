@@ -36,7 +36,7 @@
         </div>
         <div id="audit-log" class="tab-pane fade" role="tabpanel">
             {% call(audit_record) render_audit_table(audit_records) %}
-                <a href="{{ url_for('.view_audit_detail', id=provider.id, audit_id=audit_record.audit_id) }}" class="text-decoration-none">
+                <a href="{{ url_for('.audit_detail', id=provider.id, audit_id=audit_record.audit_id) }}" class="text-decoration-none">
                     Provider
                 </a>
             {% endcall %}
