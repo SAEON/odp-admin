@@ -11,11 +11,11 @@ bp = Blueprint('packages', __name__)
 def index():
     page = request.args.get('page', 1)
     packages = api.get(f'/package/?page={page}')
-    return render_template('package_list.html', packages=packages)
+    return render_template('package_index.html', packages=packages)
 
 
 @bp.route('/<id>')
 @api.view(ODPScope.PACKAGE_READ)
-def view(id):
+def detail(id):
     package = api.get(f'/package/{id}')
-    return render_template('package_view.html', package=package)
+    return render_template('package_detail.html', package=package)

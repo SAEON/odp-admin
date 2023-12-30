@@ -11,11 +11,11 @@ bp = Blueprint('archives', __name__)
 def index():
     page = request.args.get('page', 1)
     archives = api.get(f'/archive/?page={page}')
-    return render_template('archive_list.html', archives=archives)
+    return render_template('archive_index.html', archives=archives)
 
 
 @bp.route('/<id>')
 @api.view(ODPScope.ARCHIVE_READ)
-def view(id):
+def detail(id):
     archive = api.get(f'/archive/{id}')
-    return render_template('archive_view.html', archive=archive)
+    return render_template('archive_detail.html', archive=archive)

@@ -11,11 +11,11 @@ bp = Blueprint('resources', __name__)
 def index():
     page = request.args.get('page', 1)
     resources = api.get(f'/resource/?page={page}')
-    return render_template('resource_list.html', resources=resources)
+    return render_template('resource_index.html', resources=resources)
 
 
 @bp.route('/<id>')
 @api.view(ODPScope.RESOURCE_READ)
-def view(id):
+def detail(id):
     resource = api.get(f'/resource/{id}')
-    return render_template('resource_view.html', resource=resource)
+    return render_template('resource_detail.html', resource=resource)
