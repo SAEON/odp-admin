@@ -15,15 +15,15 @@ bp = Blueprint('users', __name__)
 def index():
     page = request.args.get('page', 1)
     users = api.get(f'/user/?page={page}')
-    return render_template('user_list.html', users=users)
+    return render_template('user_index.html', users=users)
 
 
 @bp.route('/<id>')
 @api.view(ODPScope.USER_READ)
-def view(id):
+def detail(id):
     user = api.get(f'/user/{id}')
     return render_template(
-        'user_view.html',
+        'user_detail.html',
         user=user,
         buttons=[
             edit_btn(object_id=id, enabled=ODPScope.USER_ADMIN in g.user_permissions),
@@ -54,7 +54,7 @@ def edit(id):
                 role_ids=form.role_ids.data,
             ))
             flash(f'User {id} has been updated.', category='success')
-            return redirect(url_for('.view', id=id))
+            return redirect(url_for('.detail', id=id))
 
         except ODPAPIError as e:
             if response := api.handle_error(e):
