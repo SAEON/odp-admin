@@ -42,7 +42,7 @@ def tag_singleton(obj_type: str, obj_id: str, tag_id: str) -> Response:
         data={},
     ))
     flash(f'{tag_id} tag has been set.', category='success')
-    return redirect(url_for('.view', id=obj_id))
+    return redirect(url_for('.detail', id=obj_id))
 
 
 def untag_singleton(obj_type: str, obj_id: str, tag_id: str) -> Response:
@@ -64,7 +64,7 @@ def untag_singleton(obj_type: str, obj_id: str, tag_id: str) -> Response:
         api.delete(f'{api_route}{obj_id}/tag/{tag_instance["id"]}')
         flash(f'{tag_id} tag has been removed.', category='success')
 
-    return redirect(url_for('.view', id=obj_id))
+    return redirect(url_for('.detail', id=obj_id))
 
 
 def tag_keyword_deprecated(
@@ -105,7 +105,7 @@ def tag_keyword_deprecated(
                 },
             ))
             flash(f'{tag_id} tag has been set.', category='success')
-            return redirect(url_for('.view', id=obj_id))
+            return redirect(url_for('.detail', id=obj_id))
 
         except ODPAPIError as e:
             if response := api.handle_error(e):
@@ -164,7 +164,7 @@ def tag_keyword(
                 },
             ))
             flash(f'{tag_id} tag has been set.', category='success')
-            return redirect(url_for('.view', id=obj_id))
+            return redirect(url_for('.detail', id=obj_id))
 
         except ODPAPIError as e:
             if response := api.handle_error(e):
@@ -199,7 +199,7 @@ def untag_keyword(
     api.delete(f'{api_route}{obj_id}/tag/{tag_instance_id}')
     flash(f'{tag_id} tag has been removed.', category='success')
 
-    return redirect(url_for('.view', id=obj_id))
+    return redirect(url_for('.detail', id=obj_id))
 
 
 def pagify(item_list: list) -> dict:

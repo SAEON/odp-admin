@@ -193,7 +193,7 @@
             {% call(catalog_record) render_table(catalog_records, 'Catalogue', 'Published', 'Reason', 'Timestamp', hide_id=True) %}
                 <td>{{ obj_link('catalogs', catalog_record.catalog_id) }}</td>
                 <td>
-                    <a href="{{ url_for('.view_catalog_record', id=record.id, catalog_id=catalog_record.catalog_id) }}" class="text-decoration-none">
+                    <a href="{{ url_for('.catalog_detail', id=record.id, catalog_id=catalog_record.catalog_id) }}" class="text-decoration-none">
                         {{ catalog_record.published }}
                     </a>
                 </td>
@@ -205,11 +205,11 @@
         <div id="audit-log" class="tab-pane fade" role="tabpanel">
             {% call(audit_record) render_audit_table(audit_records) %}
                 {% if audit_record.table == 'record' %}
-                    <a href="{{ url_for('.view_audit_detail', id=record.id, record_audit_id=audit_record.audit_id) }}" class="text-decoration-none">
+                    <a href="{{ url_for('.audit_detail', id=record.id, record_audit_id=audit_record.audit_id) }}" class="text-decoration-none">
                         Record
                     </a>
                 {% elif audit_record.table == 'record_tag' %}
-                    <a href="{{ url_for('.view_tag_audit_detail', id=record.id, record_tag_audit_id=audit_record.audit_id) }}" class="text-decoration-none">
+                    <a href="{{ url_for('.tag_audit_detail', id=record.id, record_tag_audit_id=audit_record.audit_id) }}" class="text-decoration-none">
                         {{ audit_record.tag_id }}
                     </a>
                 {% endif %}
