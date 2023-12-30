@@ -17,7 +17,7 @@ def index():
     page = request.args.get('page', 1)
     clients = api.get(f'/client/?page={page}')
     return render_template(
-        'client_list.html',
+        'client_index.html',
         clients=clients,
         buttons=[
             create_btn(enabled=ODPScope.CLIENT_ADMIN in g.user_permissions),
@@ -27,10 +27,10 @@ def index():
 
 @bp.route('/<id>')
 @api.view(ODPScope.CLIENT_READ)
-def view(id):
+def detail(id):
     client = api.get(f'/client/{id}')
     return render_template(
-        'client_view.html',
+        'client_detail.html',
         client=client,
         buttons=[
             edit_btn(object_id=id, enabled=ODPScope.CLIENT_ADMIN in g.user_permissions),
@@ -65,7 +65,7 @@ def create():
                 client_credentials_grant_access_token_lifespan=form.client_credentials_grant_access_token_lifespan.data or None,
             ))
             flash(f'Client {id} has been created.', category='success')
-            return redirect(url_for('.view', id=id))
+            return redirect(url_for('.detail', id=id))
 
         except ODPAPIError as e:
             if response := api.handle_error(e):
@@ -108,7 +108,7 @@ def edit(id):
                 client_credentials_grant_access_token_lifespan=form.client_credentials_grant_access_token_lifespan.data or None,
             ))
             flash(f'Client {id} has been updated.', category='success')
-            return redirect(url_for('.view', id=id))
+            return redirect(url_for('.detail', id=id))
 
         except ODPAPIError as e:
             if response := api.handle_error(e):

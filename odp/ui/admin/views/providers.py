@@ -15,7 +15,7 @@ def index():
     page = request.args.get('page', 1)
     providers = api.get('/provider/', page=page, sort='key')
     return render_template(
-        'provider_list.html',
+        'provider_index.html',
         providers=providers,
         buttons=[
             create_btn(enabled=ODPScope.PROVIDER_ADMIN in g.user_permissions),
@@ -25,11 +25,11 @@ def index():
 
 @bp.route('/<id>')
 @api.view(ODPScope.PROVIDER_READ)
-def view(id):
+def detail(id):
     provider = api.get(f'/provider/{id}')
     audit_records = api.get(f'/provider/{id}/audit')
     return render_template(
-        'provider_view.html',
+        'provider_detail.html',
         provider=provider,
         audit_records=audit_records,
         buttons=[
@@ -41,9 +41,9 @@ def view(id):
 
 @bp.route('/<id>/audit/<audit_id>')
 @api.view(ODPScope.PROVIDER_READ)
-def view_audit_detail(id, audit_id):
-    audit_detail = api.get(f'/provider/{id}/audit/{audit_id}')
-    return render_template('provider_audit_view.html', audit=audit_detail)
+def audit_detail(id, audit_id):
+    provider_audit = api.get(f'/provider/{id}/audit/{audit_id}')
+    return render_template('provider_audit_detail.html', audit=provider_audit)
 
 
 @bp.route('/new', methods=('GET', 'POST'))
@@ -58,7 +58,7 @@ def create():
                 name=form.name.data,
             ))
             flash(f'Provider {key} has been created.', category='success')
-            return redirect(url_for('.view', id=provider['id']))
+            return redirect(url_for('.detail', id=provider['id']))
 
         except ODPAPIError as e:
             if response := api.handle_error(e):
@@ -80,7 +80,7 @@ def edit(id):
                 name=form.name.data,
             ))
             flash(f'Provider {key} has been updated.', category='success')
-            return redirect(url_for('.view', id=id))
+            return redirect(url_for('.detail', id=id))
 
         except ODPAPIError as e:
             if response := api.handle_error(e):

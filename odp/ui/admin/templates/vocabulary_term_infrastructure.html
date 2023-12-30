@@ -15,5 +15,5 @@
 {% block content %}
     {{ render_form(form, term,
        submit_target=url_for('.edit_infrastructure_term', id=term.id) if term else url_for('.create_infrastructure_term'),
-       cancel_target=url_for('.view', id=vocabulary.id)) }}
+       cancel_target=url_for('.detail', id=vocabulary.id)) }}
 {% endblock %}

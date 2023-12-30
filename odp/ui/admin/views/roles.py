@@ -16,7 +16,7 @@ def index():
     page = request.args.get('page', 1)
     roles = api.get(f'/role/?page={page}')
     return render_template(
-        'role_list.html',
+        'role_index.html',
         roles=roles,
         buttons=[
             create_btn(enabled=ODPScope.ROLE_ADMIN in g.user_permissions),
@@ -26,10 +26,10 @@ def index():
 
 @bp.route('/<id>')
 @api.view(ODPScope.ROLE_READ)
-def view(id):
+def detail(id):
     role = api.get(f'/role/{id}')
     return render_template(
-        'role_view.html',
+        'role_detail.html',
         role=role,
         buttons=[
             edit_btn(object_id=id, enabled=ODPScope.ROLE_ADMIN in g.user_permissions),
@@ -54,7 +54,7 @@ def create():
                 scope_ids=form.scope_ids.data,
             ))
             flash(f'Role {id} has been created.', category='success')
-            return redirect(url_for('.view', id=id))
+            return redirect(url_for('.detail', id=id))
 
         except ODPAPIError as e:
             if response := api.handle_error(e):
@@ -87,7 +87,7 @@ def edit(id):
                 scope_ids=form.scope_ids.data,
             ))
             flash(f'Role {id} has been updated.', category='success')
-            return redirect(url_for('.view', id=id))
+            return redirect(url_for('.detail', id=id))
 
         except ODPAPIError as e:
             if response := api.handle_error(e):

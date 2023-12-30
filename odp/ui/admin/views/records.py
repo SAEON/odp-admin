@@ -43,7 +43,7 @@ def index():
     catalogs = api.get('/catalog/')
 
     return render_template(
-        'record_list.html',
+        'record_index.html',
         records=records,
         filter_=ui_filter,
         filter_form=filter_form,
@@ -58,7 +58,7 @@ def index():
 
 @bp.route('/<id>')
 @api.view(ODPScope.RECORD_READ)
-def view(id):
+def detail(id):
     record = api.get(f'/record/{id}')
     catalog_records = api.get(f'/record/{id}/catalog')
     audit_records = api.get(f'/record/{id}/audit')
@@ -98,7 +98,7 @@ def view(id):
         retract_btn.prompt = 'Are you sure you want to cancel the record retraction?'
 
     return render_template(
-        'record_view.html',
+        'record_detail.html',
         record=record,
         migrated_tag=utils.get_tag_instance(record, ODPRecordTag.MIGRATED),
         notsearchable_tag=notsearchable_tag,
@@ -150,7 +150,7 @@ def create():
                 metadata=json.loads(form.metadata.data),
             ))
             flash(f'Record {doi or sid} has been created.', category='success')
-            return redirect(url_for('.view', id=record['id']))
+            return redirect(url_for('.detail', id=record['id']))
 
         except ODPAPIError as e:
             if response := api.handle_error(e):
@@ -182,7 +182,7 @@ def edit(id):
                 metadata=json.loads(form.metadata.data),
             ))
             flash(f'Record {doi or sid} has been updated.', category='success')
-            return redirect(url_for('.view', id=id))
+            return redirect(url_for('.detail', id=id))
 
         except ODPAPIError as e:
             if response := api.handle_error(e):
@@ -226,7 +226,7 @@ def tag_qc(id):
                 },
             ))
             flash(f'{ODPRecordTag.QC} tag has been set.', category='success')
-            return redirect(url_for('.view', id=id))
+            return redirect(url_for('.detail', id=id))
 
         except ODPAPIError as e:
             if response := api.handle_error(e):
@@ -247,7 +247,7 @@ def untag_qc(id, tag_instance_id):
 
     api.delete(f'{api_route}{id}/tag/{tag_instance_id}')
     flash(f'{ODPRecordTag.QC} tag has been removed.', category='success')
-    return redirect(url_for('.view', id=id))
+    return redirect(url_for('.detail', id=id))
 
 
 @bp.route('/<id>/tag/note', methods=('GET', 'POST'))
@@ -270,7 +270,7 @@ def tag_note(id):
                 },
             ))
             flash(f'{ODPRecordTag.NOTE} tag has been set.', category='success')
-            return redirect(url_for('.view', id=id))
+            return redirect(url_for('.detail', id=id))
 
         except ODPAPIError as e:
             if response := api.handle_error(e):
@@ -291,7 +291,7 @@ def untag_note(id, tag_instance_id):
 
     api.delete(f'{api_route}{id}/tag/{tag_instance_id}')
     flash(f'{ODPRecordTag.NOTE} tag has been removed.', category='success')
-    return redirect(url_for('.view', id=id))
+    return redirect(url_for('.detail', id=id))
 
 
 @bp.route('/<id>/tag/embargo', methods=('GET', 'POST'))
@@ -316,7 +316,7 @@ def tag_embargo(id):
                 },
             ))
             flash(f'{ODPRecordTag.EMBARGO} tag has been set.', category='success')
-            return redirect(url_for('.view', id=id))
+            return redirect(url_for('.detail', id=id))
 
         except ODPAPIError as e:
             if response := api.handle_error(e):
@@ -337,7 +337,7 @@ def untag_embargo(id, tag_instance_id):
 
     api.delete(f'{api_route}{id}/tag/{tag_instance_id}')
     flash(f'{ODPRecordTag.EMBARGO} tag has been removed.', category='success')
-    return redirect(url_for('.view', id=id))
+    return redirect(url_for('.detail', id=id))
 
 
 @bp.route('/<id>/tag/notsearchable', methods=('POST',))
@@ -392,20 +392,20 @@ def untag_sdg(id, tag_instance_id):
 
 @bp.route('/<id>/catalog/<catalog_id>')
 @api.view(ODPScope.RECORD_READ)
-def view_catalog_record(id, catalog_id):
+def catalog_detail(id, catalog_id):
     catalog_record = api.get(f'/record/{id}/catalog/{catalog_id}')
-    return render_template('catalog_record_view.html', catalog_record=catalog_record)
+    return render_template('record_catalog_detail.html', catalog_record=catalog_record)
 
 
 @bp.route('/<id>/audit/<record_audit_id>')
 @api.view(ODPScope.RECORD_READ)
-def view_audit_detail(id, record_audit_id):
-    audit_detail = api.get(f'/record/{id}/record_audit/{record_audit_id}')
-    return render_template('record_audit_view.html', audit=audit_detail)
+def audit_detail(id, record_audit_id):
+    record_audit = api.get(f'/record/{id}/record_audit/{record_audit_id}')
+    return render_template('record_audit_detail.html', audit=record_audit)
 
 
 @bp.route('/<id>/tag_audit/<record_tag_audit_id>')
 @api.view(ODPScope.RECORD_READ)
-def view_tag_audit_detail(id, record_tag_audit_id):
-    audit_detail = api.get(f'/record/{id}/record_tag_audit/{record_tag_audit_id}')
-    return render_template('record_tag_audit_view.html', audit=audit_detail)
+def tag_audit_detail(id, record_tag_audit_id):
+    record_tag_audit = api.get(f'/record/{id}/record_tag_audit/{record_tag_audit_id}')
+    return render_template('record_tag_audit_detail.html', audit=record_tag_audit)

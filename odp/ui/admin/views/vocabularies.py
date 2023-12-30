@@ -14,17 +14,17 @@ bp = Blueprint('vocabularies', __name__)
 def index():
     page = request.args.get('page', 1)
     vocabularies = api.get(f'/vocabulary/?page={page}')
-    return render_template('vocabulary_list.html', vocabularies=vocabularies)
+    return render_template('vocabulary_index.html', vocabularies=vocabularies)
 
 
 @bp.route('/<id>')
 @api.view(ODPScope.VOCABULARY_READ)
-def view(id):
+def detail(id):
     vocabulary = api.get(f'/vocabulary/{id}')
     audit_records = api.get(f'/vocabulary/{id}/audit')
 
     return render_template(
-        'vocabulary_view.html',
+        'vocabulary_detail.html',
         vocabulary=vocabulary,
         terms=utils.pagify(vocabulary['terms']),
         audit_records=audit_records,
@@ -34,9 +34,9 @@ def view(id):
 
 @bp.route('/<id>/audit/<audit_id>')
 @api.view(ODPScope.VOCABULARY_READ)
-def view_audit_detail(id, audit_id):
-    audit_detail = api.get(f'/vocabulary/{id}/audit/{audit_id}')
-    return render_template('vocabulary_audit_view.html', audit=audit_detail)
+def audit_detail(id, audit_id):
+    term_audit = api.get(f'/vocabulary/{id}/audit/{audit_id}')
+    return render_template('vocabulary_audit_detail.html', audit=term_audit)
 
 
 @bp.route(f'/{ODPVocabulary.INFRASTRUCTURE}/new', methods=('GET', 'POST'))
@@ -89,7 +89,7 @@ def _create_term(vocab_id, form_cls, *data_fields):
                 },
             ))
             flash(f'{vocab_id} {id} has been created.', category='success')
-            return redirect(url_for('.view', id=vocab_id))
+            return redirect(url_for('.detail', id=vocab_id))
 
         except ODPAPIError as e:
             if response := api.handle_error(e):
@@ -117,7 +117,7 @@ def _edit_term(vocab_id, term_id, form_cls, *data_fields):
                 },
             ))
             flash(f'{vocab_id} {term_id} has been updated.', category='success')
-            return redirect(url_for('.view', id=vocab_id))
+            return redirect(url_for('.detail', id=vocab_id))
 
         except ODPAPIError as e:
             if response := api.handle_error(e):
@@ -134,4 +134,4 @@ def _edit_term(vocab_id, term_id, form_cls, *data_fields):
 def _delete_term(vocab_id, term_id):
     api.delete(f'/vocabulary/{vocab_id}/term/{term_id}')
     flash(f'{vocab_id} {term_id} has been deleted.', category='success')
-    return redirect(url_for('.view', id=vocab_id))
+    return redirect(url_for('.detail', id=vocab_id))
