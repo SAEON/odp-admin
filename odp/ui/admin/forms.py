@@ -1,9 +1,9 @@
-from wtforms import BooleanField, RadioField, SelectField, StringField, TextAreaField, ValidationError
+from wtforms import BooleanField, FileField, RadioField, SelectField, StringField, TextAreaField, ValidationError
 from wtforms.validators import data_required, input_required, length, optional, regexp
 
 from odp.const import DOI_REGEX, SID_REGEX
 from odp.const.hydra import GrantType, ResponseType, TokenEndpointAuthMethod
-from odp.ui.base.forms import BaseForm, DateStringField, JSONTextField, MultiCheckboxField, StringListField, json_object
+from odp.ui.base.forms import BaseForm, DateStringField, JSONTextField, MultiCheckboxField, StringListField, file_required, json_object
 
 
 class ClientForm(BaseForm):
@@ -197,6 +197,24 @@ class RecordTagEmbargoForm(BaseForm):
     def validate_end(self, field):
         if self.start.data and field.data and field.data < self.start.data:
             raise ValidationError('The end date cannot be earlier than the start date.')
+
+
+class ResourceUploadForm(BaseForm):
+    provider_id = SelectField(
+        label='Provider',
+        validators=[input_required()],
+    )
+    title = StringField(
+        label='Resource title',
+        validators=[data_required()],
+    )
+    description = StringField(
+        label='Resource description',
+    )
+    file = FileField(
+        label='File upload',
+        validators=[file_required()],
+    )
 
 
 class RoleForm(BaseForm):
