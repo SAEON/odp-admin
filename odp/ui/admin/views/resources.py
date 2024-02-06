@@ -20,11 +20,13 @@ bp = Blueprint('resources', __name__)
 @api.view(ODPScope.RESOURCE_READ)
 def index():
     page = request.args.get('page', 1)
-    resources = api.get('/resource/', page=page)
+    archive_id = request.args.get('archive')
+    resources = api.get('/resource/', page=page, archive_id=archive_id)
 
     return render_template(
         'resource_index.html',
         resources=resources,
+        archive=archive_id,
         buttons=[
             create_btn(enabled=ODPScope.RESOURCE_WRITE in g.user_permissions),
         ],

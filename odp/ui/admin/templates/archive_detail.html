@@ -9,9 +9,13 @@
 {% endblock %}
 
 {% block content %}
-    {% call(prop) render_info(archive, 'URL') %}
+    {% call(prop) render_info(archive, 'URL', 'Resources') %}
         {% if prop == 'URL' %}
             {{ archive.url }}
+        {% elif prop == 'Resources' %}
+            <a href="{{ url_for('resources.index', archive=archive.id) }}" class="text-decoration-none">
+                {{ archive.resource_count }}
+            </a>
         {% endif %}
     {% endcall %}
 {% endblock %}
