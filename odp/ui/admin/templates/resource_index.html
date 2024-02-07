@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from 'content.j2' import render_table, render_buttons, obj_link %}
+{% from 'content.j2' import render_table, render_buttons, obj_link, obj_links %}
 
 {% block web_title %}
     {{ super() }} |
@@ -12,12 +12,13 @@
     {{ render_buttons(buttons) }}
 
     {% call(resource) render_table(resources,
-            'Title', 'File name', 'File size', 'Provider',
+            'Title', 'File name', 'File size', 'Provider', 'Archive',
             archive=archive, hide_id=true
     ) %}
         <th scope="row">{{ obj_link('', resource.id, resource.title) }}</th>
         <td>{{ resource.filename }}</td>
-        <td>{{ resource.size }}</td>
+        <td>{{ resource.size | bytes }}</td>
         <td>{{ obj_link('providers', resource.provider_id, resource.provider_key) }}</td>
+        <td>{{ obj_links('archives', resource.archive_urls.keys()) }}</td>
     {% endcall %}
 {% endblock %}
