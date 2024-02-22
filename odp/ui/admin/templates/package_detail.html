@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% from 'content.j2' import render_info %}
+
+{% block web_title %}
+    {{ super() }} |
+    {% block heading %}
+        Package: {{ package.id }}
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% call(prop) render_info(package, 'Provider') %}
+        {% if prop == 'Provider' %}
+            {{ obj_link('providers', package.provider_id, package.provider_key) }}
+        {% endif %}
+    {% endcall %}
+{% endblock %}

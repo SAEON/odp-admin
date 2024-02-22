@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% from 'content.j2' import render_table %}
+
+{% block web_title %}
+    {{ super() }} |
+    {% block heading %}
+        Archives
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% call(archive) render_table(archives, 'URL', 'Resources') %}
+        <td>{{ archive.url }}</td>
+        <td>
+            <a href="{{ url_for('resources.index', archive=archive.id) }}" class="text-decoration-none">
+                {{ archive.resource_count }}
+            </a>
+        </td>
+    {% endcall %}
+{% endblock %}

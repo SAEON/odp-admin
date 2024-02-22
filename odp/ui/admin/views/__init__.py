@@ -1,17 +1,27 @@
+from importlib import import_module
+
 from flask import Flask
 
 
 def init_app(app: Flask):
-    from . import catalogs, clients, collections, home, providers, records, roles, schemas, tags, users, vocabularies
+    from . import home
 
     app.register_blueprint(home.bp)
-    app.register_blueprint(catalogs.bp, url_prefix='/catalogs')
-    app.register_blueprint(clients.bp, url_prefix='/clients')
-    app.register_blueprint(collections.bp, url_prefix='/collections')
-    app.register_blueprint(providers.bp, url_prefix='/providers')
-    app.register_blueprint(records.bp, url_prefix='/records')
-    app.register_blueprint(roles.bp, url_prefix='/roles')
-    app.register_blueprint(schemas.bp, url_prefix='/schemas')
-    app.register_blueprint(tags.bp, url_prefix='/tags')
-    app.register_blueprint(users.bp, url_prefix='/users')
-    app.register_blueprint(vocabularies.bp, url_prefix='/vocabularies')
+
+    for view in (
+            'archives',
+            'catalogs',
+            'clients',
+            'collections',
+            'packages',
+            'providers',
+            'records',
+            'resources',
+            'roles',
+            'schemas',
+            'tags',
+            'users',
+            'vocabularies'
+    ):
+        mod = import_module(f'odp.ui.admin.views.{view}')
+        app.register_blueprint(mod.bp, url_prefix=f'/{view}')

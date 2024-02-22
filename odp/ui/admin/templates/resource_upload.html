@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% from 'content.j2' import render_form %}
+
+{% block web_title %}
+    {{ super() }} |
+    {% block heading %}
+        Upload Resource
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    {{ render_form(form, file_upload=true) }}
+{% endblock %}

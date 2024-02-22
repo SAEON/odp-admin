@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% from 'content.j2' import render_table %}
+
+{% block web_title %}
+    {{ super() }} |
+    {% block heading %}
+        Packages
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% call(package) render_table(packages, 'Provider') %}
+        <td>{{ obj_link('providers', package.provider_id, package.provider_key) }}</td>
+    {% endcall %}
+{% endblock %}
