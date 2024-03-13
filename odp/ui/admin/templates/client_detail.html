@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from 'content.j2' import render_info, render_buttons, obj_links %}
+{% from 'content.j2' import render_info, render_buttons, obj_link %}
 
 {% block web_title %}
     {{ super() }} |
@@ -9,12 +9,12 @@
 {% endblock %}
 
 {% block content %}
-    {% call(prop) render_info(client, 'Name', 'Collections', 'Scope', 'Grant types', 'Response types', 'Redirect URIs',
+    {% call(prop) render_info(client, 'Name', 'Provider', 'Scope', 'Grant types', 'Response types', 'Redirect URIs',
             'Post-logout redirect URIs', 'Token lifespan (client credentials)', 'Token endpoint auth method', 'Allowed CORS origins') %}
         {% if prop == 'Name' %}
             {{ client.name }}
-        {% elif prop == 'Collections' %}
-            {{ obj_links('collections', client.collection_keys, newlines=True) if client.collection_specific else '(All)' }}
+        {% elif prop == 'Provider' %}
+            {{ obj_link('providers', client.provider_id, client.provider_key) }}
         {% elif prop == 'Scope' %}
             {{ client.scope_ids|sort|join('<br/>')|safe }}
         {% elif prop == 'Grant types' %}

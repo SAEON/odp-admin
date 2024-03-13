@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from 'content.j2' import render_table, render_buttons, obj_links %}
+{% from 'content.j2' import render_table, render_buttons, obj_link %}
 
 {% block web_title %}
     {{ super() }} |
@@ -10,8 +10,8 @@
 
 {% block content %}
     {{ render_buttons(buttons) }}
-    {% call(client) render_table(clients, 'Name', 'Collections') %}
+    {% call(client) render_table(clients, 'Name', 'Provider') %}
         <td>{{ client.name }}</td>
-        <td>{{ obj_links('collections', client.collection_keys) if client.collection_specific else '(All)' }}</td>
+        <td>{{ obj_link('providers', client.provider_id, client.provider_key) }}</td>
     {% endcall %}
 {% endblock %}
