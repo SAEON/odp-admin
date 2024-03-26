@@ -22,7 +22,12 @@ def create_app():
         UPLOAD_ARCHIVE_ID=ODPArchive.ODP_UPLOAD,
     )
 
-    base.init_app(app, user_api=True, template_dir=Path(__file__).parent / 'templates')
+    base.init_app(
+        app,
+        user_api=True,
+        template_dir=Path(__file__).parent / 'templates',
+        macro_dir=Path(__file__).parent / 'macros',
+    )
     views.init_app(app)
 
     return app
