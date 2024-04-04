@@ -75,7 +75,7 @@
     <div class="tab-content">
         <div id="info" class="tab-pane fade show active" role="tabpanel">
             {% call(prop) render_info(record,
-                    'DOI', 'SID', 'Parent record', 'Child records', 'Collection', 'Schema', 'Valid', 'QC', 'SDG', 'Embargo',
+                    'DOI', 'SID', 'Title', 'Parent record', 'Child records', 'Collection', 'Schema', 'Valid', 'QC', 'SDG', 'Embargo',
                     'Published', 'Searchable', 'Retracted', 'Migrated', 'Timestamp') %}
 
                 {% if prop == 'DOI' %}
@@ -83,6 +83,9 @@
 
                 {% elif prop == 'SID' %}
                     {{ record.sid if record.sid }}
+
+                {% elif prop == 'Title' %}
+                    {{ record | metadata_title }}
 
                 {% elif prop == 'Parent record' %}
                     {{ obj_link('records', record.parent_id, record.parent_doi) }}

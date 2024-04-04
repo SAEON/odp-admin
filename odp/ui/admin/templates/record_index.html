@@ -29,13 +29,7 @@
             {{ obj_link('records', record.id, record.doi or record.sid) }}
         </th>
         <td>
-            {% if record.schema_id == 'SAEON.DataCite4' %}
-                {% if 'titles' in record.metadata %}
-                    {{ record.metadata.titles[0].title }}
-                {% endif %}
-            {% elif record.schema_id == 'SAEON.ISO19115' %}
-                {{ record.metadata.title }}
-            {% endif %}
+            {{ record | metadata_title }}
         </td>
         <td>
             {{ obj_link('collections', record.collection_id, record.collection_key) }}
