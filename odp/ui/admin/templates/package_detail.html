@@ -1,5 +1,5 @@
 {% extends 'admin_base.html' %}
-{% from 'content.j2' import render_info %}
+{% from 'content.j2' import render_info, obj_link %}
 
 {% block web_title %}
     {{ super() }} |
@@ -9,9 +9,43 @@
 {% endblock %}
 
 {% block content %}
-    {% call(prop) render_info(package, 'Provider') %}
-        {% if prop == 'Provider' %}
-            {{ obj_link('providers', package.provider_id, package.provider_key) }}
-        {% endif %}
-    {% endcall %}
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">
+                Info
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#resources" type="button" role="tab">
+                Resources
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="info" class="tab-pane fade show active" role="tabpanel">
+            {% call(prop) render_info(package,
+                    'Provider', 'Title', 'Resources', 'Record') %}
+
+                {% if prop == 'Provider' %}
+                    {{ obj_link('providers', package.provider_id, package.provider_key) }}
+
+                {% elif prop == 'Title' %}
+                    {{ package | metadata_title }}
+
+                {% elif prop == 'Resources' %}
+                    <a href="{{ url_for('resources.index', package=package.id) }}" class="text-decoration-none">
+                        {{ package.resource_count }}
+                    </a>
+
+                {% elif prop == 'Record' %}
+                    {{ package.record_doi or package.record_sid }}
+
+                {% endif %}
+            {% endcall %}
+        </div>
+
+        <div id="resources" class="tab-pane fade" role="tabpanel">
+        </div>
+    </div>
 {% endblock %}

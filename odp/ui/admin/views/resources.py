@@ -21,7 +21,8 @@ bp = Blueprint('resources', __name__)
 def index():
     page = request.args.get('page', 1)
     archive_id = request.args.get('archive')
-    resources = api.get('/resource/', page=page, archive_id=archive_id)
+    package_id = request.args.get('package')
+    resources = api.get('/resource/', page=page, archive_id=archive_id, package_id=package_id)
 
     return render_template(
         'resource_index.html',

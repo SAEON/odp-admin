@@ -3,7 +3,7 @@
 {% from 'page.j2' import nav_logo, nav_title, nav_menu, nav_dropdown, footer %}
 
 {% block web_title %}
-    ODP Admin
+    ODP
 {% endblock %}
 
 {% block header %}
@@ -12,33 +12,43 @@
             <div class="navbar-nav justify-content-start flex-grow-evenly">
                 {{ nav_logo() }}
             </div>
+
             <div class="d-flex flex-column navbar-nav justify-content-center align-items-center">
                 {{ nav_title() }}
+
                 {% if current_user.is_authenticated %}
                     <div class="d-flex flex-row">
-                        {{ nav_dropdown('Metadata Management', request.blueprint, dark=true,
-                            records='Records',
+                        {{ nav_dropdown('Archival', request.blueprint, dark=true,
+                            packages='Packages',
+                            resources='Resources'
+                        ) }}
+
+                        {{ nav_dropdown('Publication', request.blueprint, dark=true,
                             collections='Collections',
+                            records='Records'
+                        ) }}
+
+                        {{ nav_dropdown('Access', request.blueprint, dark=true,
                             providers='Providers',
-                            _='',
-                            catalogs='Catalogues',
+                            users='Users',
+                            roles='Roles',
+                            clients='Clients'
+                        ) }}
+
+                        {{ nav_dropdown('Extension', request.blueprint, dark=true,
                             schemas='Schemas',
                             tags='Tags',
                             vocabularies='Vocabularies'
                         ) }}
-                        {{ nav_dropdown('Data Storage', request.blueprint, dark=true,
+
+                        {{ nav_dropdown('Integration', request.blueprint, dark=true,
                             archives='Archives',
-                            packages='Packages',
-                            resources='Resources'
-                        ) }}
-                        {{ nav_dropdown('Access Control', request.blueprint, dark=true,
-                            clients='Clients',
-                            roles='Roles',
-                            users='Users'
+                            catalogs='Catalogues'
                         ) }}
                     </div>
                 {% endif %}
             </div>
+
             <div class="navbar-nav justify-content-end flex-grow-evenly">
                 {{ nav_menu(current_user) }}
             </div>
@@ -58,4 +68,5 @@
 {% block scripts %}
     {{ super() }}
     {{ jquery_js() }}
+    <script src="{{ url_for('static', filename='scripts/controls.js') }}"></script>
 {% endblock %}

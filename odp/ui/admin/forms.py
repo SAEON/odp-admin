@@ -107,6 +107,30 @@ class CollectionTagProjectForm(BaseForm):
     )
 
 
+class PackageForm(BaseForm):
+    provider_id = SelectField(
+        label='Provider',
+        validators=[input_required()],
+    )
+    resource_ids = MultiCheckboxField(
+        label='Resources',
+        dynamic_choices=True,
+    )
+    schema_id = SelectField(
+        label='Schema',
+        validators=[input_required()],
+    )
+    metadata = JSONTextField(
+        label='Metadata',
+        validators=[input_required(), json_object],
+        render_kw={'rows': 18},
+    )
+    notes = TextAreaField(
+        label='Notes',
+        render_kw={'rows': 5},
+    )
+
+
 class ProviderForm(BaseForm):
     id = StringField(
         label='Provider id',
@@ -214,6 +238,17 @@ class ResourceUploadForm(BaseForm):
     file = FileField(
         label='File upload',
         validators=[file_required()],
+    )
+
+
+class ResourceSearchForm(BaseForm):
+    # disambiguate from the package's provider_id which might be on the same page
+    resource_provider_id = SelectField(
+        label='Provider',
+        validators=[input_required()],
+    )
+    include_packaged = BooleanField(
+        label='Show already-packaged resources',
     )
 
 
