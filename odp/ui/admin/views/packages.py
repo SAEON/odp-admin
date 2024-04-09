@@ -7,7 +7,7 @@ from odp.lib.client import ODPAPIError
 from odp.ui.admin.forms import PackageForm, ResourceSearchForm
 from odp.ui.admin.views import utils
 from odp.ui.base import api
-from odp.ui.base.templates import create_btn, edit_btn
+from odp.ui.base.templates import create_btn, delete_btn, edit_btn
 
 bp = Blueprint('packages', __name__)
 
@@ -38,6 +38,7 @@ def detail(id):
         resources=resources,
         buttons=[
             edit_btn(object_id=id, enabled=ODPScope.PACKAGE_WRITE in g.user_permissions),
+            delete_btn(object_id=id, enabled=ODPScope.PACKAGE_WRITE in g.user_permissions, prompt_args=(id,)),
         ]
     )
 
@@ -122,6 +123,14 @@ def edit(id):
         form=form,
         resource_search_form=resource_search_form,
     )
+
+
+@bp.route('/<id>/delete', methods=('POST',))
+@api.view(ODPScope.PACKAGE_WRITE)
+def delete(id):
+    api.delete(f'/package/{id}')
+    flash(f'Package {id} has been deleted.', category='success')
+    return redirect(url_for('.index'))
 
 
 @bp.route('/fetch-resources/<provider_id>')
