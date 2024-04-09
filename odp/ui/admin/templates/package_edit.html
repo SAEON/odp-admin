@@ -14,7 +14,7 @@
 {% endblock %}
 
 {% block content %}
-    {{ resources_button(package, resource_search_form) }}
+    {{ resources_button(resource_search_form) }}
     {{ render_form(form, package, ['schema_id', 'metadata']) }}
 {% endblock %}
 
@@ -25,10 +25,15 @@
             $('input[id^="check-"]').prop('checked', false);
             $('#check-all').prop('indeterminate', false);
             $('#no-results').addClass('visually-hidden');
+
+            const providerId = $('#provider_id').val();
+            if (providerId) {
+                $('#resource_provider_id').val(providerId);
+            }
         });
 
         function fetchResources() {
-            /* Fetch resource records from the server and populate the modal. */
+            /* Fetch resource records from the app server and populate the modal. */
             const providerId = $('#resource_provider_id').val();
             const includePackaged = $('#include_packaged').is(':checked');
             const url = `${rootPath}/packages/fetch-resources/${providerId}?${includePackaged ? 'include_packaged=1' : ''}`;

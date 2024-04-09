@@ -12,14 +12,18 @@
     {{ render_buttons(buttons) }}
 
     {% call(package) render_table(packages,
-            'Title', 'Resources', 'Record', 'Provider'
+            'Identifier', 'Title', 'Resources', 'Record', 'Provider',
+            hide_id=true
     ) %}
+        <th scope="row">
+            {{ obj_link('packages', package.id, package.record_doi or package.record_sid or package.id) }}
+        </th>
         <td>
             {{ package | metadata_title }}
         </td>
         <td>
             <a href="{{ url_for('resources.index', package=package.id) }}" class="text-decoration-none">
-                {{ package.resource_count }}
+                {{ package.resource_ids | length }}
             </a>
         </td>
         <td>

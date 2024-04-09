@@ -19,31 +19,28 @@
                 {% if current_user.is_authenticated %}
                     <div class="d-flex flex-row">
                         {{ nav_dropdown('Archival', request.blueprint, dark=true,
+                            providers='Providers',
                             packages='Packages',
-                            resources='Resources'
+                            resources='Resources',
+                            archives='Archives'
                         ) }}
 
                         {{ nav_dropdown('Publication', request.blueprint, dark=true,
+                            records='Records',
                             collections='Collections',
-                            records='Records'
+                            catalogs='Catalogues'
                         ) }}
 
                         {{ nav_dropdown('Access', request.blueprint, dark=true,
-                            providers='Providers',
                             users='Users',
                             roles='Roles',
                             clients='Clients'
                         ) }}
 
-                        {{ nav_dropdown('Extension', request.blueprint, dark=true,
+                        {{ nav_dropdown('Configuration', request.blueprint, dark=true,
                             schemas='Schemas',
                             tags='Tags',
                             vocabularies='Vocabularies'
-                        ) }}
-
-                        {{ nav_dropdown('Integration', request.blueprint, dark=true,
-                            archives='Archives',
-                            catalogs='Catalogues'
                         ) }}
                     </div>
                 {% endif %}

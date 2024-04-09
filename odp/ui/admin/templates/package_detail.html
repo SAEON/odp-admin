@@ -1,5 +1,5 @@
 {% extends 'admin_base.html' %}
-{% from 'content.j2' import render_info, obj_link %}
+{% from 'content.j2' import render_info, render_buttons, render_table, obj_link, obj_links %}
 
 {% block web_title %}
     {{ super() }} |
@@ -20,32 +20,78 @@
                 Resources
             </button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#metadata" type="button" role="tab">
+                Metadata
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#validity" type="button" role="tab">
+                Validity
+            </button>
+        </li>
     </ul>
 
     <div class="tab-content">
         <div id="info" class="tab-pane fade show active" role="tabpanel">
             {% call(prop) render_info(package,
-                    'Provider', 'Title', 'Resources', 'Record') %}
+                    'Title', 'Provider', 'Resources', 'Schema', 'Valid', 'Record', 'Notes', 'Timestamp') %}
 
-                {% if prop == 'Provider' %}
-                    {{ obj_link('providers', package.provider_id, package.provider_key) }}
-
-                {% elif prop == 'Title' %}
+                {% if prop == 'Title' %}
                     {{ package | metadata_title }}
+
+                {% elif prop == 'Provider' %}
+                    {{ obj_link('providers', package.provider_id, package.provider_key) }}
 
                 {% elif prop == 'Resources' %}
                     <a href="{{ url_for('resources.index', package=package.id) }}" class="text-decoration-none">
-                        {{ package.resource_count }}
+                        {{ package.resource_ids | length }}
                     </a>
+
+                {% elif prop == 'Schema' %}
+                    {{ obj_link('schemas', package.schema_id) }}
+
+                {% elif prop == 'Valid' %}
+                    {{ '&#9989;' | safe if package.validity.valid else '&#10060;' | safe }}
 
                 {% elif prop == 'Record' %}
                     {{ package.record_doi or package.record_sid }}
 
+                {% elif prop == 'Notes' %}
+                    <div class="pre-wrap">{{ package.notes }}</div>
+
+                {% elif prop == 'Timestamp' %}
+                    {{ package.timestamp | timestamp }}
+
                 {% endif %}
             {% endcall %}
+
+            {{ render_buttons(buttons) }}
         </div>
 
         <div id="resources" class="tab-pane fade" role="tabpanel">
+            {% call(resource) render_table(resources,
+                    'Title', 'File name', 'File size', 'Provider', 'Archive',
+                    archive=archive, hide_id=true
+            ) %}
+                <th scope="row">{{ obj_link('resources', resource.id, resource.title) }}</th>
+                <td>{{ resource.filename }}</td>
+                <td>{{ resource.size | bytes }}</td>
+                <td>{{ obj_link('providers', resource.provider_id, resource.provider_key) }}</td>
+                <td>{{ obj_links('archives', resource.archive_urls.keys()) }}</td>
+            {% endcall %}
+        </div>
+
+        <div id="metadata" class="tab-pane fade" role="tabpanel">
+            <pre class="m-3">
+                {{- package.metadata | format_json -}}
+            </pre>
+        </div>
+
+        <div id="validity" class="tab-pane fade" role="tabpanel">
+            <pre class="m-3">
+                {{- package.validity | format_json -}}
+            </pre>
         </div>
     </div>
 {% endblock %}
