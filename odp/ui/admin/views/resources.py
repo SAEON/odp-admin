@@ -85,7 +85,7 @@ def create():
                     md5=md5,
                     provider_id=form.provider_id.data,
                     archive_id=upload_archive_id,
-                    archive_path=f'/{folder / archive_filename}',
+                    archive_path=f'{folder / archive_filename}',
                 ))
 
                 flash(f'Resource {title} has been created.', category='success')
