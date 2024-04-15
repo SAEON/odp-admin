@@ -1,6 +1,6 @@
 import json
 
-from flask import Blueprint, abort, flash, g, redirect, render_template, request, url_for
+from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
 
 from odp.const import ODPScope
 from odp.lib.client import ODPAPIError
@@ -21,7 +21,7 @@ def index():
         'package_index.html',
         packages=packages,
         buttons=[
-            create_btn(enabled=ODPScope.PACKAGE_WRITE in g.user_permissions),
+            create_btn(scope=ODPScope.PACKAGE_WRITE),
         ]
     )
 
@@ -37,8 +37,8 @@ def detail(id):
         package=package,
         resources=resources,
         buttons=[
-            edit_btn(object_id=id, enabled=ODPScope.PACKAGE_WRITE in g.user_permissions),
-            delete_btn(object_id=id, enabled=ODPScope.PACKAGE_WRITE in g.user_permissions, prompt_args=(id,)),
+            edit_btn(object_id=id, scope=ODPScope.PACKAGE_WRITE),
+            delete_btn(object_id=id, scope=ODPScope.PACKAGE_WRITE, prompt_args=(id,)),
         ]
     )
 

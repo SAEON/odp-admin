@@ -19,7 +19,7 @@ def index():
         'collection_index.html',
         collections=collections,
         buttons=[
-            create_btn(enabled=ODPScope.COLLECTION_ADMIN in g.user_permissions),
+            create_btn(scope=ODPScope.COLLECTION_ADMIN),
         ]
     )
 
@@ -36,7 +36,7 @@ def detail(id):
         theme=ButtonTheme.success,
         prompt='Are you sure you want to publish the collection?',
         object_id=id,
-        enabled=ODPScope.COLLECTION_PUBLISH in g.user_permissions,
+        scope=ODPScope.COLLECTION_PUBLISH,
     )
     if published_tag := utils.get_tag_instance(collection, ODPCollectionTag.PUBLISHED):
         publish_btn.label = 'Un-publish'
@@ -50,7 +50,7 @@ def detail(id):
         theme=ButtonTheme.warning,
         prompt='Are you sure you want to freeze the collection?',
         object_id=id,
-        enabled=ODPScope.COLLECTION_FREEZE in g.user_permissions,
+        scope=ODPScope.COLLECTION_FREEZE,
     )
     if frozen_tag := utils.get_tag_instance(collection, ODPCollectionTag.FROZEN):
         freeze_btn.label = 'Un-freeze'
@@ -64,7 +64,7 @@ def detail(id):
         theme=ButtonTheme.warning,
         prompt='Are you sure you want to tag the collection as not searchable?',
         object_id=id,
-        enabled=ODPScope.COLLECTION_NOSEARCH in g.user_permissions,
+        scope=ODPScope.COLLECTION_NOSEARCH,
     )
     if notsearchable_tag := utils.get_tag_instance(collection, ODPCollectionTag.NOTSEARCHABLE):
         nosearch_btn.label = 'Searchable'
@@ -85,11 +85,11 @@ def detail(id):
         project_tag_enabled=ODPScope.COLLECTION_PROJECT in g.user_permissions,
         audit_records=audit_records,
         buttons=[
-            edit_btn(object_id=id, enabled=ODPScope.COLLECTION_ADMIN in g.user_permissions),
+            edit_btn(object_id=id, scope=ODPScope.COLLECTION_ADMIN),
             publish_btn,
             freeze_btn,
             nosearch_btn,
-            delete_btn(object_id=id, enabled=ODPScope.COLLECTION_ADMIN in g.user_permissions, prompt_args=(id,)),
+            delete_btn(object_id=id, scope=ODPScope.COLLECTION_ADMIN, prompt_args=(id,)),
         ],
     )
 

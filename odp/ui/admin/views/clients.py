@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, g, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 from wtforms.validators import input_required
 
 from odp.const import ODPScope
@@ -20,7 +20,7 @@ def index():
         'client_index.html',
         clients=clients,
         buttons=[
-            create_btn(enabled=ODPScope.CLIENT_ADMIN in g.user_permissions),
+            create_btn(scope=ODPScope.CLIENT_ADMIN),
         ]
     )
 
@@ -33,8 +33,8 @@ def detail(id):
         'client_detail.html',
         client=client,
         buttons=[
-            edit_btn(object_id=id, enabled=ODPScope.CLIENT_ADMIN in g.user_permissions),
-            delete_btn(object_id=id, enabled=ODPScope.CLIENT_ADMIN in g.user_permissions, prompt_args=(id,)),
+            edit_btn(object_id=id, scope=ODPScope.CLIENT_ADMIN),
+            delete_btn(object_id=id, scope=ODPScope.CLIENT_ADMIN, prompt_args=(id,)),
         ]
     )
 

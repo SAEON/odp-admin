@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, g, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from odp.const import ODPScope
 from odp.lib.client import ODPAPIError
@@ -18,7 +18,7 @@ def index():
         'provider_index.html',
         providers=providers,
         buttons=[
-            create_btn(enabled=ODPScope.PROVIDER_ADMIN in g.user_permissions),
+            create_btn(scope=ODPScope.PROVIDER_ADMIN),
         ]
     )
 
@@ -33,8 +33,8 @@ def detail(id):
         provider=provider,
         audit_records=audit_records,
         buttons=[
-            edit_btn(object_id=id, enabled=ODPScope.PROVIDER_ADMIN in g.user_permissions),
-            delete_btn(object_id=id, enabled=ODPScope.PROVIDER_ADMIN in g.user_permissions, prompt_args=(id,)),
+            edit_btn(object_id=id, scope=ODPScope.PROVIDER_ADMIN),
+            delete_btn(object_id=id, scope=ODPScope.PROVIDER_ADMIN, prompt_args=(id,)),
         ]
     )
 

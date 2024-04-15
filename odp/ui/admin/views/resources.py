@@ -3,7 +3,7 @@ from datetime import date
 from pathlib import Path
 from urllib.parse import urlparse
 
-from flask import Blueprint, current_app, flash, g, redirect, render_template, request, url_for
+from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
 from werkzeug.utils import secure_filename
 
 from odp.const import ODPScope
@@ -29,7 +29,7 @@ def index():
         resources=resources,
         archive=archive_id,
         buttons=[
-            create_btn(enabled=ODPScope.RESOURCE_WRITE in g.user_permissions),
+            create_btn(scope=ODPScope.RESOURCE_WRITE),
         ],
     )
 

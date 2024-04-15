@@ -48,7 +48,7 @@ def index():
         filter_=ui_filter,
         filter_form=filter_form,
         buttons=[
-            create_btn(enabled=ODPScope.RECORD_WRITE in g.user_permissions),
+            create_btn(scope=ODPScope.RECORD_WRITE),
         ],
         catalog_urls={
             catalog['id']: catalog['url'] for catalog in catalogs['items']
@@ -75,7 +75,7 @@ def detail(id):
         theme=ButtonTheme.warning,
         prompt='Are you sure you want to tag the record as not searchable?',
         object_id=id,
-        enabled=ODPScope.RECORD_NOSEARCH in g.user_permissions,
+        scope=ODPScope.RECORD_NOSEARCH,
     )
     if notsearchable_tag := utils.get_tag_instance(record, ODPRecordTag.NOTSEARCHABLE):
         nosearch_btn.label = 'Searchable'
@@ -89,7 +89,7 @@ def detail(id):
         theme=ButtonTheme.danger,
         prompt='Are you sure you want to retract the record from public catalogs?',
         object_id=id,
-        enabled=ODPScope.RECORD_RETRACT in g.user_permissions,
+        scope=ODPScope.RECORD_RETRACT,
     )
     if retracted_tag := utils.get_tag_instance(record, ODPRecordTag.RETRACTED):
         retract_btn.label = 'Un-retract'
@@ -116,12 +116,12 @@ def detail(id):
         catalog_records=catalog_records,
         audit_records=audit_records,
         buttons=[
-            edit_btn(object_id=id, enabled=ODPScope.RECORD_WRITE in g.user_permissions),
+            edit_btn(object_id=id, scope=ODPScope.RECORD_WRITE),
             nosearch_btn,
             retract_btn,
-            delete_btn(object_id=id, enabled=ODPScope.RECORD_WRITE in g.user_permissions, prompt_args=(record['doi'] or record['sid'],)),
+            delete_btn(object_id=id, scope=ODPScope.RECORD_WRITE, prompt_args=(record['doi'] or record['sid'],)),
         ],
-        create_btn=create_btn(enabled=ODPScope.RECORD_WRITE in g.user_permissions),
+        create_btn=create_btn(scope=ODPScope.RECORD_WRITE),
         filter_form=RecordFilterForm(),
         catalog_urls={
             catalog['id']: catalog['url'] for catalog in catalogs['items']

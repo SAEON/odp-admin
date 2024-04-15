@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, g, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from odp.const import ODPScope
 from odp.lib.client import ODPAPIError
@@ -26,8 +26,8 @@ def detail(id):
         'user_detail.html',
         user=user,
         buttons=[
-            edit_btn(object_id=id, enabled=ODPScope.USER_ADMIN in g.user_permissions),
-            delete_btn(object_id=id, enabled=ODPScope.USER_ADMIN in g.user_permissions, prompt_args=(user['name'],)),
+            edit_btn(object_id=id, scope=ODPScope.USER_ADMIN),
+            delete_btn(object_id=id, scope=ODPScope.USER_ADMIN, prompt_args=(user['name'],)),
         ]
     )
 
