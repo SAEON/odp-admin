@@ -124,7 +124,7 @@ class PackageForm(BaseForm):
     )
     metadata = JSONTextField(
         label='Metadata',
-        validators=[input_required(), json_object],
+        validators=[input_required(), json_object()],
         render_kw={'rows': 18},
     )
     notes = TextAreaField(
@@ -172,7 +172,7 @@ class RecordForm(BaseForm):
     )
     metadata = JSONTextField(
         label='Metadata',
-        validators=[input_required(), json_object],
+        validators=[input_required(), json_object()],
         render_kw={'rows': 24},
     )
 
