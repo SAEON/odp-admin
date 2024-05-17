@@ -9,8 +9,8 @@ from werkzeug.utils import secure_filename
 from odp.const import ODPScope
 from odp.lib.client import ODPAPIError
 from odp.ui.admin.forms import ResourceUploadForm
-from odp.ui.admin.views import utils
 from odp.ui.base import api
+from odp.ui.base.lib import utils
 from odp.ui.base.templates import create_btn
 
 bp = Blueprint('resources', __name__)

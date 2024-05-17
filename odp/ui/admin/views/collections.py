@@ -3,8 +3,8 @@ from flask import Blueprint, flash, g, redirect, render_template, request, url_f
 from odp.const import ODPCollectionTag, ODPScope, ODPVocabulary
 from odp.lib.client import ODPAPIError
 from odp.ui.admin.forms import CollectionForm, CollectionTagInfrastructureForm, CollectionTagProjectForm
-from odp.ui.admin.views import utils
 from odp.ui.base import api
+from odp.ui.base.lib import tags, utils
 from odp.ui.base.templates import Button, ButtonTheme, create_btn, delete_btn, edit_btn
 
 bp = Blueprint('collections', __name__)
@@ -38,7 +38,7 @@ def detail(id):
         object_id=id,
         scope=ODPScope.COLLECTION_PUBLISH,
     )
-    if published_tag := utils.get_tag_instance(collection, ODPCollectionTag.PUBLISHED):
+    if published_tag := tags.get_tag_instance(collection, ODPCollectionTag.PUBLISHED):
         publish_btn.label = 'Un-publish'
         publish_btn.endpoint = '.untag_published'
         publish_btn.theme = ButtonTheme.warning
@@ -52,7 +52,7 @@ def detail(id):
         object_id=id,
         scope=ODPScope.COLLECTION_FREEZE,
     )
-    if frozen_tag := utils.get_tag_instance(collection, ODPCollectionTag.FROZEN):
+    if frozen_tag := tags.get_tag_instance(collection, ODPCollectionTag.FROZEN):
         freeze_btn.label = 'Un-freeze'
         freeze_btn.endpoint = '.untag_frozen'
         freeze_btn.theme = ButtonTheme.success
@@ -66,7 +66,7 @@ def detail(id):
         object_id=id,
         scope=ODPScope.COLLECTION_NOSEARCH,
     )
-    if notsearchable_tag := utils.get_tag_instance(collection, ODPCollectionTag.NOTSEARCHABLE):
+    if notsearchable_tag := tags.get_tag_instance(collection, ODPCollectionTag.NOTSEARCHABLE):
         nosearch_btn.label = 'Searchable'
         nosearch_btn.endpoint = '.untag_notsearchable'
         nosearch_btn.theme = ButtonTheme.success
@@ -78,10 +78,10 @@ def detail(id):
         published_tag=published_tag,
         frozen_tag=frozen_tag,
         notsearchable_tag=notsearchable_tag,
-        harvested_tag=utils.get_tag_instance(collection, ODPCollectionTag.HARVESTED),
-        infrastructure_tags=utils.get_tag_instances(collection, ODPCollectionTag.INFRASTRUCTURE),
+        harvested_tag=tags.get_tag_instance(collection, ODPCollectionTag.HARVESTED),
+        infrastructure_tags=tags.get_tag_instances(collection, ODPCollectionTag.INFRASTRUCTURE),
         infrastructure_tag_enabled=ODPScope.COLLECTION_INFRASTRUCTURE in g.user_permissions,
-        project_tags=utils.get_tag_instances(collection, ODPCollectionTag.PROJECT),
+        project_tags=tags.get_tag_instances(collection, ODPCollectionTag.PROJECT),
         project_tag_enabled=ODPScope.COLLECTION_PROJECT in g.user_permissions,
         audit_records=audit_records,
         buttons=[
@@ -155,7 +155,7 @@ def delete(id):
 @bp.route('/<id>/tag/published', methods=('POST',))
 @api.view(ODPScope.COLLECTION_PUBLISH)
 def tag_published(id):
-    return utils.tag_singleton(
+    return tags.tag_singleton(
         'collection', id, ODPCollectionTag.PUBLISHED
     )
 
@@ -163,7 +163,7 @@ def tag_published(id):
 @bp.route('/<id>/untag/published', methods=('POST',))
 @api.view(ODPScope.COLLECTION_PUBLISH)
 def untag_published(id):
-    return utils.untag_singleton(
+    return tags.untag_singleton(
         'collection', id, ODPCollectionTag.PUBLISHED
     )
 
@@ -171,7 +171,7 @@ def untag_published(id):
 @bp.route('/<id>/tag/frozen', methods=('POST',))
 @api.view(ODPScope.COLLECTION_FREEZE)
 def tag_frozen(id):
-    return utils.tag_singleton(
+    return tags.tag_singleton(
         'collection', id, ODPCollectionTag.FROZEN
     )
 
@@ -179,7 +179,7 @@ def tag_frozen(id):
 @bp.route('/<id>/untag/frozen', methods=('POST',))
 @api.view(ODPScope.COLLECTION_FREEZE)
 def untag_frozen(id):
-    return utils.untag_singleton(
+    return tags.untag_singleton(
         'collection', id, ODPCollectionTag.FROZEN
     )
 
@@ -187,7 +187,7 @@ def untag_frozen(id):
 @bp.route('/<id>/tag/notsearchable', methods=('POST',))
 @api.view(ODPScope.COLLECTION_NOSEARCH)
 def tag_notsearchable(id):
-    return utils.tag_singleton(
+    return tags.tag_singleton(
         'collection', id, ODPCollectionTag.NOTSEARCHABLE
     )
 
@@ -195,7 +195,7 @@ def tag_notsearchable(id):
 @bp.route('/<id>/untag/notsearchable', methods=('POST',))
 @api.view(ODPScope.COLLECTION_NOSEARCH)
 def untag_notsearchable(id):
-    return utils.untag_singleton(
+    return tags.untag_singleton(
         'collection', id, ODPCollectionTag.NOTSEARCHABLE
     )
 
@@ -203,7 +203,7 @@ def untag_notsearchable(id):
 @bp.route('/<id>/tag/project', methods=('GET', 'POST',))
 @api.view(ODPScope.COLLECTION_PROJECT)
 def tag_project(id):
-    return utils.tag_keyword_deprecated(
+    return tags.tag_keyword_deprecated(
         'collection', id, ODPCollectionTag.PROJECT, ODPVocabulary.PROJECT, CollectionTagProjectForm,
         tag_endpoint='.tag_project'
     )
@@ -212,7 +212,7 @@ def tag_project(id):
 @bp.route('/<id>/untag/project/<tag_instance_id>', methods=('POST',))
 @api.view(ODPScope.COLLECTION_PROJECT)
 def untag_project(id, tag_instance_id):
-    return utils.untag_keyword(
+    return tags.untag_keyword(
         'collection', id, ODPCollectionTag.PROJECT, tag_instance_id
     )
 
@@ -220,7 +220,7 @@ def untag_project(id, tag_instance_id):
 @bp.route('/<id>/tag/infrastructure', methods=('GET', 'POST',))
 @api.view(ODPScope.COLLECTION_INFRASTRUCTURE)
 def tag_infrastructure(id):
-    return utils.tag_keyword_deprecated(
+    return tags.tag_keyword_deprecated(
         'collection', id, ODPCollectionTag.INFRASTRUCTURE, ODPVocabulary.INFRASTRUCTURE, CollectionTagInfrastructureForm,
         tag_endpoint='.tag_infrastructure'
     )
@@ -229,7 +229,7 @@ def tag_infrastructure(id):
 @bp.route('/<id>/untag/infrastructure/<tag_instance_id>', methods=('POST',))
 @api.view(ODPScope.COLLECTION_INFRASTRUCTURE)
 def untag_infrastructure(id, tag_instance_id):
-    return utils.untag_keyword(
+    return tags.untag_keyword(
         'collection', id, ODPCollectionTag.INFRASTRUCTURE, tag_instance_id
     )
 

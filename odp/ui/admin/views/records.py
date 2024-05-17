@@ -5,8 +5,8 @@ from flask import Blueprint, flash, g, redirect, render_template, request, url_f
 from odp.const import ODPCollectionTag, ODPRecordTag, ODPScope, ODPVocabulary
 from odp.lib.client import ODPAPIError
 from odp.ui.admin.forms import RecordFilterForm, RecordForm, RecordTagEmbargoForm, RecordTagNoteForm, RecordTagQCForm
-from odp.ui.admin.views import utils
 from odp.ui.base import api
+from odp.ui.base.lib import tags, utils
 from odp.ui.base.templates import Button, ButtonTheme, create_btn, delete_btn, edit_btn
 
 bp = Blueprint('records', __name__)
@@ -77,7 +77,7 @@ def detail(id):
         object_id=id,
         scope=ODPScope.RECORD_NOSEARCH,
     )
-    if notsearchable_tag := utils.get_tag_instance(record, ODPRecordTag.NOTSEARCHABLE):
+    if notsearchable_tag := tags.get_tag_instance(record, ODPRecordTag.NOTSEARCHABLE):
         nosearch_btn.label = 'Searchable'
         nosearch_btn.endpoint = '.untag_notsearchable'
         nosearch_btn.theme = ButtonTheme.success
@@ -91,7 +91,7 @@ def detail(id):
         object_id=id,
         scope=ODPScope.RECORD_RETRACT,
     )
-    if retracted_tag := utils.get_tag_instance(record, ODPRecordTag.RETRACTED):
+    if retracted_tag := tags.get_tag_instance(record, ODPRecordTag.RETRACTED):
         retract_btn.label = 'Un-retract'
         retract_btn.endpoint = '.untag_retracted'
         retract_btn.theme = ButtonTheme.success
@@ -100,17 +100,17 @@ def detail(id):
     return render_template(
         'record_detail.html',
         record=record,
-        migrated_tag=utils.get_tag_instance(record, ODPRecordTag.MIGRATED),
+        migrated_tag=tags.get_tag_instance(record, ODPRecordTag.MIGRATED),
         notsearchable_tag=notsearchable_tag,
-        collection_notsearchable_tag=utils.get_tag_instance(record, ODPCollectionTag.NOTSEARCHABLE),
+        collection_notsearchable_tag=tags.get_tag_instance(record, ODPCollectionTag.NOTSEARCHABLE),
         retracted_tag=retracted_tag,
-        qc_tags=utils.get_tag_instances(record, ODPRecordTag.QC),
+        qc_tags=tags.get_tag_instances(record, ODPRecordTag.QC),
         qc_tag_enabled=ODPScope.RECORD_QC in g.user_permissions,
-        embargo_tags=utils.get_tag_instances(record, ODPRecordTag.EMBARGO),
+        embargo_tags=tags.get_tag_instances(record, ODPRecordTag.EMBARGO),
         embargo_tag_enabled=ODPScope.RECORD_EMBARGO in g.user_permissions,
-        note_tags=utils.get_tag_instances(record, ODPRecordTag.NOTE),
+        note_tags=tags.get_tag_instances(record, ODPRecordTag.NOTE),
         note_tag_enabled=ODPScope.RECORD_NOTE in g.user_permissions,
-        sdg_tags=utils.get_tag_instances(record, ODPRecordTag.SDG),
+        sdg_tags=tags.get_tag_instances(record, ODPRecordTag.SDG),
         sdg_tag_enabled=ODPScope.RECORD_SDG in g.user_permissions,
         sdg_vocab=sdg_vocab,
         catalog_records=catalog_records,
@@ -213,7 +213,7 @@ def tag_qc(id):
     if request.method == 'POST':
         form = RecordTagQCForm(request.form)
     else:
-        record_tag = utils.get_tag_instance(record, ODPRecordTag.QC, user=True)
+        record_tag = tags.get_tag_instance(record, ODPRecordTag.QC, user=True)
         form = RecordTagQCForm(data=record_tag['data'] if record_tag else None)
 
     if request.method == 'POST' and form.validate():
@@ -258,7 +258,7 @@ def tag_note(id):
     if request.method == 'POST':
         form = RecordTagNoteForm(request.form)
     else:
-        record_tag = utils.get_tag_instance(record, ODPRecordTag.NOTE, user=True)
+        record_tag = tags.get_tag_instance(record, ODPRecordTag.NOTE, user=True)
         form = RecordTagNoteForm(data=record_tag['data'] if record_tag else None)
 
     if request.method == 'POST' and form.validate():
@@ -343,7 +343,7 @@ def untag_embargo(id, tag_instance_id):
 @bp.route('/<id>/tag/notsearchable', methods=('POST',))
 @api.view(ODPScope.RECORD_NOSEARCH)
 def tag_notsearchable(id):
-    return utils.tag_singleton(
+    return tags.tag_singleton(
         'record', id, ODPRecordTag.NOTSEARCHABLE
     )
 
@@ -351,7 +351,7 @@ def tag_notsearchable(id):
 @bp.route('/<id>/untag/notsearchable', methods=('POST',))
 @api.view(ODPScope.RECORD_NOSEARCH)
 def untag_notsearchable(id):
-    return utils.untag_singleton(
+    return tags.untag_singleton(
         'record', id, ODPRecordTag.NOTSEARCHABLE
     )
 
@@ -359,7 +359,7 @@ def untag_notsearchable(id):
 @bp.route('/<id>/tag/retracted', methods=('POST',))
 @api.view(ODPScope.RECORD_RETRACT)
 def tag_retracted(id):
-    return utils.tag_singleton(
+    return tags.tag_singleton(
         'record', id, ODPRecordTag.RETRACTED
     )
 
@@ -367,7 +367,7 @@ def tag_retracted(id):
 @bp.route('/<id>/untag/retracted', methods=('POST',))
 @api.view(ODPScope.RECORD_RETRACT)
 def untag_retracted(id):
-    return utils.untag_singleton(
+    return tags.untag_singleton(
         'record', id, ODPRecordTag.RETRACTED
     )
 
@@ -375,7 +375,7 @@ def untag_retracted(id):
 @bp.route('/<id>/tag/sdg', methods=('GET', 'POST',))
 @api.view(ODPScope.RECORD_SDG)
 def tag_sdg(id):
-    return utils.tag_keyword(
+    return tags.tag_keyword(
         'record', id, ODPRecordTag.SDG, ODPVocabulary.SDG,
         tag_endpoint='.tag_sdg',
         keyword_choices_fn=utils.populate_sdg_choices,
@@ -385,7 +385,7 @@ def tag_sdg(id):
 @bp.route('/<id>/untag/sdg/<tag_instance_id>', methods=('POST',))
 @api.view(ODPScope.RECORD_SDG)
 def untag_sdg(id, tag_instance_id):
-    return utils.untag_keyword(
+    return tags.untag_keyword(
         'record', id, ODPRecordTag.SDG, tag_instance_id
     )
 

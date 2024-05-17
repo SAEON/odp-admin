@@ -5,8 +5,8 @@ from flask import Blueprint, abort, flash, redirect, render_template, request, u
 from odp.const import ODPScope
 from odp.lib.client import ODPAPIError
 from odp.ui.admin.forms import PackageForm, ResourceSearchForm
-from odp.ui.admin.views import utils
 from odp.ui.base import api
+from odp.ui.base.lib import utils
 from odp.ui.base.templates import create_btn, delete_btn, edit_btn
 
 bp = Blueprint('packages', __name__)

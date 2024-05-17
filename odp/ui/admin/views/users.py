@@ -3,8 +3,8 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from odp.const import ODPScope
 from odp.lib.client import ODPAPIError
 from odp.ui.admin.forms import UserForm
-from odp.ui.admin.views import utils
 from odp.ui.base import api
+from odp.ui.base.lib import utils
 from odp.ui.base.templates import delete_btn, edit_btn
 
 bp = Blueprint('users', __name__)

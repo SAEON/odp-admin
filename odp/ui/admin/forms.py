@@ -271,20 +271,6 @@ class RoleForm(BaseForm):
     )
 
 
-class TagKeywordForm(BaseForm):
-    vocabulary = StringField(
-        label='Vocabulary',
-        render_kw={'readonly': ''},
-    )
-    keyword = SelectField(
-        label='Keyword',
-        validators=[input_required()],
-    )
-    comment = StringField(
-        label='Comment',
-    )
-
-
 class UserForm(BaseForm):
     id = StringField(
         label='User id',
