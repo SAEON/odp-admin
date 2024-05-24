@@ -1,0 +1,31 @@
+{% macro user_filter(
+    form
+) %}
+    <form action="{{ url_for('users.index') }}" method="get">
+        <div class="row">
+            <div class="col-1 text-end">
+                {{ form.q.label(class='col-form-label') }}
+            </div>
+            <div class="col-3">
+                {{ form.q(class='form-control', placeholder='Search by user name and/or email...') }}
+            </div>
+            <div class="col-1 text-end">
+                {{ form.provider.label(class='col-form-label') }}
+            </div>
+            <div class="col-3">
+                {{ form.provider(class='form-control') }}
+            </div>
+            <div class="col-1 text-end">
+                {{ form.role.label(class='col-form-label') }}
+            </div>
+            <div class="col-2">
+                {{ form.role(class='form-control') }}
+            </div>
+            <div class="col">
+                <button type="submit" class="btn btn-outline-info btn-action">
+                    Find
+                </button>
+            </div>
+        </div>
+    </form>
+{% endmacro %}

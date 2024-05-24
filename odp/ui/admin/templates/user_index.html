@@ -1,5 +1,6 @@
 {% extends 'admin_base.html' %}
 {% from 'content.j2' import render_table, obj_link, obj_links %}
+{% from 'users.j2' import user_filter %}
 
 {% block web_title %}
     {{ super() }} |
@@ -9,9 +10,31 @@
 {% endblock %}
 
 {% block content %}
-    {% call(user) render_table(users, 'Email', 'Name', 'Roles', hide_id=True) %}
-        <th scope="row">{{ obj_link('users', user.id, user.email) }}</th>
-        <td>{{ user.name }}</td>
-        <td>{{ obj_links('roles', user.role_ids) }}</td>
+    <div class="container-fluid my-4">
+        {{ user_filter(filter_form) }}
+    </div>
+
+    {% call(user) render_table(users,
+            'Name', 'Email', 'Verified', 'Roles', 'Providers', 'Active',
+            hide_id=True) %}
+
+        <th scope="row">
+            {{ obj_link('users', user.id, user.name or '(None)') }}
+        </th>
+        <td>
+            {{ user.email }}
+        </td>
+        <td>
+            {{ '&#9989;'|safe if user.verified else '&#10060;'|safe }}
+        </td>
+        <td>
+            {{ obj_links('roles', user.role_ids) }}
+        </td>
+        <td>
+            {{ obj_links('providers', user.provider_keys) }}
+        </td>
+        <td>
+            {{ '&#9989;'|safe if user.active else '&#10060;'|safe }}
+        </td>
     {% endcall %}
 {% endblock %}

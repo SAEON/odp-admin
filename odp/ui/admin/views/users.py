@@ -2,7 +2,7 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from odp.const import ODPScope
 from odp.lib.client import ODPAPIError
-from odp.ui.admin.forms import UserForm
+from odp.ui.admin.forms import UserFilterForm, UserForm
 from odp.ui.base import api
 from odp.ui.base.lib import utils
 from odp.ui.base.templates import delete_btn, edit_btn
@@ -14,8 +14,34 @@ bp = Blueprint('users', __name__)
 @api.view(ODPScope.USER_READ)
 def index():
     page = request.args.get('page', 1)
-    users = api.get(f'/user/?page={page}')
-    return render_template('user_index.html', users=users)
+    text_q = request.args.get('q')
+    provider_id = request.args.get('provider')
+    role_id = request.args.get('role')
+
+    api_filter = ''
+    ui_filter = ''
+    if text_q:
+        api_filter += f'&text_query={text_q}'
+        ui_filter += f'&q={text_q}'
+    if provider_id:
+        api_filter += f'&provider_id={provider_id}'
+        ui_filter += f'&provider={provider_id}'
+    if role_id:
+        api_filter += f'&role_id={role_id}'
+        ui_filter += f'&role={role_id}'
+
+    filter_form = UserFilterForm(request.args)
+    utils.populate_provider_choices(filter_form.provider, include_none=True)
+    utils.populate_role_choices(filter_form.role, include_none=True)
+
+    users = api.get(f'/user/?page={page}{api_filter}')
+
+    return render_template(
+        'user_index.html',
+        users=users,
+        filter_=ui_filter,
+        filter_form=filter_form,
+    )
 
 
 @bp.route('/<id>')

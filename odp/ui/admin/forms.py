@@ -284,11 +284,23 @@ class UserForm(BaseForm):
         label='Name',
         render_kw={'readonly': ''},
     )
+    role_ids = MultiCheckboxField(
+        label='Roles',
+    )
     active = BooleanField(
         label='Active',
     )
-    role_ids = MultiCheckboxField(
-        label='Roles',
+
+
+class UserFilterForm(BaseForm):
+    q = StringField(
+        label='Name / Email',
+    )
+    provider = SelectField(
+        label='Provider',
+    )
+    role = SelectField(
+        label='Role',
     )
 
 
