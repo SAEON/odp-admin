@@ -40,6 +40,10 @@
                     <a href="{{ url_for('resources.index', provider=provider.id) }}" class="text-decoration-none">
                         {{ provider.resource_count }}
                     </a>
+                {% elif prop == 'Users' %}
+                    {{ obj_links('users', provider.user_names, newlines=True) }}
+                {% elif prop == 'Clients' %}
+                    {{ obj_links('clients', provider.client_ids, newlines=True) }}
                 {% elif prop == 'Timestamp' %}
                     {{ provider.timestamp | timestamp }}
                 {% endif %}

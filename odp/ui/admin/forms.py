@@ -147,6 +147,10 @@ class ProviderForm(BaseForm):
         label='Provider name',
         validators=[data_required()],
     )
+    user_ids = MultiCheckboxField(
+        label='Users',
+        dynamic_choices=True,
+    )
 
 
 class RecordForm(BaseForm):

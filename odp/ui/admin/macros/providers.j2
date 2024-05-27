@@ -1,0 +1,65 @@
+{% from 'controls.j2' import check_all %}
+
+{% macro users_button(
+    form
+) %}
+    <button type="button" class="btn btn-outline-info btn-action" data-bs-toggle="modal" data-bs-target="#users-popup">
+        Add Users
+    </button>
+
+    <div class="modal fade" id="users-popup" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Add users to provider</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-auto">
+                            {{ form.q.label(class='col-form-label') }}
+                        </div>
+                        <div class="col">
+                            {{ form.q(class='form-control') }}
+                        </div>
+                        <div class="col-auto">
+                            {{ form.role.label(class='col-form-label') }}
+                        </div>
+                        <div class="col-auto">
+                            {{ form.role(class='form-control') }}
+                        </div>
+                        <div class="col-auto">
+                            <button id="fetch-users" onclick="fetchUsers();" class="btn btn-outline-info">
+                                Find
+                            </button>
+                        </div>
+                    </div>
+
+                    <table class="table table-hover mt-2">
+                        <thead>
+                        <tr>
+                            <th scope="col">{{ check_all() }}</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Roles</th>
+                        </tr>
+                        </thead>
+                        <tbody id="users-table-body"></tbody>
+                    </table>
+
+                    <p id="no-results" class="text-center">No results</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                    <button id="add-users-btn" type="button" class="btn btn-primary" onclick="addUsers();">
+                        Add selected
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
