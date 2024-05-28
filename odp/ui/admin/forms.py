@@ -110,6 +110,10 @@ class CollectionTagProjectForm(BaseForm):
 
 
 class PackageForm(BaseForm):
+    title = StringField(
+        label='Package title',
+        validators=[data_required()],
+    )
     provider_id = SelectField(
         label='Provider',
         validators=[input_required()],
@@ -117,15 +121,6 @@ class PackageForm(BaseForm):
     resource_ids = MultiCheckboxField(
         label='Resources',
         dynamic_choices=True,
-    )
-    schema_id = SelectField(
-        label='Schema',
-        validators=[input_required()],
-    )
-    metadata = JSONTextField(
-        label='Metadata',
-        validators=[input_required(), json_object()],
-        render_kw={'rows': 18},
     )
     notes = TextAreaField(
         label='Notes',

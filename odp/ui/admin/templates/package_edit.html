@@ -15,7 +15,7 @@
 
 {% block content %}
     {{ resources_button(resource_search_form) }}
-    {{ render_form(form, package, ['schema_id', 'metadata']) }}
+    {{ render_form(form, package, ['resource_ids']) }}
 {% endblock %}
 
 {% block scripts %}

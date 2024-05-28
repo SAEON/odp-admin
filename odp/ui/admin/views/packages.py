@@ -1,5 +1,3 @@
-import json
-
 from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
 
 from odp.const import ODPScope
@@ -48,7 +46,6 @@ def detail(id):
 def create():
     form = PackageForm(request.form)
     utils.populate_provider_choices(form.provider_id, include_none=True)
-    utils.populate_metadata_schema_choices(form.schema_id)
 
     resource_search_form = ResourceSearchForm()
     utils.populate_provider_choices(resource_search_form.resource_provider_id, include_none=True)
@@ -57,8 +54,7 @@ def create():
         try:
             package = api.post('/package/', dict(
                 provider_id=form.provider_id.data,
-                schema_id=form.schema_id.data,
-                metadata=json.loads(form.metadata.data),
+                title=form.title.data,
                 notes=form.notes.data,
                 resource_ids=form.resource_ids.data,
             ))
@@ -89,7 +85,6 @@ def edit(id):
         form = PackageForm(data=package)
 
     utils.populate_provider_choices(form.provider_id)
-    utils.populate_metadata_schema_choices(form.schema_id)
 
     resources = api.get(f'/resource/', package_id=id, size=0)  # don't paginate
     # formatting of checkbox labels must match that of addResources() in the template
@@ -105,8 +100,7 @@ def edit(id):
         try:
             api.put(f'/package/{id}', dict(
                 provider_id=form.provider_id.data,
-                schema_id=form.schema_id.data,
-                metadata=json.loads(form.metadata.data),
+                title=form.title.data,
                 notes=form.notes.data,
                 resource_ids=form.resource_ids.data,
             ))
