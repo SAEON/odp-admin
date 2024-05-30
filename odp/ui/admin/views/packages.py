@@ -19,7 +19,7 @@ def index():
         'package_index.html',
         packages=packages,
         buttons=[
-            create_btn(scope=ODPScope.PACKAGE_WRITE),
+            create_btn(scope=ODPScope.PACKAGE_ADMIN),
         ]
     )
 
@@ -28,21 +28,21 @@ def index():
 @api.view(ODPScope.PACKAGE_READ_ALL)
 def detail(id):
     package = api.get(f'/package/all/{id}')
-    resources = api.get(f'/resource/', package_id=id, size=0)  # don't paginate
+    resources = api.get(f'/resource/all/', package_id=id, size=0)  # don't paginate
 
     return render_template(
         'package_detail.html',
         package=package,
         resources=resources,
         buttons=[
-            edit_btn(object_id=id, scope=ODPScope.PACKAGE_WRITE),
-            delete_btn(object_id=id, scope=ODPScope.PACKAGE_WRITE, prompt_args=(id,)),
+            edit_btn(object_id=id, scope=ODPScope.PACKAGE_ADMIN),
+            delete_btn(object_id=id, scope=ODPScope.PACKAGE_ADMIN, prompt_args=(id,)),
         ]
     )
 
 
 @bp.route('/new', methods=('GET', 'POST'))
-@api.view(ODPScope.PACKAGE_WRITE)
+@api.view(ODPScope.PACKAGE_ADMIN)
 def create():
     form = PackageForm(request.form)
     utils.populate_provider_choices(form.provider_id, include_none=True)
@@ -52,13 +52,13 @@ def create():
 
     if request.method == 'POST' and form.validate():
         try:
-            package = api.post('/package/', dict(
+            package = api.post('/package/admin/', dict(
                 provider_id=form.provider_id.data,
                 title=form.title.data,
                 notes=form.notes.data,
                 resource_ids=form.resource_ids.data,
             ))
-            flash(f"Package {package['id']} has been created.", category='success')
+            flash(f"Package <b>{package['title']}</b> has been created.", category='success')
             return redirect(url_for('.detail', id=package['id']))
 
         except ODPAPIError as e:
@@ -73,9 +73,9 @@ def create():
 
 
 @bp.route('/<id>/edit', methods=('GET', 'POST'))
-@api.view(ODPScope.PACKAGE_WRITE)
+@api.view(ODPScope.PACKAGE_ADMIN)
 def edit(id):
-    package = api.get(f'/package/{id}')
+    package = api.get(f'/package/all/{id}')
 
     # separate get/post form instantiation to resolve
     # ambiguity of missing vs empty multiselect field
@@ -86,7 +86,7 @@ def edit(id):
 
     utils.populate_provider_choices(form.provider_id)
 
-    resources = api.get(f'/resource/', package_id=id, size=0)  # don't paginate
+    resources = api.get(f'/resource/all/', package_id=id, size=0)  # don't paginate
     # formatting of checkbox labels must match that of addResources() in the template
     form.resource_ids.choices = [
         (res['id'], f"{res['title']} [{res['filename']} | {res['size']} | {res['mimetype']}]")
@@ -98,13 +98,13 @@ def edit(id):
 
     if request.method == 'POST' and form.validate():
         try:
-            api.put(f'/package/{id}', dict(
+            api.put(f'/package/admin/{id}', dict(
                 provider_id=form.provider_id.data,
-                title=form.title.data,
+                title=(title := form.title.data),
                 notes=form.notes.data,
                 resource_ids=form.resource_ids.data,
             ))
-            flash(f'Package {id} has been updated.', category='success')
+            flash(f'Package <b>{title}</b> has been updated.', category='success')
             return redirect(url_for('.detail', id=id))
 
         except ODPAPIError as e:
@@ -120,9 +120,9 @@ def edit(id):
 
 
 @bp.route('/<id>/delete', methods=('POST',))
-@api.view(ODPScope.PACKAGE_WRITE)
+@api.view(ODPScope.PACKAGE_ADMIN)
 def delete(id):
-    api.delete(f'/package/{id}')
+    api.delete(f'/package/admin/{id}')
     flash(f'Package {id} has been deleted.', category='success')
     return redirect(url_for('.index'))
 
@@ -134,11 +134,9 @@ def fetch_resources(provider_id):
     include_packaged = request.args.get('include_packaged')
     try:
         return api.get(
-            '/resource/',
+            '/resource/all/',
             provider_id=provider_id,
             exclude_packaged=not include_packaged,
-            # XXX we can render in a scrollable modal, but
-            #  this might be a problem for high volume providers:
             size=0,
         )
     except ODPAPIError as e:
