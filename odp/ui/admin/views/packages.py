@@ -15,6 +15,7 @@ bp = Blueprint('packages', __name__)
 def index():
     page = request.args.get('page', 1)
     packages = api.get(f'/package/all/?page={page}')
+
     return render_template(
         'package_index.html',
         packages=packages,
@@ -28,12 +29,11 @@ def index():
 @api.view(ODPScope.PACKAGE_READ_ALL)
 def detail(id):
     package = api.get(f'/package/all/{id}')
-    resources = api.get(f'/resource/all/', package_id=id, size=0)  # don't paginate
 
     return render_template(
         'package_detail.html',
         package=package,
-        resources=resources,
+        resources=utils.pagify(package['resources']),
         buttons=[
             edit_btn(object_id=id, scope=ODPScope.PACKAGE_ADMIN),
             delete_btn(object_id=id, scope=ODPScope.PACKAGE_ADMIN, prompt_args=(id,)),
@@ -86,11 +86,10 @@ def edit(id):
 
     utils.populate_provider_choices(form.provider_id)
 
-    resources = api.get(f'/resource/all/', package_id=id, size=0)  # don't paginate
     # formatting of checkbox labels must match that of addResources() in the template
     form.resource_ids.choices = [
         (res['id'], f"{res['title']} [{res['filename']} | {res['size']} | {res['mimetype']}]")
-        for res in resources['items']
+        for res in package['resources']
     ]
 
     resource_search_form = ResourceSearchForm()
