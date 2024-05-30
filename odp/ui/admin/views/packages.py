@@ -11,10 +11,10 @@ bp = Blueprint('packages', __name__)
 
 
 @bp.route('/')
-@api.view(ODPScope.PACKAGE_READ)
+@api.view(ODPScope.PACKAGE_READ_ALL)
 def index():
     page = request.args.get('page', 1)
-    packages = api.get(f'/package/?page={page}')
+    packages = api.get(f'/package/all/?page={page}')
     return render_template(
         'package_index.html',
         packages=packages,
@@ -25,9 +25,9 @@ def index():
 
 
 @bp.route('/<id>')
-@api.view(ODPScope.PACKAGE_READ)
+@api.view(ODPScope.PACKAGE_READ_ALL)
 def detail(id):
-    package = api.get(f'/package/{id}')
+    package = api.get(f'/package/all/{id}')
     resources = api.get(f'/resource/', package_id=id, size=0)  # don't paginate
 
     return render_template(

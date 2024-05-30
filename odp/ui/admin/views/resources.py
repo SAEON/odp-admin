@@ -17,12 +17,12 @@ bp = Blueprint('resources', __name__)
 
 
 @bp.route('/')
-@api.view(ODPScope.RESOURCE_READ)
+@api.view(ODPScope.RESOURCE_READ_ALL)
 def index():
     page = request.args.get('page', 1)
     archive_id = request.args.get('archive')
     package_id = request.args.get('package')
-    resources = api.get('/resource/', page=page, archive_id=archive_id, package_id=package_id)
+    resources = api.get('/resource/all/', page=page, archive_id=archive_id, package_id=package_id)
 
     return render_template(
         'resource_index.html',
@@ -35,9 +35,9 @@ def index():
 
 
 @bp.route('/<id>')
-@api.view(ODPScope.RESOURCE_READ)
+@api.view(ODPScope.RESOURCE_READ_ALL)
 def detail(id):
-    resource = api.get(f'/resource/{id}')
+    resource = api.get(f'/resource/all/{id}')
 
     return render_template(
         'resource_detail.html',
