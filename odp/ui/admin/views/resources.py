@@ -29,7 +29,7 @@ def index():
         resources=resources,
         archive=archive_id,
         buttons=[
-            create_btn(scope=ODPScope.RESOURCE_WRITE),
+            create_btn(scope=ODPScope.RESOURCE_ADMIN),
         ],
     )
 
@@ -46,7 +46,7 @@ def detail(id):
 
 
 @bp.route('/new', methods=('GET', 'POST'))
-@api.view(ODPScope.RESOURCE_WRITE)
+@api.view(ODPScope.RESOURCE_ADMIN)
 def create():
     upload_archive_id = current_app.config['UPLOAD_ARCHIVE_ID']
     upload_archive = api.get(f'/archive/{upload_archive_id}')
@@ -76,7 +76,7 @@ def create():
             file.save(savepath)
 
             try:
-                resource = api.post('/resource/', dict(
+                resource = api.post('/resource/admin/', dict(
                     title=(title := form.title.data),
                     description=form.description.data,
                     filename=filename,
