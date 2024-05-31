@@ -13,7 +13,7 @@
 
     {% call(resource) render_table(resources,
             'Title', 'File name', 'File size', 'Provider', 'Archive',
-            archive=archive, hide_id=true
+            hide_id=true, query=filter_
     ) %}
         <th scope="row">{{ obj_link('', resource.id, resource.title) }}</th>
         <td>{{ resource.filename }}</td>

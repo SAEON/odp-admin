@@ -13,7 +13,7 @@
 
     {% call(package) render_table(packages,
             'Title', 'Status', 'Resources', 'Record', 'Provider',
-            hide_id=true
+            hide_id=true, query=filter_
     ) %}
         <th scope="row">
             {{ obj_link('packages', package.id, package.title) }}

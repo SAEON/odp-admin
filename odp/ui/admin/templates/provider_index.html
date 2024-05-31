@@ -10,9 +10,23 @@
 
 {% block content %}
     {{ render_buttons(buttons) }}
-    {% call(provider) render_table(providers, 'Key', 'Name', 'Collections', hide_id=True) %}
-        <th scope="row">{{ obj_link('', provider.id, provider.key) }}</th>
-        <td>{{ provider.name }}</td>
-        <td>{{ obj_links('collections', provider.collection_keys) }}</td>
+
+    {% call(provider) render_table(providers,
+            'Key', 'Name', 'Collections', 'Packages', hide_id=True
+    ) %}
+        <th scope="row">
+            {{ obj_link('', provider.id, provider.key) }}
+        </th>
+        <td>
+            {{ provider.name }}
+        </td>
+        <td>
+            {{ obj_links('collections', provider.collection_keys) }}
+        </td>
+        <td>
+            <a href="{{ url_for('packages.index', provider=provider.id) }}" class="text-decoration-none">
+                {{ provider.package_count }}
+            </a>
+        </td>
     {% endcall %}
 {% endblock %}
