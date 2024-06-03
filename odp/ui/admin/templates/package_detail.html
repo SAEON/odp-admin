@@ -1,5 +1,6 @@
 {% extends 'admin_base.html' %}
 {% from 'content.j2' import render_info, render_buttons, render_table, obj_link, obj_links %}
+{% from 'packages.j2' import tag_popup_button %}
 
 {% block web_title %}
     {{ super() }} |
@@ -25,10 +26,20 @@
     <div class="tab-content">
         <div id="info" class="tab-pane fade show active" role="tabpanel">
             {% call(prop) render_info(package,
-                    'Title', 'Provider', 'Resources', 'Status', 'Record', 'Notes', 'Timestamp') %}
+                    'Title', 'DOI', 'Provider', 'Resources', 'Status', 'Record', 'Notes', 'Timestamp') %}
 
                 {% if prop == 'Title' %}
                     {{ package.title }}
+
+                {% elif prop == 'DOI' %}
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            {{ doi_tag.data.doi if doi_tag }}
+                        </div>
+                        <div>
+                            {{ tag_popup_button(doi_btn) }}
+                        </div>
+                    </div>
 
                 {% elif prop == 'Provider' %}
                     {{ obj_link('providers', package.provider_id, package.provider_key) }}
@@ -69,4 +80,15 @@
             {% endcall %}
         </div>
     </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        {% if modal %}
+            $(window).on('load', function() {
+                $('#{{ modal }}').modal('show');
+            });
+        {% endif %}
+    </script>
 {% endblock %}

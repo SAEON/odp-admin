@@ -242,17 +242,6 @@ class ResourceUploadForm(BaseForm):
     )
 
 
-class ResourceSearchForm(BaseForm):
-    # disambiguate from the package's provider_id which might be on the same page
-    resource_provider_id = SelectField(
-        label='Provider',
-        validators=[input_required()],
-    )
-    include_packaged = BooleanField(
-        label='Show already-packaged resources',
-    )
-
-
 class RoleForm(BaseForm):
     id = StringField(
         label='Role id',
