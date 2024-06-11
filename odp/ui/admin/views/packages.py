@@ -39,15 +39,20 @@ def index():
 def detail(id):
     package = api.get(f'/package/all/{id}')
     resources = utils.pagify(package['resources'])
-    modal = request.args.get('modal')
 
     doi_tag = tags.get_tag_instance(package, ODPPackageTag.DOI)
-    doi_form = TagDOIForm(data=doi_tag['data'] if doi_tag else None)
+    doi_form = None
 
-    if request.method == 'POST':
-        if modal == 'tag-popup':
-            doi_form = TagDOIForm(request.form)
-            doi_form.validate()
+    if modal := request.args.get('modal'):
+        if request.method == 'POST':
+            if modal == 'tag-popup':
+                doi_form = TagDOIForm(request.form)
+                doi_form.validate()
+        else:
+            modal = None
+
+    if not doi_form:
+        doi_form = TagDOIForm(data=doi_tag['data'] if doi_tag else None)
 
     doi_btn = TagPopupButton(
         label='DOI',
