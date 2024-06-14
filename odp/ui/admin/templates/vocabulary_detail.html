@@ -31,19 +31,28 @@
             </button>
         </li>
     </ul>
+
     <div class="tab-content">
         <div id="terms" class="tab-pane fade show active" role="tabpanel">
             {% if vocabulary.id == 'Infrastructure' %}
                 {{ render_terms(terms, '.create_infrastructure_term', '.edit_infrastructure_term', '.delete_infrastructure_term',
                    name='Name', description='Description') }}
+
+            {% elif vocabulary.id == 'Institution' %}
+                {{ render_terms(terms, '.create_institution_term', '.edit_institution_term', '.delete_institution_term',
+                   title='Title', ror='ROR', url='URL') }}
+
             {% elif vocabulary.id == 'Project' %}
                 {{ render_terms(terms, '.create_project_term', '.edit_project_term', '.delete_project_term',
                    title='Title', description='Description') }}
+
             {% elif vocabulary.id == 'SDG' %}
                 {{ render_terms(terms,
                    title='Title', goal='Goal') }}
+
             {% endif %}
         </div>
+
         <div id="info" class="tab-pane fade" role="tabpanel">
             {% call(prop) render_info(vocabulary, 'Scope', 'Schema URI') %}
                 {% if prop == 'Scope' %}
@@ -53,11 +62,13 @@
                 {% endif %}
             {% endcall %}
         </div>
+
         <div id="schema" class="tab-pane fade" role="tabpanel">
             <pre class="m-3">
                 {{- vocabulary.schema_|format_json -}}
             </pre>
         </div>
+
         <div id="audit-log" class="tab-pane fade" role="tabpanel">
             {% call(audit_record) render_audit_table(audit_records) %}
                 <a href="{{ url_for('.audit_detail', id=vocabulary.id, audit_id=audit_record.audit_id) }}" class="text-decoration-none">

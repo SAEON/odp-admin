@@ -5,15 +5,17 @@
     {{ super() }} |
     {% block heading %}
         {% if term %}
-            Project: {{ term.data.title }}
+            vocabulary.id: {{ term.data.name or term.data.title }}
         {% else %}
-            Add Project
+            Add vocabulary.id
         {% endif %}
     {% endblock %}
 {% endblock %}
 
 {% block content %}
+    {% set create_endpoint = '.create_' + vocabulary.id|lower + '_term' %}
+    {% set edit_endpoint = '.edit_' + vocabulary.id|lower + '_term' %}
     {{ render_form(form, term,
-       submit_target=url_for('.edit_project_term', id=term.id) if term else url_for('.create_project_term'),
+       submit_target=url_for(edit_endpoint, id=term.id) if term else url_for(create_endpoint),
        cancel_target=url_for('.detail', id=vocabulary.id)) }}
 {% endblock %}
