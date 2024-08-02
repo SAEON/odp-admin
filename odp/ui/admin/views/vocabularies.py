@@ -2,7 +2,7 @@ from flask import Blueprint, flash, g, redirect, render_template, request, url_f
 
 from odp.const import ODPScope, ODPVocabulary
 from odp.lib.client import ODPAPIError
-from odp.ui.admin.forms import StringListField, VocabularyTermInfrastructureForm, VocabularyTermInstitutionForm, VocabularyTermProjectForm
+from odp.ui.admin.forms import StringListField, VocabularyTermInfrastructureForm, VocabularyTermProjectForm
 from odp.ui.base import api
 from odp.ui.base.lib import utils
 
@@ -68,33 +68,6 @@ def edit_infrastructure_term(id):
 def delete_infrastructure_term(id):
     return _delete_term(
         ODPVocabulary.INFRASTRUCTURE.value, id,
-    )
-
-
-@bp.route(f'/{ODPVocabulary.INSTITUTION}/new', methods=('GET', 'POST'))
-@api.view(ODPScope.VOCABULARY_INSTITUTION)
-def create_institution_term():
-    return _create_or_update_term(
-        ODPVocabulary.INSTITUTION.value, VocabularyTermInstitutionForm,
-        'title', 'ror', 'url', 'locations',
-    )
-
-
-@bp.route(f'/{ODPVocabulary.INSTITUTION}/<id>/edit', methods=('GET', 'POST'))
-@api.view(ODPScope.VOCABULARY_INSTITUTION)
-def edit_institution_term(id):
-    return _create_or_update_term(
-        ODPVocabulary.INSTITUTION.value, VocabularyTermInstitutionForm,
-        'title', 'ror', 'url', 'locations',
-        term_id=id,
-    )
-
-
-@bp.route(f'/{ODPVocabulary.INSTITUTION}/<id>/delete', methods=('POST',))
-@api.view(ODPScope.VOCABULARY_INSTITUTION)
-def delete_institution_term(id):
-    return _delete_term(
-        ODPVocabulary.INSTITUTION.value, id,
     )
 
 
