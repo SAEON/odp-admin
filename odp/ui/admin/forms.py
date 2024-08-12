@@ -1,7 +1,7 @@
 from wtforms import BooleanField, FileField, RadioField, SelectField, StringField, TextAreaField, ValidationError
 from wtforms.validators import data_required, input_required, length, optional, regexp
 
-from odp.const import DOI_REGEX, ROR_REGEX, SID_REGEX
+from odp.const import DOI_REGEX, SID_REGEX
 from odp.const.hydra import GrantType, ResponseType, TokenEndpointAuthMethod
 from odp.ui.base.forms import BaseForm
 from odp.ui.base.forms.fields import DateStringField, JSONTextField, MultiCheckboxField, StringListField
@@ -304,30 +304,6 @@ class VocabularyTermInfrastructureForm(BaseForm):
     )
     description = StringField(
         label='Infrastructure description',
-    )
-
-
-class VocabularyTermInstitutionForm(BaseForm):
-    id = StringField(
-        label='Institution id',
-        filters=[lambda s: s.strip() if s else s],
-        validators=[data_required(), length(min=2)],
-    )
-    title = StringField(
-        label='Institution title',
-        validators=[data_required()],
-    )
-    ror = StringField(
-        label='ROR (Research Organization Registry) identifier',
-        validators=[regexp('^$|' + ROR_REGEX)],
-        description='The entire URL i.e. https://ror.org/...'
-    )
-    url = StringField(
-        label='Institution website URL',
-    )
-    locations = StringListField(
-        label='Geographic locations (one per line)',
-        render_kw={'rows': 3},
     )
 
 
