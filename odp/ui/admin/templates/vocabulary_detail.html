@@ -1,5 +1,6 @@
 {% extends 'admin_base.html' %}
-{% from 'content.j2' import render_info, render_table, render_audit_table, render_item_delete_form %}
+{% from 'content.j2' import render_info, render_table, render_audit_table %}
+{% from 'forms.j2' import render_delete_button_form %}
 
 {% block web_title %}
     {{ super() }} |
@@ -102,7 +103,7 @@
 
         {% if delete_view %}
             <td class="text-end">
-                {{ render_item_delete_form(delete_view, 'term', enable_buttons, id=term.id) }}
+                {{ render_delete_button_form(delete_view, 'term', enable_buttons, id=term.id) }}
             </td>
         {% endif %}
     {% endcall %}
