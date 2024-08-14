@@ -4,9 +4,9 @@ from odp.const import ODPPackageTag, ODPScope
 from odp.lib.client import ODPAPIError
 from odp.ui.admin.forms import PackageForm
 from odp.ui.base import api
-from odp.ui.base.forms import ResourceSearchForm, TagDOIForm
+from odp.ui.base.forms import ResourceSearchForm
 from odp.ui.base.lib import tags, utils
-from odp.ui.base.templates import TagPopupButton, create_btn, delete_btn, edit_btn
+from odp.ui.base.templates import create_btn, delete_btn, edit_btn
 
 bp = Blueprint('packages', __name__)
 
@@ -34,43 +34,21 @@ def index():
     )
 
 
-@bp.route('/<id>', methods=('GET', 'POST'))
+@bp.route('/<id>')
 @api.view(ODPScope.PACKAGE_READ_ALL)
 def detail(id):
     package = api.get(f'/package/all/{id}')
     resources = utils.pagify(package['resources'])
 
     doi_tag = tags.get_tag_instance(package, ODPPackageTag.DOI)
-    doi_form = None
-
-    if modal := request.args.get('modal'):
-        if request.method == 'POST':
-            if modal == 'tag-popup':
-                doi_form = TagDOIForm(request.form)
-                doi_form.validate()
-        else:
-            modal = None
-
-    if not doi_form:
-        doi_form = TagDOIForm(data=doi_tag['data'] if doi_tag else None)
-
-    doi_btn = TagPopupButton(
-        label='DOI',
-        form=doi_form,
-        scope=ODPScope.PACKAGE_DOI,
-        object_id=id,
-        tag_instance=doi_tag,
-        tag_endpoint='.tag_doi',
-        untag_endpoint='.untag_doi',
-    )
+    contrib_tags = tags.get_tag_instances(package, ODPPackageTag.CONTRIBUTOR)
 
     return render_template(
         'package_detail.html',
         package=package,
         resources=resources,
-        modal=modal,
-        doi_btn=doi_btn,
         doi_tag=doi_tag,
+        contrib_tags=contrib_tags,
         buttons=[
             edit_btn(object_id=id, scope=ODPScope.PACKAGE_ADMIN),
             delete_btn(object_id=id, scope=ODPScope.PACKAGE_ADMIN, prompt_args=(id,)),
@@ -177,31 +155,3 @@ def fetch_resources(provider_id):
         )
     except ODPAPIError as e:
         abort(e.status_code, e.error_detail)
-
-
-@bp.route('/<id>/tag/doi', methods=('POST',))
-@api.view(ODPScope.PACKAGE_DOI)
-def tag_doi(id):
-    form = TagDOIForm(request.form)
-    if form.validate():
-        try:
-            api.post(f'/package/{id}/tag', dict(
-                tag_id=ODPPackageTag.DOI,
-                data={
-                    'doi': form.doi.data,
-                },
-            ))
-            flash(f'{ODPPackageTag.DOI} tag has been set.', category='success')
-            return redirect(url_for('.detail', id=id))
-
-        except ODPAPIError as e:
-            if response := api.handle_error(e):
-                return response
-
-    return redirect(url_for('.detail', id=id, modal='tag-popup'), code=307)
-
-
-@bp.route('/<id>/untag/doi/<tag_instance_id>', methods=('POST',))
-@api.view(ODPScope.PACKAGE_DOI)
-def untag_doi(id, tag_instance_id):
-    return
