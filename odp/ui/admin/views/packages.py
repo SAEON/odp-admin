@@ -70,7 +70,6 @@ def create():
             package = api.post('/package/admin/', dict(
                 provider_id=form.provider_id.data,
                 title=form.title.data,
-                notes=form.notes.data,
                 resource_ids=form.resource_ids.data,
             ))
             flash(f"Package <b>{package['title']}</b> has been created.", category='success')
@@ -115,7 +114,6 @@ def edit(id):
             api.put(f'/package/admin/{id}', dict(
                 provider_id=form.provider_id.data,
                 title=(title := form.title.data),
-                notes=form.notes.data,
                 resource_ids=form.resource_ids.data,
             ))
             flash(f'Package <b>{title}</b> has been updated.', category='success')

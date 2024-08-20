@@ -25,7 +25,7 @@
     <div class="tab-content">
         <div id="info" class="tab-pane fade show active" role="tabpanel">
             {% call(prop) render_info(package,
-                    'Title', 'DOI', 'Contributors', 'Provider', 'Resources', 'Status', 'Record', 'Notes', 'Timestamp') %}
+                    'Title', 'DOI', 'Contributors', 'Provider', 'Resources', 'Status', 'Record', 'Timestamp') %}
 
                 {% if prop == 'Title' %}
                     {{ package.title }}
@@ -51,9 +51,6 @@
 
                 {% elif prop == 'Record' %}
                     {{ package.record_doi or package.record_sid }}
-
-                {% elif prop == 'Notes' %}
-                    <div class="pre-wrap">{{ package.notes }}</div>
 
                 {% elif prop == 'Timestamp' %}
                     {{ package.timestamp | timestamp }}

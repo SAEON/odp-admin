@@ -122,10 +122,6 @@ class PackageForm(BaseForm):
         label='Resources',
         dynamic_choices=True,
     )
-    notes = TextAreaField(
-        label='Notes',
-        render_kw={'rows': 5},
-    )
 
 
 class ProviderForm(BaseForm):
