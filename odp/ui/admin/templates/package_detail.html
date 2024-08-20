@@ -70,7 +70,7 @@
                 <td>{{ resource.filename }}</td>
                 <td>{{ resource.size | bytes }}</td>
                 <td>{{ obj_link('providers', resource.provider_id, resource.provider_key) }}</td>
-                <td>{{ obj_links('archives', resource.archive_urls.keys()) }}</td>
+                <td>{{ obj_links('archives', resource.archive_paths.keys()) }}</td>
             {% endcall %}
         </div>
     </div>
