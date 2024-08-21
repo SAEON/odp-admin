@@ -11,10 +11,10 @@ bp = Blueprint('providers', __name__)
 
 
 @bp.route('/')
-@api.view(ODPScope.PROVIDER_READ)
+@api.view(ODPScope.PROVIDER_READ_ALL)
 def index():
     page = request.args.get('page', 1)
-    providers = api.get('/provider/', page=page, sort='key')
+    providers = api.get('/provider/all/', page=page, sort='key')
     return render_template(
         'provider_index.html',
         providers=providers,
@@ -25,9 +25,9 @@ def index():
 
 
 @bp.route('/<id>')
-@api.view(ODPScope.PROVIDER_READ)
+@api.view(ODPScope.PROVIDER_READ_ALL)
 def detail(id):
-    provider = api.get(f'/provider/{id}')
+    provider = api.get(f'/provider/all/{id}')
     audit_records = api.get(f'/provider/{id}/audit')
     return render_template(
         'provider_detail.html',
