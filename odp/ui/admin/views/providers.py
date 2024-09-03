@@ -78,7 +78,7 @@ def create():
 @bp.route('/<id>/edit', methods=('GET', 'POST'))
 @api.view(ODPScope.PROVIDER_ADMIN)
 def edit(id):
-    provider = api.get(f'/provider/{id}')
+    provider = api.get(f'/provider/all/{id}')
 
     # separate get/post form instantiation to resolve
     # ambiguity of missing vs empty multiselect field
