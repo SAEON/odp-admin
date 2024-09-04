@@ -9,7 +9,8 @@
 {% endblock %}
 
 {% block content %}
-    {% call(archive) render_table(archives, 'URL', 'Resources') %}
+    {% call(archive) render_table(archives, 'Adapter', 'URL', 'Resources') %}
+        <td>{{ archive.adapter }}</td>
         <td>{{ archive.url }}</td>
         <td>
             <a href="{{ url_for('resources.index', archive=archive.id) }}" class="text-decoration-none">
