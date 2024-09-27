@@ -11,7 +11,7 @@
 {% block content %}
     {% call(prop) render_info(resource,
             'Title', 'Description', 'File name', 'File size', 'Content type',
-            'MD5 checksum', 'Provider', 'Archive path', 'Timestamp') %}
+            'Checksum', 'Provider', 'Archive path', 'Timestamp') %}
         {% if prop == 'Title' %}
             {{ resource.title }}
         {% elif prop == 'Description' %}
@@ -22,8 +22,8 @@
             {{ resource.size | bytes(verbose=true) }}
         {% elif prop == 'Content type' %}
             {{ resource.mimetype }}
-        {% elif prop == 'MD5 checksum' %}
-            {{ resource.md5 }}
+        {% elif prop == 'Checksum' %}
+            {{ resource.hash_algorithm }}: {{ resource.hash }}
         {% elif prop == 'Provider' %}
             {{ obj_link('providers', resource.provider_id, resource.provider_key) }}
         {% elif prop == 'Archive path' %}
