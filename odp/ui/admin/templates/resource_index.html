@@ -1,5 +1,5 @@
 {% extends 'admin_base.html' %}
-{% from 'content.j2' import render_table, render_buttons, obj_link, obj_links %}
+{% from 'content.j2' import render_table, obj_link, obj_links %}
 
 {% block web_title %}
     {{ super() }} |
@@ -9,13 +9,11 @@
 {% endblock %}
 
 {% block content %}
-    {{ render_buttons(buttons) }}
-
     {% call(resource) render_table(resources,
             'Title', 'File name', 'File size', 'Provider', 'Archive',
             hide_id=true, query=filter_
     ) %}
-        <th scope="row">{{ obj_link('', resource.id, resource.title) }}</th>
+        <th scope="row">{{ obj_link('', resource.id, resource.title or resource.filename) }}</th>
         <td>{{ resource.filename }}</td>
         <td>{{ resource.size | bytes }}</td>
         <td>{{ obj_link('providers', resource.provider_id, resource.provider_key) }}</td>

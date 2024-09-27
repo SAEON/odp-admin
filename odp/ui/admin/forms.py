@@ -220,24 +220,6 @@ class RecordTagEmbargoForm(BaseForm):
             raise ValidationError('The end date cannot be earlier than the start date.')
 
 
-class ResourceUploadForm(BaseForm):
-    provider_id = SelectField(
-        label='Provider',
-        validators=[input_required()],
-    )
-    title = StringField(
-        label='Resource title',
-        validators=[data_required()],
-    )
-    description = StringField(
-        label='Resource description',
-    )
-    file = FileField(
-        label='File upload',
-        validators=[file_required()],
-    )
-
-
 class RoleForm(BaseForm):
     id = StringField(
         label='Role id',
