@@ -3,7 +3,7 @@ from pathlib import Path
 from flask import Flask
 
 from odp.config import config
-from odp.const import ODPArchive, ODPScope
+from odp.const import ODPScope
 from odp.const.hydra import HydraScope
 from odp.ui import base
 from odp.ui.admin import views
@@ -19,7 +19,6 @@ def create_app():
         UI_CLIENT_SECRET=config.ODP.ADMIN.UI_CLIENT_SECRET,
         UI_CLIENT_SCOPE=[HydraScope.OPENID, HydraScope.OFFLINE_ACCESS] + [s.value for s in ODPScope],
         SECRET_KEY=config.ODP.ADMIN.FLASK_SECRET,
-        UPLOAD_ARCHIVE_ID=ODPArchive.SAEON_REPOSITORY,
     )
 
     base.init_app(
