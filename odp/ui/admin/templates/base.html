@@ -42,7 +42,9 @@
 {% endblock %}
 
 {% block footer %}
-    {{ footer() }}
+    {{ footer(
+        repos=['odp-server', 'odp-admin', 'odp-core', 'odp-ui']
+    ) }}
 {% endblock %}
 
 {% block styles %}
