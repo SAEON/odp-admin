@@ -1,0 +1,55 @@
+{% extends 'admin_base.html' %}
+{% from 'content.j2' import render_info, render_audit_table, obj_link %}
+
+{% block web_title %}
+    {{ super() }} |
+    {% block heading %}
+        {{ keyword.vocabulary_id }}: {{ keyword.key }}
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">
+                Info
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#audit-log" type="button" role="tab">
+                Audit Log
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="info" class="tab-pane fade show active" role="tabpanel">
+            {% call(prop) render_info(keyword, 'Key', 'Parent key', 'Keyword data', 'Status', 'Vocabulary') %}
+                {% if prop == 'Key' %}
+                    {{ keyword.key }}
+
+                {% elif prop == 'Parent key' %}
+                    {{ keyword.parent_key }}
+
+                {% elif prop == 'Keyword data' %}
+                    <pre>{{- keyword.data | format_json -}}</pre>
+
+                {% elif prop == 'Status' %}
+                    {{ keyword.status }}
+
+                {% elif prop == 'Vocabulary' %}
+                    {{ obj_link('vocabularies', keyword.vocabulary_id) }}
+
+                {% endif %}
+            {% endcall %}
+        </div>
+
+{#        <div id="audit-log" class="tab-pane fade" role="tabpanel">#}
+{#            {% call(audit_record) render_audit_table(audit_records) %}#}
+{#                <a href="{{ url_for('.audit_detail', id=vocabulary.id, audit_id=audit_record.audit_id) }}" class="text-decoration-none">#}
+{#                    {{ audit_record.keyword_id }}#}
+{#                </a>#}
+{#            {% endcall %}#}
+{#        </div>#}
+    </div>
+{% endblock %}

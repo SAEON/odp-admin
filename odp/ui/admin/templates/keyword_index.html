@@ -1,0 +1,32 @@
+{% extends 'admin_base.html' %}
+{% from 'content.j2' import render_table, obj_link %}
+
+{% block web_title %}
+    {{ super() }} |
+    {% block heading %}
+        Keywords
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% call(keyword) render_table(keywords,
+            'Vocabulary', 'Keyword', 'Status', hide_id=true, query=filter_
+    ) %}
+        <td>
+            {{ obj_link('vocabularies', keyword.vocabulary_id) }}
+        </td>
+        <th scope="row">
+            {{ keyword_trail(keyword) }}
+        </th>
+        <td>
+            {{ keyword.status }}
+        </td>
+    {% endcall %}
+{% endblock %}
+
+{% macro keyword_trail(keyword) %}
+    {% for id in keyword.ids %}
+        {{ obj_link('keywords', id, keyword.keys_[loop.index0]) }}
+        {{ ' > ' if not loop.last }}
+    {% endfor %}
+{% endmacro %}

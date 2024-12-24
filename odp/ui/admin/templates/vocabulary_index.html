@@ -9,8 +9,17 @@
 {% endblock %}
 
 {% block content %}
-    {% call(vocabulary) render_table(vocabularies, 'Terms', 'Scope') %}
-        <td>{{ vocabulary.terms|length }}</td>
-        <td>{{ vocabulary.scope_id }}</td>
+    {% call(vocabulary) render_table(vocabularies, 'URI', 'Keywords', 'Editable') %}
+        <td>
+            {{ vocabulary.uri }}
+        </td>
+        <td>
+            <a href="{{ url_for('keywords.index', vocabulary=vocabulary.id) }}" class="text-decoration-none">
+                {{ vocabulary.keyword_count }}
+            </a>
+        </td>
+        <td>
+            {{ not vocabulary.static }}
+        </td>
     {% endcall %}
 {% endblock %}

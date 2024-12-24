@@ -13,6 +13,7 @@ def init_app(app: Flask):
             'catalogs',
             'clients',
             'collections',
+            'keywords',
             'packages',
             'providers',
             'records',

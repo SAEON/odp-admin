@@ -1,6 +1,5 @@
 {% extends 'admin_base.html' %}
-{% from 'content.j2' import render_info, render_table, render_audit_table %}
-{% from 'forms.j2' import render_delete_button_form %}
+{% from 'content.j2' import render_info, obj_link %}
 
 {% block web_title %}
     {{ super() }} |
@@ -12,12 +11,7 @@
 {% block content %}
     <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#terms" type="button" role="tab">
-                Terms
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">
                 Info
             </button>
         </li>
@@ -26,93 +20,33 @@
                 Schema
             </button>
         </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#audit-log" type="button" role="tab">
-                Audit Log
-            </button>
-        </li>
     </ul>
 
     <div class="tab-content">
-        <div id="terms" class="tab-pane fade show active" role="tabpanel">
-            {% if vocabulary.id == 'Infrastructure' %}
-                {{ render_terms(terms, '.create_infrastructure_term', '.edit_infrastructure_term', '.delete_infrastructure_term',
-                   name='Name', description='Description') }}
+        <div id="info" class="tab-pane fade show active" role="tabpanel">
+            {% call(prop) render_info(vocabulary, 'URI', 'Schema URI', 'Keywords', 'Editable' ) %}
+                {% if prop == 'URI' %}
+                    {{ vocabulary.uri }}
 
-            {% elif vocabulary.id == 'Institution' %}
-                {{ render_terms(terms, '.create_institution_term', '.edit_institution_term', '.delete_institution_term',
-                   title='Title', ror='ROR', url='URL') }}
-
-            {% elif vocabulary.id == 'Project' %}
-                {{ render_terms(terms, '.create_project_term', '.edit_project_term', '.delete_project_term',
-                   title='Title', description='Description') }}
-
-            {% elif vocabulary.id == 'SDG' %}
-                {{ render_terms(terms,
-                   title='Title', goal='Goal') }}
-
-            {% endif %}
-        </div>
-
-        <div id="info" class="tab-pane fade" role="tabpanel">
-            {% call(prop) render_info(vocabulary, 'Scope', 'Schema URI') %}
-                {% if prop == 'Scope' %}
-                    {{ vocabulary.scope_id }}
                 {% elif prop == 'Schema URI' %}
                     {{ vocabulary.schema_uri }}
+
+                {% elif prop == 'Keywords' %}
+                    <a href="{{ url_for('keywords.index', vocabulary=vocabulary.id) }}" class="text-decoration-none">
+                        {{ vocabulary.keyword_count }}
+                    </a>
+
+                {% elif prop == 'Editable' %}
+                    {{ not vocabulary.static }}
+
                 {% endif %}
             {% endcall %}
         </div>
 
         <div id="schema" class="tab-pane fade" role="tabpanel">
             <pre class="m-3">
-                {{- vocabulary.schema_|format_json -}}
+                {{- vocabulary.schema_ | format_json -}}
             </pre>
-        </div>
-
-        <div id="audit-log" class="tab-pane fade" role="tabpanel">
-            {% call(audit_record) render_audit_table(audit_records) %}
-                <a href="{{ url_for('.audit_detail', id=vocabulary.id, audit_id=audit_record.audit_id) }}" class="text-decoration-none">
-                    {{ audit_record.term_id }}
-                </a>
-            {% endcall %}
         </div>
     </div>
 {% endblock %}
-
-{% macro render_terms(terms, create_view, edit_view, delete_view) %}
-    {% set cols = ['Id'] + kwargs.values()|list + [''] %}
-    {% set fields = kwargs.keys() %}
-
-    {% call(term) render_table(terms, columns=cols, hide_id=True) %}
-        <th>
-            {% if edit_view %}
-                <a href="{{ url_for(edit_view, id=term.id) }}" class="text-decoration-none">
-                    {{ term.id }}
-                </a>
-            {% else %}
-                <span class="text-info">
-                    {{ term.id }}
-                </span>
-            {% endif %}
-        </th>
-
-        {% for field in fields %}
-            <td>{{ term.data[field] }}</td>
-        {% endfor %}
-
-        {% if delete_view %}
-            <td class="text-end">
-                {{ render_delete_button_form(delete_view, 'term', enable_buttons, id=term.id) }}
-            </td>
-        {% endif %}
-    {% endcall %}
-
-    {% if create_view %}
-        <div class="btn-toolbar justify-content-between mt-4">
-            <a href="{{ url_for(create_view) }}" class="btn btn-outline-success btn-action {{ 'disabled' if not enable_buttons }}">
-                Add
-            </a>
-        </div>
-    {% endif %}
-{% endmacro %}
