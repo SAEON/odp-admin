@@ -24,7 +24,7 @@
     <div class="tab-content">
         <div id="info" class="tab-pane fade show active" role="tabpanel">
             {% call(prop) render_info(provider,
-                    'Key', 'Name', 'Collections', 'Packages', 'Resources', 'Users', 'Clients', 'Timestamp'
+                    'Key', 'Name', 'Collections', 'Packages', 'Users', 'Clients', 'Timestamp'
             ) %}
                 {% if prop == 'Key' %}
                     {{ provider.key }}
@@ -35,10 +35,6 @@
                 {% elif prop == 'Packages' %}
                     <a href="{{ url_for('packages.index', provider=provider.id) }}" class="text-decoration-none">
                         {{ provider.package_count }}
-                    </a>
-                {% elif prop == 'Resources' %}
-                    <a href="{{ url_for('resources.index', provider=provider.id) }}" class="text-decoration-none">
-                        {{ provider.resource_count }}
                     </a>
                 {% elif prop == 'Users' %}
                     {{ obj_links('users', provider.user_names, newlines=True) }}
