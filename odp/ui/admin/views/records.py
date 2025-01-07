@@ -64,11 +64,6 @@ def detail(id):
     audit_records = api.get(f'/record/{id}/audit')
     catalogs = api.get('/catalog/')
 
-    sdg_vocab = {
-        keyword_obj['id']: keyword_obj['data']
-        for keyword_obj in api.get(f'/vocabulary/SDG')['terms']
-    }
-
     nosearch_btn = Button(
         label='No search',
         endpoint='.tag_notsearchable',
@@ -112,7 +107,6 @@ def detail(id):
         note_tag_enabled=ODPScope.RECORD_NOTE in g.user_permissions,
         sdg_tags=tags.get_tag_instances(record, ODPRecordTag.SDG),
         sdg_tag_enabled=ODPScope.RECORD_SDG in g.user_permissions,
-        sdg_vocab=sdg_vocab,
         catalog_records=catalog_records,
         audit_records=audit_records,
         buttons=[

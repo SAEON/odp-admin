@@ -46,11 +46,6 @@
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tag-sdg" type="button" role="tab">
-                SDG
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tag-embargo" type="button" role="tab">
                 Embargo
             </button>
@@ -75,7 +70,7 @@
     <div class="tab-content">
         <div id="info" class="tab-pane fade show active" role="tabpanel">
             {% call(prop) render_info(record,
-                    'DOI', 'SID', 'Title', 'Parent record', 'Child records', 'Collection', 'Schema', 'Valid', 'QC', 'SDG', 'Embargo',
+                    'DOI', 'SID', 'Title', 'Parent record', 'Child records', 'Collection', 'Schema', 'Valid', 'QC', 'Embargo',
                     'Published', 'Searchable', 'Retracted', 'Migrated', 'Timestamp') %}
 
                 {% if prop == 'DOI' %}
@@ -133,13 +128,6 @@
                         - {{ obj_link('users', qc_tag.user_id, qc_tag.user_name) }}, {{ qc_tag.timestamp|timestamp }}<br/>
                     {% endfor %}
 
-                {% elif prop == 'SDG' %}
-                    {% for sdg_tag in sdg_tags['items'] | sort(attribute='data.keyword') %}
-                        {% set sdg_keyword = sdg_vocab[sdg_tag.data.keyword] %}
-                        {{ sdg_keyword.id | int }} - {{ sdg_keyword.title }}
-                        {%- if not loop.last %}<br/>{% endif %}
-                    {% endfor %}
-
                 {% elif prop == 'Embargo' %}
                     {% for embargo_tag in embargo_tags['items'] %}
                         From {{ embargo_tag.data.start|date }}
@@ -185,11 +173,6 @@
         <div id="tag-notes" class="tab-pane fade" role="tabpanel">
             {{ render_tag_table(record, note_tags, '.tag_note', '.untag_note', note_tag_enabled,
                comment='Note') }}
-        </div>
-
-        <div id="tag-sdg" class="tab-pane fade" role="tabpanel">
-            {{ render_tag_table(record, sdg_tags, '.tag_sdg', '.untag_sdg', sdg_tag_enabled,
-               keyword='SDG', comment='Comment') }}
         </div>
 
         <div id="catalog-records" class="tab-pane fade" role="tabpanel">

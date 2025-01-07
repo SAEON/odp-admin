@@ -22,7 +22,7 @@
     </div>
 
     {% call(record) render_table(records,
-            'Identifier', 'Title', 'Collection', 'Valid', 'QC', 'SDG', 'Published',
+            'Identifier', 'Title', 'Collection', 'Valid', 'QC', 'Published',
             hide_id=true, query=filter_) %}
 
         <th scope="row">
@@ -40,14 +40,6 @@
         <td>
             {% for qc_tag in record.tags | selectattr('tag_id', '==', 'Record.QC') %}
                 {{ '&#9989;'|safe if qc_tag.data.pass_ else '&#10060;'|safe }}
-            {% endfor %}
-        </td>
-        <td>
-            {% for sdg_tag in record.tags | selectattr('tag_id', '==', 'Record.SDG') | sort(attribute='data.keyword') %}
-                <strong>
-                    {{ sdg_tag.data.keyword | int }}
-                    {%- if not loop.last %}, {% endif %}
-                </strong>
             {% endfor %}
         </td>
         <td>
