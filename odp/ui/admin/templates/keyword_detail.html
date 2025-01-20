@@ -24,12 +24,9 @@
 
     <div class="tab-content">
         <div id="info" class="tab-pane fade show active" role="tabpanel">
-            {% call(prop) render_info(keyword, 'Key', 'Parent key', 'Keyword data', 'Status', 'Vocabulary') %}
-                {% if prop == 'Key' %}
-                    {{ keyword.key }}
-
-                {% elif prop == 'Parent key' %}
-                    {{ keyword.parent_key }}
+            {% call(prop) render_info(keyword, 'Keyword', 'Keyword data', 'Status', 'Vocabulary') %}
+                {% if prop == 'Keyword' %}
+                    {{ keyword_trail(keyword) }}
 
                 {% elif prop == 'Keyword data' %}
                     <pre>{{- keyword.data | format_json -}}</pre>
@@ -53,3 +50,13 @@
 {#        </div>#}
     </div>
 {% endblock %}
+
+{% macro keyword_trail(keyword) %}
+    {% for id in keyword.ids %}
+        {% if loop.last %}
+            {{ keyword.keys_[loop.index0] }}
+        {% else %}
+            {{ obj_link('keywords', id, keyword.keys_[loop.index0]) }} >
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
