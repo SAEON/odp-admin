@@ -22,7 +22,7 @@
     </div>
 
     {% call(record) render_table(records,
-            'Identifier', 'Title', 'Collection', 'Valid', 'QC', 'Published',
+            'Identifier', 'Title', 'Collection', 'Schema', 'Valid', 'QC', 'Published',
             hide_id=true, query=filter_) %}
 
         <th scope="row">
@@ -33,6 +33,9 @@
         </td>
         <td>
             {{ obj_link('collections', record.collection_id, record.collection_key) }}
+        </td>
+        <td>
+            {{ obj_link('schemas', record.schema_id) }}
         </td>
         <td>
             {{ '&#9989;'|safe if record.validity.valid else '&#10060;'|safe }}
