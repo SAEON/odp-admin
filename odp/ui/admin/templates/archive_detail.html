@@ -9,11 +9,13 @@
 {% endblock %}
 
 {% block content %}
-    {% call(prop) render_info(archive, 'Adapter', 'URL', 'Resources', 'Scope') %}
-        {% if prop == 'Adapter' %}
-            {{ archive.adapter }}
-        {% elif prop == 'URL' %}
-            {{ archive.url }}
+    {% call(prop) render_info(archive, 'Type', 'Upload URL', 'Download URL', 'Resources', 'Scope') %}
+        {% if prop == 'Type' %}
+            {{ archive.type }}
+        {% elif prop == 'Upload URL' %}
+            {{ archive.upload_url }}
+        {% elif prop == 'Download URL' %}
+            {{ archive.download_url }}
         {% elif prop == 'Resources' %}
             <a href="{{ url_for('resources.index', archive=archive.id) }}" class="text-decoration-none">
                 {{ archive.resource_count }}
