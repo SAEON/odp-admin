@@ -10,7 +10,7 @@
     # via -r requirements.in
 async-timeout==5.0.1
     # via redis
-authlib==1.5.1
+authlib==1.5.2
     # via
     #   odp
     #   odp-ui
@@ -47,7 +47,7 @@ markupsafe==3.0.2
     #   wtforms
 ory-hydra-client==1.11.8
     # via odp
-packaging==24.2
+packaging==25.0
     # via gunicorn
 pycparser==2.22
     # via cffi
@@ -65,9 +65,9 @@ requests==2.32.3
     # via odp
 six==1.17.0
     # via python-dateutil
-typing-extensions==4.13.0
+typing-extensions==4.13.2
     # via pydantic
-urllib3==2.3.0
+urllib3==2.4.0
     # via
     #   ory-hydra-client
     #   requests
