@@ -10,21 +10,21 @@
     # via -r requirements.in
 async-timeout==5.0.1
     # via redis
-authlib==1.5.2
+authlib==1.6.1
     # via
     #   odp
     #   odp-ui
 blinker==1.9.0
     # via flask
-certifi==2025.1.31
+certifi==2025.7.14
     # via requests
 cffi==1.17.1
     # via cryptography
-charset-normalizer==3.4.1
+charset-normalizer==3.4.2
     # via requests
-click==8.1.8
+click==8.2.1
     # via flask
-cryptography==44.0.2
+cryptography==45.0.5
     # via authlib
 flask==2.3.3
     # via
@@ -51,23 +51,23 @@ packaging==25.0
     # via gunicorn
 pycparser==2.22
     # via cffi
-pydantic[dotenv]==1.10.21
+pydantic[dotenv]==1.10.22
     # via odp
 python-dateutil==2.9.0.post0
     # via ory-hydra-client
-python-dotenv==1.1.0
+python-dotenv==1.1.1
     # via pydantic
-redis==5.2.1
+redis==6.2.0
     # via
     #   odp
     #   odp-ui
-requests==2.32.3
+requests==2.32.4
     # via odp
 six==1.17.0
     # via python-dateutil
-typing-extensions==4.13.2
+typing-extensions==4.14.1
     # via pydantic
-urllib3==2.4.0
+urllib3==2.5.0
     # via
     #   ory-hydra-client
     #   requests
