@@ -1,4 +1,5 @@
 """Admin interface for download audit logs and reporting."""
+import os
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 import requests
@@ -8,8 +9,8 @@ bp = Blueprint('downloads', __name__)
 
 
 def get_api_base_url():
-    """Get the base URL for API calls (assuming local backend)."""
-    return 'http://localhost:8000'
+    """Get the base URL for API calls from environment variable or use default."""
+    return os.getenv('ODP_API_URL', 'http://localhost:2020')
 
 
 @bp.route('/')
