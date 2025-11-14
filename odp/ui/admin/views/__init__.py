@@ -2,12 +2,13 @@ from flask import Flask
 
 
 def init_app(app: Flask):
-    from . import catalogs, clients, collections, home, providers, records, roles, schemas, tags, users, vocabularies
+    from . import catalogs, clients, collections, downloads, home, providers, records, roles, schemas, tags, users, vocabularies
 
     app.register_blueprint(home.bp)
     app.register_blueprint(catalogs.bp, url_prefix='/catalogs')
     app.register_blueprint(clients.bp, url_prefix='/clients')
     app.register_blueprint(collections.bp, url_prefix='/collections')
+    app.register_blueprint(downloads.bp, url_prefix='/downloads')
     app.register_blueprint(providers.bp, url_prefix='/providers')
     app.register_blueprint(records.bp, url_prefix='/records')
     app.register_blueprint(roles.bp, url_prefix='/roles')
