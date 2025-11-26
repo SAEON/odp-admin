@@ -75,8 +75,8 @@
                             <th>Email</th>
                             <th>Organisation</th>
                             <th>Type</th>
-                            <th>File Size</th>
                             <th>Status</th>
+                            <th>Record Link</th>
                             <th>IP Address</th>
                         </tr>
                     </thead>
@@ -97,17 +97,30 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if download.file_size %}
-                                        {{ (download.file_size / 1024 / 1024)|round(2) }} MB
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                                <td>
                                     {% if download.success %}
                                         <span class="badge bg-success">Success</span>
                                     {% else %}
                                         <span class="badge bg-danger">Failed</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if download.download_type == 'single_record' %}
+                                        {% set doi = download.meta.get('doi', '') %}
+                                        {% if doi %}
+                                            <a href="http://mims.localhost:2021/catalog/{{ doi }}" target="_blank" class="btn btn-sm btn-outline-primary">View Record</a>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    {% elif download.download_type == 'zip_bundle' %}
+                                        {% set dois = download.meta.get('dois', []) %}
+                                        {% if dois and dois|length > 0 %}
+                                            {% set query = '&'.join(['record_id_or_doi_list=' + doi for doi in dois]) %}
+                                            <a href="http://mims.localhost:2021/catalog/subset?{{ query }}&page=1&size=50" target="_blank" class="btn btn-sm btn-outline-warning">View Bundle</a>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    {% else %}
+                                        -
                                     {% endif %}
                                 </td>
                                 <td><small>{{ download.ip_address or '-' }}</small></td>
