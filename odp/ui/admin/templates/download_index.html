@@ -107,7 +107,7 @@
                                     {% if download.download_type == 'single_record' %}
                                         {% set doi = download.meta.get('doi', '') %}
                                         {% if doi %}
-                                            <a href="http://mims.localhost:2021/catalog/{{ doi }}" target="_blank" class="btn btn-sm btn-outline-primary">View Record</a>
+                                            <a href="{{ config.MIMS_CATALOG_URL }}/{{ doi }}" target="_blank" class="btn btn-sm btn-outline-primary">View Record</a>
                                         {% else %}
                                             -
                                         {% endif %}
@@ -119,7 +119,7 @@
                                                 {% set _ = query_parts.append('record_id_or_doi_list=' + doi) %}
                                             {% endfor %}
                                             {% set query = query_parts|join('&') %}
-                                            <a href="http://mims.localhost:2021/catalog/subset?{{ query }}&page=1&size=50" target="_blank" class="btn btn-sm btn-outline-warning">View Bundle</a>
+                                            <a href="{{ config.MIMS_CATALOG_URL }}/subset?{{ query }}&page=1&size=50" target="_blank" class="btn btn-sm btn-outline-warning">View Bundle</a>
                                         {% else %}
                                             -
                                         {% endif %}
