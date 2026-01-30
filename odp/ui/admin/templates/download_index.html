@@ -107,7 +107,8 @@
                                     {% if download.download_type == 'single_record' %}
                                         {% set doi = download.meta.get('doi', '') %}
                                         {% if doi %}
-                                            <a href="{{ config.MIMS_CATALOG_URL }}/{{ doi }}" target="_blank" class="btn btn-sm btn-outline-primary">View Record</a>
+                                            {% set base = config.get('MIMS_CATALOG_URL', '').rstrip('/') %}
+                                            <a href="{% if base.endswith('/catalog') %}{{ base }}/{{ doi }}{% else %}{{ base }}/catalog/{{ doi }}{% endif %}" target="_blank" class="btn btn-sm btn-outline-primary">View Record</a>
                                         {% else %}
                                             -
                                         {% endif %}
