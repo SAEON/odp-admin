@@ -260,7 +260,7 @@
                                             {% set total_downloads = stats.get('total_downloads', 0) %}
                                             {% for record in top_records %}
                                                 <tr>
-                                                    <td>
+                                                    <td>{{ config.MIMS_CATALOG_URL }}
                                                         {% if record.doi %}
                                                             <a href="{{ config.MIMS_CATALOG_URL }}/{{ record.doi }}" target="_blank" class="text-decoration-none">
                                                                 {{ record.doi }}
