@@ -5,6 +5,8 @@ from odp.const import DOI_REGEX, SID_REGEX
 from odp.const.hydra import GrantType, ResponseType, TokenEndpointAuthMethod
 from odp.ui.base.forms import BaseForm, DateStringField, JSONTextField, MultiCheckboxField, StringListField, json_object
 
+from odp.ui.base.forms import SubmissionForm
+
 
 class ClientForm(BaseForm):
     id = StringField(
@@ -279,3 +281,12 @@ class VocabularyTermProjectForm(BaseForm):
     description = StringField(
         label='Project description',
     )
+
+
+class CurationSubmissionForm(SubmissionForm):
+    # The additional curation fields will go here
+    test = StringField('Test Field')
+
+
+class SubmissionFilterForm(BaseForm):
+    status = SelectField(label='Status')
