@@ -2,7 +2,7 @@ from flask import Flask
 
 
 def init_app(app: Flask):
-    from . import catalogs, clients, collections, home, providers, records, roles, schemas, tags, users, vocabularies
+    from . import catalogs, clients, collections, home, providers, records, roles, schemas, tags, users, vocabularies, submissions
 
     app.register_blueprint(home.bp)
     app.register_blueprint(catalogs.bp, url_prefix='/catalogs')
@@ -15,3 +15,4 @@ def init_app(app: Flask):
     app.register_blueprint(tags.bp, url_prefix='/tags')
     app.register_blueprint(users.bp, url_prefix='/users')
     app.register_blueprint(vocabularies.bp, url_prefix='/vocabularies')
+    app.register_blueprint(submissions.bp, url_prefix='/submissions')
