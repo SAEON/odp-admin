@@ -113,11 +113,11 @@
                                             -
                                         {% endif %}
                                     {% elif download.download_type == 'zip_bundle' %}
-                                        {% set dois = download.meta.get('dois', []) %}
-                                        {% if dois and dois|length > 0 %}
+                                        {% set record_ids = download.meta.get('record_ids', []) %}
+                                        {% if record_ids and record_ids|length > 0 %}
                                             {% set query_parts = [] %}
-                                            {% for doi in dois %}
-                                                {% set _ = query_parts.append('record_id_or_doi_list=' + doi) %}
+                                            {% for record_id in record_ids %}
+                                                {% set _ = query_parts.append('record_id_or_doi_list=' + record_id) %}
                                             {% endfor %}
                                             {% set query = query_parts|join('&') %}
 
