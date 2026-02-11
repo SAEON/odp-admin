@@ -1,11 +1,12 @@
-from wtforms import BooleanField, RadioField, SelectField, StringField, TextAreaField, ValidationError
+from wtforms import BooleanField, RadioField, SelectField, StringField, TextAreaField, ValidationError, HiddenField, \
+    DateField, FieldList, FormField, SelectMultipleField
 from wtforms.validators import data_required, input_required, length, optional, regexp
 
 from odp.const import DOI_REGEX, SID_REGEX
 from odp.const.hydra import GrantType, ResponseType, TokenEndpointAuthMethod
 from odp.ui.base.forms import BaseForm, DateStringField, JSONTextField, MultiCheckboxField, StringListField, json_object
 
-from odp.ui.base.forms import SubmissionForm
+from odp.ui.base.forms import SubmissionForm, CreatorForm, ContributorForm
 
 
 class ClientForm(BaseForm):
@@ -283,10 +284,185 @@ class VocabularyTermProjectForm(BaseForm):
     )
 
 
+class CreatorWithRORForm(CreatorForm):
+    ror = StringField(label='ROR')
+
+
+class ContributorWithRORForm(ContributorForm):
+    ror = StringField(label='ROR')
+
+
 class CurationSubmissionForm(SubmissionForm):
     # The additional curation fields will go here
-    test = StringField('Test Field')
+    creators = FieldList(
+        FormField(CreatorWithRORForm),
+        label='Creators',
+        min_entries=1,
+        description='The main researchers or organisations involved in producing the data submission'
+    )
+    contributors = FieldList(
+        FormField(ContributorWithRORForm),
+        label='Contributors',
+        min_entries=1,
+        description='Other parties who contributed to the resource, including a contact person'
+    )
+    languages = HiddenField(label='Language', default='en-US')
+    publication_year = DateField(label='Date', format='%Y')
+    publisher = SelectField(
+        label='Publisher',
+        choices=[
+            'South African Environmental Observation Network',
+            'Department of Forestry, Fisheries and the Environment'
+        ])
+    format = StringField(label='Format Name')
+    resource_type = SelectField('Resource Type', choices=[
+        'Audiovisual',
+        'Book',
+        'BookChapter',
+        'Collection',
+        'ComputationalNotebook',
+        'ConferencePaper',
+        'ConferenceProceeding',
+        'DataPaper',
+        'Dataset',
+        'Dissertation',
+        'Event',
+        'Image',
+        'InteractiveResource',
+        'Journal',
+        'JournalArticle',
+        'Model',
+        'OutputManagementPlan',
+        'PeerReview',
+        'PhysicalObject',
+        'Preprint',
+        'Report',
+        'Service',
+        'Software',
+        'Sound',
+        'Standard',
+        'Text',
+        'Workflow',
+        'Other'
+    ])
+    earth_science_theme_keyword = SelectField(
+        'GCMD Earth Science theme keyword',
+        choices=[
+            'AGRICULTURE',
+            'ATMOSPHERE',
+            'BIOLOGICAL CLASSIFICATION',
+            'BIOSPHERE',
+            'CLIMATE INDICATORS',
+            'CRYOSPHERE',
+            'HUMAN DIMENSIONS',
+            'LAND SURFACE',
+            'OCEANS',
+            'PALEOCLIMATE',
+            'SOLID EARTH',
+            'SPECTRAL / ENGINEERING',
+            'SUN - EARTH INTERACTIONS',
+            'TERRESTRIAL HYDROSPHERE'
+        ])
+    eov_keywords = SelectMultipleField(
+        'Essential Ocean Variables (EOVs)',
+        choices=[
+            "Sea state",
+            "Ocean surface stress",
+            "Sea ice",
+            "Sea surface height",
+            "Sea surface temperature, SST",
+            "Subsurface temperature",
+            "Surface currents",
+            "Subsurface currents",
+            "Sea surface salinity",
+            "Subsurface salinity",
+            "Ocean surface heat flux",
+            "Ocean bottom pressure",
+            "Turbulent diapycnal fluxes (emerging)",
+            "Oxygen",
+            "Nutrients",
+            "Inorganic carbon",
+            "Transient tracers",
+            "Particulate matter",
+            "Nitrous oxide",
+            "Stable carbon isotopes",
+            "Dissolved organic carbon",
+            "Phytoplankton biomass and diversity",
+            "Zooplankton biomass and diversity",
+            "Fish abundance and distribution",
+            "Marine turtles, birds, mammals abundance and distribution",
+            "Hard coral cover and composition",
+            "Seagrass cover and composition",
+            "Macroalgal canopy cover and composition",
+            "Mangrove cover and composition",
+            "Microbe biomass and diversity (emerging)",
+            "Invertebrate abundance and distribution (emerging)"
+        ])
+    ecv_keywords = SelectMultipleField(
+        'ECV Keywords',
+        choices=[
+            'Precipitation',
+            'Surface Pressure',
+            'Surface Radiation Budget',
+            'Surface Temperature',
+            'Surface Water Vapour',
+            'Surface Wind Speed and Direction',
+            'Upper-air Temperature',
+            'Earth Radiation Budget',
+            'Lightning',
+            'Upper-air Water Vapour',
+            'Upper-air Wind Speed and Direction',
+            'Clouds',
+            'Aerosols',
+            'Carbon Dioxide, Methane & Other Greenhouse Gases',
+            'Ozone',
+            'Precursors for Aerosols and Ozone',
+            'Groundwater',
+            'Lakes',
+            'River Discharge',
+            'Terrestrial Water Storage (TWS)',
+            'Evaporation from Land',
+            'Soil Moisture',
+            'Glaciers',
+            'Ice sheets and Ice Shelves',
+            'Permafrost',
+            'Snow',
+            'Above-ground Biomass',
+            'Albedo',
+            'Fire',
+            'Fraction of Absorbed Photosynthetically Active Radiation (FAPAR)',
+            'Land Cover',
+            'Land Surface Temperature',
+            'Leaf Area Index',
+            'Soil Carbon',
+            'Anthropogenic Greenhouse Gas Emissions',
+            'Anthropogenic Water Use',
+            'Ocean Surface Heat Flux',
+            'Sea Ice',
+            'Sea Level',
+            'Sea State',
+            'Surface Currents',
+            'Sea Surface Salinity',
+            'Surface Stress',
+            'Sea Surface Temperature',
+            'Subsurface Currents',
+            'Subsurface Salinity',
+            'Subsurface Temperature',
+            'Inorganic Carbon',
+            'Nitrous Oxide',
+            'Nutrients',
+            'Ocean Colour',
+            'Oxygen',
+            'Transient Tracers',
+            'Marine Habitats',
+            'Plankton'
+        ])
 
 
 class SubmissionFilterForm(BaseForm):
     status = SelectField(label='Status')
+
+
+class SubmissionAcceptForm(BaseForm):
+    collection = SelectField(label='Collection')
+    schema = RadioField(label='Schema', choices=['Datacite', 'Iso'], default='Datacite')
