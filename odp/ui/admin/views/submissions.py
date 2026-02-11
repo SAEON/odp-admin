@@ -1,10 +1,12 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask_login import current_user
 
 from odp.const import ODPScope
-from odp.ui.admin.forms import CurationSubmissionForm, SubmissionFilterForm
+from odp.ui.admin.forms import CurationSubmissionForm, SubmissionFilterForm, SubmissionAcceptForm
 from odp.ui.base import api
 from odp.ui.base.templates import edit_btn
 from odp.ui.base.views import utils
+from odp.ui.admin.views.utils import populate_collection_choices
 
 bp = Blueprint('submissions', __name__)
 
@@ -38,13 +40,32 @@ def index():
 def detail(id):
     submission = api.get(f'/submission/admin/{id}')
 
+    accept_form = SubmissionAcceptForm(request.form)
+
+    populate_collection_choices(accept_form.collection)
+
     return render_template(
         'submission_detail.html',
         submission=submission,
+        accept_form=accept_form,
         buttons=[
             edit_btn(object_id=id)
         ]
     )
+
+
+@bp.route('/<id>/submit', methods=['GET', 'POST'])
+@api.view(ODPScope.RECORD_READ)
+def submit(id):
+    print('Submit')
+    return True
+
+
+@bp.route('/<id>/delete', methods=['GET', 'POST'])
+@api.view(ODPScope.RECORD_READ)
+def delete(id):
+    print('Delete')
+    return True
 
 
 @bp.route('/<id>/edit', methods=['GET', 'POST'])
@@ -76,3 +97,13 @@ def edit(id):
         submission=submission,
         form=form
     )
+
+
+@bp.route('/orcid/<id>')
+@api.view(ODPScope.RECORD_READ)
+def get_orcid_info(id):
+    if not current_user.is_authenticated:
+        flash('Please log in to access that page.', 'warning')
+        return redirect(url_for('.index'))
+
+    return utils.get_orcid_info(id)

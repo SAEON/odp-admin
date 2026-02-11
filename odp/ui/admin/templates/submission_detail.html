@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% from 'content.j2' import render_info, render_buttons %}
+
+{% block web_title %}
+    {{ super() }} |
+{% endblock %}
+
+{% block content %}
+    <main class="d-flex flex-grow-1 align-items-center justify-content-evenly">
+        <div class="container-md row m-auto">
+            <div class="col-12">
+                <h2>{{ submission.data['title'] }}</h2>
+            </div>
+            <div class="col-6">
+                <div class="mt-4">
+                    Status: <span
+                        class="badge bg-{{ 'info' if submission.status == 'editing' else 'success' }}">{{ submission.status }}</span>
+                </div>
+
+                <div class="mt-4">
+                    <label class="form-label">Uploaded Dataset</label>
+                    <input type="text" class="form-control"
+                           placeholder="/{{ submission.id }}/{{ submission.dataset_file_name }}"
+                           disabled="">
+                </div>
+
+
+                <form id="submit-form" action="{{ url_for('.submit', id=submission.id) }}" method="post">
+                    <div class="mt-4">
+                        {{ accept_form.collection.label(class="form-label") }}
+                        {{ accept_form.collection(class="form-control") }}
+                    </div>
+                    <div class="mt-4">
+                        {{ accept_form.schema.label(class="form-label") }}
+                        {{ accept_form.schema(class="form-control list-unstyled") }}
+                    </div>
+                </form>
+
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{{ url_for('.edit', id=submission.id) }}"
+                       class="btn btn-outline-primary btn-action {{ 'disabled' if submission.status == 'editing' }}"
+                    >
+                        Edit Metadata
+                    </a>
+                    <button type="submit"
+                            form="submit-form"
+                            class="btn btn-outline-success btn-action"
+                            data-toggle="tooltip" data-placement="bottom"
+                            title="Accept this submission and generate a corresponding Metadata Record"
+                            {{ 'disabled' if submission.status == 'editing' }}>
+                        Submit
+                    </button>
+                    <button type="submit"
+                            form="delete-form"
+                            class="btn btn-outline-danger btn-action"
+                            {{ 'disabled' if submission.status == 'editing' }}
+                            onclick="return confirm('Are you sure you want to delete this submission? This cannot be undone')"
+                    >
+                        Delete Submission
+                    </button>
+                </div>
+            </div>
+            <div class="col-6">
+                <label class="mb-2">Metadata</label>
+                <pre class="p-3 bg-light border">{{ submission.data | tojson(indent=4) }}</pre>
+            </div>
+        </div>
+    </main>
+
+    <form id="delete-form" action="{{ url_for('.delete', id=submission.id) }}" method="post">
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+{% endblock %}

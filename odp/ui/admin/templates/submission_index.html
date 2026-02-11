@@ -11,10 +11,7 @@
                     {{ render_flat_form(filter_form, submit_target=url_for('.index')) }}
                 </div>
 
-                {% call(submission) render_table(submissions, 'ID', 'Title', 'Status', hide_id=true) %}
-                    <td>
-                        <a href="{{ url_for('.edit', id=submission.id) }}">{{ submission.id }}</a>
-                    </td>
+                {% call(submission) render_table(submissions, 'Title', 'Status') %}
                     <td>
                         {{ submission.title }}
                     </td>
