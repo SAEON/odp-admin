@@ -14,8 +14,17 @@
             <div class="col-6">
                 <div class="mt-4">
                     Status: <span
-                        class="badge bg-{{ 'info' if submission.status == 'editing' else 'success' }}">{{ submission.status }}</span>
+                        class="badge bg-{{ 'info' if not buttons_enabled else 'success' }}">{{ submission.status }}</span>
                 </div>
+
+                {% if submission.record_id %}
+                    <div class="mt-4">
+                        Created Record:
+                        <a href="{{ url_for('records.detail', id=submission.record_id) }}">
+                            {{ submission.record_id }}
+                        </a>
+                    </div>
+                {% endif %}
 
                 <div class="mt-4">
                     <label class="form-label">Uploaded Dataset</label>
@@ -25,21 +34,21 @@
                 </div>
 
 
-                <form id="submit-form" action="{{ url_for('.submit', id=submission.id) }}" method="post">
+                <form id="submit-form" action="{{ url_for('.accept', id=submission.id) }}" method="post">
                     <div class="mt-4">
-                        {{ accept_form.collection.label(class="form-label") }}
-                        {{ accept_form.collection(class="form-control") }}
+                        {{ accept_form.collection_id.label(class="form-label") }}
+                        {{ accept_form.collection_id(class="form-control") }}
                     </div>
                     <div class="mt-4">
-                        {{ accept_form.schema.label(class="form-label") }}
-                        {{ accept_form.schema(class="form-control list-unstyled") }}
+                        {{ accept_form.schema_id.label(class="form-label") }}
+                        {{ accept_form.schema_id(class="form-control list-unstyled") }}
                     </div>
                 </form>
 
 
                 <div class="d-flex justify-content-between mt-4">
                     <a href="{{ url_for('.edit', id=submission.id) }}"
-                       class="btn btn-outline-primary btn-action {{ 'disabled' if submission.status == 'editing' }}"
+                       class="btn btn-outline-primary btn-action {{ 'disabled' if not buttons_enabled }}"
                     >
                         Edit Metadata
                     </a>
@@ -48,13 +57,13 @@
                             class="btn btn-outline-success btn-action"
                             data-toggle="tooltip" data-placement="bottom"
                             title="Accept this submission and generate a corresponding Metadata Record"
-                            {{ 'disabled' if submission.status == 'editing' }}>
+                            {{ 'disabled' if not buttons_enabled }}>
                         Submit
                     </button>
                     <button type="submit"
                             form="delete-form"
                             class="btn btn-outline-danger btn-action"
-                            {{ 'disabled' if submission.status == 'editing' }}
+                            {{ 'disabled' if not buttons_enabled }}
                             onclick="return confirm('Are you sure you want to delete this submission? This cannot be undone')"
                     >
                         Delete Submission
