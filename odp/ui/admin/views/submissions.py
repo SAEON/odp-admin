@@ -2,11 +2,11 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import current_user
 
 from odp.const import ODPScope
+from odp.const.db import SubmissionStatus
 from odp.ui.admin.forms import CurationSubmissionForm, SubmissionFilterForm, SubmissionAcceptForm
-from odp.ui.base import api
-from odp.ui.base.templates import edit_btn
-from odp.ui.base.views import utils
 from odp.ui.admin.views.utils import populate_collection_choices
+from odp.ui.base import api
+from odp.ui.base.views import utils
 
 bp = Blueprint('submissions', __name__)
 
@@ -18,10 +18,9 @@ def index():
 
     filter_form = SubmissionFilterForm(request.form, data=request.args)
 
-    filter_form.status.choices = [
-        'all',
-        'editing',
-        'submitted'
+    filter_form.status.choices = [('all', 'All')] + [
+        (status.value, status.name.replace('_', ' ').title())
+        for status in SubmissionStatus
     ]
 
     filter_status = request.args.get('status', 'all')
@@ -40,25 +39,33 @@ def index():
 def detail(id):
     submission = api.get(f'/submission/admin/{id}')
 
-    accept_form = SubmissionAcceptForm(request.form)
+    accept_form = SubmissionAcceptForm(request.form, data=submission)
 
-    populate_collection_choices(accept_form.collection)
+    populate_collection_choices(accept_form.collection_id)
+
+    buttons_enabled = (submission['status'] == SubmissionStatus.submitted)
 
     return render_template(
         'submission_detail.html',
         submission=submission,
         accept_form=accept_form,
-        buttons=[
-            edit_btn(object_id=id)
-        ]
+        buttons_enabled=buttons_enabled,
     )
 
 
-@bp.route('/<id>/submit', methods=['GET', 'POST'])
+@bp.route('/<id>/accept', methods=['POST'])
 @api.view(ODPScope.RECORD_READ)
-def submit(id):
-    print('Submit')
-    return True
+def accept(id):
+    accept_form = SubmissionAcceptForm(request.form)
+
+    api.put(
+        f'/submission/admin/{id}/accept',
+        data=dict(),
+        collection_id=accept_form.data['collection_id'],
+        schema_id=accept_form.data['schema_id']
+    )
+
+    return redirect(url_for('.detail', id=id))
 
 
 @bp.route('/<id>/delete', methods=['GET', 'POST'])
@@ -82,13 +89,18 @@ def edit(id):
 
     form.keywords.data = submission_data.get('keywords')
     form.instruments.data = submission_data.get('instruments')
+    form.ecv_keywords.data = submission_data.get('ecv_keywords')
+    form.eov_keywords.data = submission_data.get('eov_keywords')
 
     if request.method == 'POST' and form.validate():
         cleaned_data = utils.clean_submission_data(form.data)
 
-        api.put(f'/submission/{id}', dict(
-            cleaned_data
-        ))
+        api.put(
+            f'/submission/admin/{id}',
+            dict(
+                data=cleaned_data
+            )
+        )
         flash(f'Record {id} has been updated.', category='success')
         return redirect(url_for('.detail', id=id))
 

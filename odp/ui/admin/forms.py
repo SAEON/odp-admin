@@ -1,11 +1,13 @@
+from datetime import datetime
+
 from wtforms import BooleanField, RadioField, SelectField, StringField, TextAreaField, ValidationError, HiddenField, \
-    DateField, FieldList, FormField, SelectMultipleField
-from wtforms.validators import data_required, input_required, length, optional, regexp
+    FieldList, FormField, SelectMultipleField, IntegerField
+from wtforms.validators import data_required, input_required, length, optional, regexp, DataRequired
 
 from odp.const import DOI_REGEX, SID_REGEX
+from odp.const import ODPMetadataSchema
 from odp.const.hydra import GrantType, ResponseType, TokenEndpointAuthMethod
 from odp.ui.base.forms import BaseForm, DateStringField, JSONTextField, MultiCheckboxField, StringListField, json_object
-
 from odp.ui.base.forms import SubmissionForm, CreatorForm, ContributorForm
 
 
@@ -292,8 +294,21 @@ class ContributorWithRORForm(ContributorForm):
     ror = StringField(label='ROR')
 
 
+def validate_past_year(form, field):
+    current_year = datetime.now().year
+    year_val = field.data
+
+    if year_val is None:
+        return
+
+    if not (1000 <= year_val <= 9999):
+        raise ValidationError('Year must be a 4-digit number (e.g., 2024).')
+
+    if year_val > current_year:
+        raise ValidationError(f'Year cannot be in the future.')
+
+
 class CurationSubmissionForm(SubmissionForm):
-    # The additional curation fields will go here
     creators = FieldList(
         FormField(CreatorWithRORForm),
         label='Creators',
@@ -307,7 +322,7 @@ class CurationSubmissionForm(SubmissionForm):
         description='Other parties who contributed to the resource, including a contact person'
     )
     languages = HiddenField(label='Language', default='en-US')
-    publication_year = DateField(label='Date', format='%Y')
+    publication_year = IntegerField(label='Publication Year', validators=[validate_past_year])
     publisher = SelectField(
         label='Publisher',
         choices=[
@@ -464,5 +479,12 @@ class SubmissionFilterForm(BaseForm):
 
 
 class SubmissionAcceptForm(BaseForm):
-    collection = SelectField(label='Collection')
-    schema = RadioField(label='Schema', choices=['Datacite', 'Iso'], default='Datacite')
+    collection_id = SelectField(label='Collection')
+    schema_id = RadioField(
+        label='Schema',
+        choices=[
+            ODPMetadataSchema.SAEON_DATACITE4.value,
+            ODPMetadataSchema.SAEON_ISO19115.value
+        ],
+        validators=[data_required()]
+    )
