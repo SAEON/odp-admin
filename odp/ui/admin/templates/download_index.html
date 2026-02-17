@@ -107,7 +107,8 @@
                                     {% if download.download_type == 'single_record' %}
                                         {% set doi = download.meta.get('doi', '') %}
                                         {% if doi %}
-                                            <a href="{{ config.MIMS_CATALOG_URL if 'catalog' in config.MIMS_CATALOG_URL else config.MIMS_CATALOG_URL.rstrip('/') + '/catalog' }}/{{ doi }}" target="_blank" class="btn btn-sm btn-outline-primary">View Record</a>
+                                            {% set base = config.get('MIMS_CATALOG_URL', '').rstrip('/') %}
+                                            <a href="{% if base.endswith('/catalog') %}{{ base }}/{{ doi }}{% else %}{{ base }}/catalog/{{ doi }}{% endif %}" target="_blank" class="btn btn-sm btn-outline-primary">View Record</a>
                                         {% else %}
                                             -
                                         {% endif %}
@@ -119,7 +120,21 @@
                                                 {% set _ = query_parts.append('record_id_or_doi_list=' + doi) %}
                                             {% endfor %}
                                             {% set query = query_parts|join('&') %}
-                                            <a href="{{ config.MIMS_CATALOG_URL }}/subset?{{ query }}&page=1&size=50" target="_blank" class="btn btn-sm btn-outline-warning">View Bundle</a>
+
+                                                {% set base = config.get('MIMS_CATALOG_URL', '').rstrip('/') %}
+
+                                                {% set base = config.get('MIMS_CATALOG_URL', '').rstrip('/') %}
+
+                                                <a href="
+                                                {% if base.endswith('/catalog') %}
+                                                    {{ base }}/subset?{{ query }}&page=1&size=50
+                                                {% else %}
+                                                    {{ base }}/catalog/subset?{{ query }}&page=1&size=50
+                                                {% endif %}
+                                                " target="_blank" class="btn btn-sm btn-outline-warning">
+                                                    View Bundle
+                                                </a>
+
                                         {% else %}
                                             -
                                         {% endif %}
