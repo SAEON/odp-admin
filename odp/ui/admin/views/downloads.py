@@ -1,16 +1,12 @@
 """Admin interface for download audit logs and reporting."""
-import os
 from datetime import datetime, timedelta
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+
 import requests
-from urllib.parse import urlencode
+from flask import Blueprint, Response, render_template, request, redirect, url_for, flash
+
+from odp.ui.base import api
 
 bp = Blueprint('downloads', __name__)
-
-
-def get_api_base_url():
-    """Get the base URL for API calls from environment variable or use default."""
-    return os.getenv('ODP_API_URL', 'http://localhost:2020')
 
 
 @bp.route('/')
@@ -41,19 +37,16 @@ def index():
         params['download_type'] = download_type
 
     try:
-        # Call the backend API
-        api_url = f"{get_api_base_url()}/download/logs"
-        response = requests.get(api_url, params=params, timeout=10)
-        response.raise_for_status()
-        data = response.json()
+
+        download_logs = api.get('/download/logs', params=params)
 
         return render_template(
             'download_index.html',
-            downloads=data.get('items', []),
-            total=data.get('total', 0),
+            downloads=download_logs.get('items', []),
+            total=download_logs.get('total', 0),
             page=page,
-            total_pages=data.get('total_pages', 0),
-            size=data.get('size', 50),
+            total_pages=download_logs.get('total_pages', 0),
+            size=download_logs.get('size', 50),
             start_date=start_date,
             end_date=end_date,
             email=email,
@@ -94,14 +87,11 @@ def analytics():
 
     try:
         # Call the backend API for statistics
-        api_url = f"{get_api_base_url()}/download/stats"
-        response = requests.get(api_url, params=params, timeout=10)
-        response.raise_for_status()
-        stats = response.json()
+        download_stats = api.get('/download/stats', params=params)
 
         return render_template(
             'download_analytics.html',
-            stats=stats,
+            stats=download_stats,
             start_date=start_date,
             end_date=end_date,
         )
@@ -138,17 +128,25 @@ def export_csv():
         params['download_type'] = download_type
 
     try:
-        # Call the backend API
-        api_url = f"{get_api_base_url()}/download/export/csv"
-        response = requests.get(api_url, params=params, timeout=30)
+
+        api_url = f"{api.api_url}/download/export/csv"
+        response = api._send_request('GET', api_url, data=None, params=params)
+
+        # Check for errors (this will raise ODPAPIError if the backend fails)
         response.raise_for_status()
 
-        # The response should already be a CSV with proper headers
-        return response.content, 200, {
-            'Content-Disposition': f'attachment; filename="download_logs.csv"',
-            'Content-Type': 'text/csv',
-        }
+        # Stream the CSV content directly to the browser
+        return Response(
+            response.iter_content(chunk_size=1024),
+            content_type=response.headers.get('Content-Type', 'text/csv'),
+            headers={
+                'Content-Disposition': response.headers.get(
+                    'Content-Disposition',
+                    'attachment; filename="download_logs.csv"'
+                )
+            }
+        )
 
-    except requests.RequestException as e:
+    except Exception as e:
         flash(f'Error exporting download logs: {str(e)}', category='error')
         return redirect(request.referrer or url_for('.index'))
