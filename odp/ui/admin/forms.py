@@ -286,6 +286,14 @@ class VocabularyTermProjectForm(BaseForm):
     )
 
 
+class ImmutableResourceForm(BaseForm):
+    download_url = StringField('Download URL')
+    file_format = StringField('File format')
+    file_name = StringField('File name')
+    resource_name = StringField('Resource name')
+    resource_description = StringField('Resource description')
+
+
 class CreatorWithRORForm(CreatorForm):
     ror = StringField(label='ROR')
 
@@ -472,6 +480,7 @@ class CurationSubmissionForm(SubmissionForm):
             'Marine Habitats',
             'Plankton'
         ])
+    immutable_resource = FormField(ImmutableResourceForm, label='Immutable Resource')
 
 
 class SubmissionFilterForm(BaseForm):

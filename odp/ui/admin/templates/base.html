@@ -1,5 +1,5 @@
 {% extends 'layout.html' %}
-{% from 'lib.j2' import jquery_js, bootswatch_spacelab_css, leaflet_js, leaflet_css %}
+{% from 'lib.j2' import jquery_js, bootswatch_spacelab_css, bootswatch_flatly_css, bootswatch_sandstone_css, leaflet_js, leaflet_css %}
 {% from 'page.j2' import nav_logo, nav_title, nav_menu, nav_dropdown, footer %}
 
 {% block web_title %}
@@ -53,7 +53,7 @@
 
 {% block styles %}
     {{ super() }}
-    {{ bootswatch_spacelab_css() }}
+    {{ bootswatch_sandstone_css() }}
     {{ leaflet_css() }}
 {% endblock %}
 
