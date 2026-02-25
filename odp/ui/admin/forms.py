@@ -294,6 +294,40 @@ class ImmutableResourceForm(BaseForm):
     resource_description = StringField('Resource description')
 
 
+class ResourceTypeForm(BaseForm):
+    resource_type_general = SelectField('Resource Type General', choices=[
+        'Audiovisual',
+        'Book',
+        'BookChapter',
+        'Collection',
+        'ComputationalNotebook',
+        'ConferencePaper',
+        'ConferenceProceeding',
+        'DataPaper',
+        'Dataset',
+        'Dissertation',
+        'Event',
+        'Image',
+        'InteractiveResource',
+        'Journal',
+        'JournalArticle',
+        'Model',
+        'OutputManagementPlan',
+        'PeerReview',
+        'PhysicalObject',
+        'Preprint',
+        'Report',
+        'Service',
+        'Software',
+        'Sound',
+        'Standard',
+        'Text',
+        'Workflow',
+        'Other'
+    ])
+    resource_type = StringField(label='Resource Type')
+
+
 class CreatorWithRORForm(CreatorForm):
     ror = StringField(label='ROR')
 
@@ -338,36 +372,7 @@ class CurationSubmissionForm(SubmissionForm):
             'Department of Forestry, Fisheries and the Environment'
         ])
     format = StringField(label='Format Name')
-    resource_type = SelectField('Resource Type', choices=[
-        'Audiovisual',
-        'Book',
-        'BookChapter',
-        'Collection',
-        'ComputationalNotebook',
-        'ConferencePaper',
-        'ConferenceProceeding',
-        'DataPaper',
-        'Dataset',
-        'Dissertation',
-        'Event',
-        'Image',
-        'InteractiveResource',
-        'Journal',
-        'JournalArticle',
-        'Model',
-        'OutputManagementPlan',
-        'PeerReview',
-        'PhysicalObject',
-        'Preprint',
-        'Report',
-        'Service',
-        'Software',
-        'Sound',
-        'Standard',
-        'Text',
-        'Workflow',
-        'Other'
-    ])
+    resource_types = FormField(ResourceTypeForm, label='Resource Types')
     earth_science_theme_keyword = SelectField(
         'GCMD Earth Science theme keyword',
         choices=[
@@ -387,7 +392,7 @@ class CurationSubmissionForm(SubmissionForm):
             'TERRESTRIAL HYDROSPHERE'
         ])
     eov_keywords = SelectMultipleField(
-        'Essential Ocean Variables (EOVs)',
+        'Essential Ocean Variables',
         choices=[
             "Sea state",
             "Ocean surface stress",
@@ -422,7 +427,7 @@ class CurationSubmissionForm(SubmissionForm):
             "Invertebrate abundance and distribution (emerging)"
         ])
     ecv_keywords = SelectMultipleField(
-        'ECV Keywords',
+        'Essential Climate Variables',
         choices=[
             'Precipitation',
             'Surface Pressure',
@@ -480,6 +485,99 @@ class CurationSubmissionForm(SubmissionForm):
             'Marine Habitats',
             'Plankton'
         ])
+    ebv_keywords = SelectMultipleField(
+        'Essential Biodiversity Variables',
+        choices=[
+            'Genetic diversity (richness & heterozygosity)',
+            'Genetic differentiation (number of genetic units and genetic distance)',
+            'Effective population size',
+            'Inbreeding',
+            'Species distributions',
+            'Species abundances',
+            'Morphology',
+            'Physiology',
+            'Phenology',
+            'Movement',
+            'Reproduction',
+            'Community abundance',
+            'Taxonomic/phylogenetic diversity',
+            'Trait diversity',
+            'Interaction diversity',
+            'Live cover fraction',
+            'Ecosystem distribution',
+            'Ecosystem Vertical Profile',
+            'Primary productivity',
+            'Ecosystem phenology',
+            'Ecosystem disturbances',
+        ])
+    eav_keywords = SelectMultipleField(
+        'Essential Agricultural Variables',
+        choices=[
+            'Seasonal Dynamics of Surface Water Availability',
+            'Reference Evapotranspiration',
+            'Reference Crop Calendars',
+            'Non-Perennial Cover Crop Utilization Mask',
+            'Managed Grasslands Mask',
+            'Leaf Area Index',
+            'Irrigated Cropland Map',
+            'Degree Growing Days',
+            'Fractional Cover',
+            'Field Boundaries',
+            'fAPAR',
+            'Current Crop Stage',
+            'Crop Rotation Sequence',
+            'Crop Residue Cover Percentage',
+            'Actual Evapotranspiration',
+            'Above Ground Agricultural Biomass',
+            'Surface Soil Moisture',
+            'Root Zone Soil Moisture',
+            'Precipitation',
+            'Land Surface Temperature',
+            'Air Temperature',
+            'Water Productivity',
+            'Seasonal Fallow Mask',
+            'Rangelands Mask',
+            'Rangeland Condition Assessment',
+            'Perennial Cropland Mask',
+            'Non-Perennial Cropland Mask',
+            'Managed Grasslands Mask',
+            'Crop Yield Forecast',
+            'Crop Yield Estimation',
+            'Crop Type Area Estimate',
+            'Cropland Mask',
+            'Crop Type Masks',
+            'Incoming Radiation',
+            'Relative Humidity',
+            'Wind Speed',
+            'Crop Condition Assessment',
+            'Agriculture Mask',
+        ])
+    status = SelectField('Status', choices=[
+        'historicalArchive',
+        'onGoing',
+        'completed',
+    ])
+    place_keywords = SelectMultipleField(label='Place Keywords')
+    topic_categories = SelectField('Status', choices=[
+        'farming',
+        'biota',
+        'boundaries',
+        'climatologyMeteorologyAtmosphere',
+        'economy',
+        'environment',
+        'geoscientificInformation',
+        'health',
+        'imageryBaseMapsEarthCover',
+        'intelligenceMilitary',
+        'inlandWaters',
+        'location',
+        'oceans',
+        'planningCadastre',
+        'society',
+        'structure',
+        'transportation',
+        'utlitiesCommunication',
+    ])
     immutable_resource = FormField(ImmutableResourceForm, label='Immutable Resource')
 
 
@@ -489,6 +587,7 @@ class SubmissionFilterForm(BaseForm):
 
 class SubmissionAcceptForm(BaseForm):
     collection_id = SelectField(label='Collection')
+    doi = StringField(label='DOI')
     schema_id = RadioField(
         label='Schema',
         choices=[
