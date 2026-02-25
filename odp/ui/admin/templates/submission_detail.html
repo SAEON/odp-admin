@@ -40,6 +40,10 @@
                         {{ accept_form.collection_id(class="form-control") }}
                     </div>
                     <div class="mt-4">
+                        {{ accept_form.doi.label(class="form-label") }}
+                        {{ accept_form.doi(class="form-control list-unstyled") }}
+                    </div>
+                    <div class="mt-4">
                         {{ accept_form.schema_id.label(class="form-label") }}
                         {{ accept_form.schema_id(class="form-control list-unstyled") }}
                     </div>
@@ -47,6 +51,9 @@
 
 
                 <div class="d-flex justify-content-between mt-4">
+                    <button id="new-doi" class="btn btn-outline-info btn-action" {{ 'disabled' if not buttons_enabled }}>
+                        New DOI
+                    </button>
                     <a href="{{ url_for('.edit', id=submission.id) }}"
                        class="btn btn-outline-primary btn-action {{ 'disabled' if not buttons_enabled }}"
                     >
@@ -58,7 +65,7 @@
                             data-toggle="tooltip" data-placement="bottom"
                             title="Accept this submission and generate a corresponding Metadata Record"
                             {{ 'disabled' if not buttons_enabled }}>
-                        Submit
+                        Accept
                     </button>
                     <button type="submit"
                             form="delete-form"

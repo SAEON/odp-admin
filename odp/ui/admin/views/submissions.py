@@ -62,7 +62,8 @@ def accept(id):
         f'/submission/admin/{id}/accept',
         data=dict(),
         collection_id=accept_form.data['collection_id'],
-        schema_id=accept_form.data['schema_id']
+        schema_id=accept_form.data['schema_id'],
+        doi=accept_form.data['doi']
     )
 
     return redirect(url_for('.detail', id=id))
@@ -86,6 +87,7 @@ def edit(id):
 
     utils.populate_keywords_choices(form.keywords)
     utils.populate_instruments_choices(form.instruments)
+    utils.populate_location_choices(form.place_keywords)
 
     if request.method == 'GET':
         form.keywords.data = submission_data.get('keywords')
