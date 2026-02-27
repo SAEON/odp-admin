@@ -92,8 +92,11 @@ def edit(id):
     if request.method == 'GET':
         form.keywords.data = submission_data.get('keywords')
         form.instruments.data = submission_data.get('instruments')
-        form.ecv_keywords.data = submission_data.get('ecv_keywords')
         form.eov_keywords.data = submission_data.get('eov_keywords')
+        form.ecv_keywords.data = submission_data.get('ecv_keywords')
+        form.ebv_keywords.data = submission_data.get('ebv_keywords')
+        form.eav_keywords.data = submission_data.get('eav_keywords')
+        form.place_keywords.data = submission_data.get('place_keywords')
 
     if request.method == 'POST' and form.validate():
         cleaned_data = utils.clean_submission_data(form.data)
