@@ -12,7 +12,7 @@ bp = Blueprint('submissions', __name__)
 
 
 @bp.route('/')
-@api.view(ODPScope.RECORD_READ)
+@api.view(ODPScope.SUBMISSION_ADMIN)
 def index():
     page = request.args.get('page', 1)
 
@@ -35,7 +35,7 @@ def index():
 
 
 @bp.route('/<id>')
-@api.view(ODPScope.RECORD_READ)
+@api.view(ODPScope.SUBMISSION_ADMIN)
 def detail(id):
     submission = api.get(f'/submission/admin/{id}')
 
@@ -54,7 +54,7 @@ def detail(id):
 
 
 @bp.route('/<id>/accept', methods=['POST'])
-@api.view(ODPScope.RECORD_READ)
+@api.view(ODPScope.SUBMISSION_ADMIN)
 def accept(id):
     accept_form = SubmissionAcceptForm(request.form)
 
@@ -69,15 +69,8 @@ def accept(id):
     return redirect(url_for('.detail', id=id))
 
 
-@bp.route('/<id>/delete', methods=['GET', 'POST'])
-@api.view(ODPScope.RECORD_READ)
-def delete(id):
-    print('Delete')
-    return True
-
-
 @bp.route('/<id>/edit', methods=['GET', 'POST'])
-@api.view(ODPScope.RECORD_READ)
+@api.view(ODPScope.SUBMISSION_ADMIN)
 def edit(id):
     submission = api.get(f'/submission/admin/{id}')
 
@@ -115,6 +108,16 @@ def edit(id):
         submission=submission,
         form=form
     )
+
+
+@bp.route('/<id>/delete', methods=['GET', 'POST'])
+@api.view(ODPScope.SUBMISSION_ADMIN)
+def delete(id):
+    api.delete(f'/submission/admin/{id}')
+
+    flash(f'Record {id} has been delete.', category='success')
+
+    return redirect(url_for('.index'))
 
 
 @bp.route('/orcid/<id>')
