@@ -545,7 +545,7 @@ class CurationSubmissionForm(SubmissionForm):
         'completed',
     ])
     place_keywords = SelectMultipleField(label='Place Keywords')
-    topic_categories = SelectField('Status', choices=[
+    topic_categories = SelectField('Topic categories', choices=[
         'farming',
         'biota',
         'boundaries',
