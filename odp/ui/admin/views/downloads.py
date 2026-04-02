@@ -4,12 +4,14 @@ from datetime import datetime, timedelta
 import requests
 from flask import Blueprint, Response, render_template, request, redirect, url_for, flash
 
+from odp.const import ODPScope
 from odp.ui.base import api
 
 bp = Blueprint('downloads', __name__)
 
 
 @bp.route('/')
+@api.view(ODPScope.CATALOG_READ)
 def index():
     """Display paginated download logs with filtering options."""
     page = request.args.get('page', 1, type=int)
@@ -68,6 +70,7 @@ def index():
 
 
 @bp.route('/analytics')
+@api.view(ODPScope.CATALOG_READ)
 def analytics():
     """Display download analytics and statistics dashboard."""
     start_date = request.args.get('start_date', '')
@@ -89,12 +92,14 @@ def analytics():
         # Call the backend API for statistics
         download_stats = api.get('/download/stats', params=params)
 
+
         return render_template(
             'download_analytics.html',
             stats=download_stats,
             start_date=start_date,
             end_date=end_date,
         )
+
 
     except requests.RequestException as e:
         flash(f'Error retrieving download statistics: {str(e)}', category='error')
@@ -106,6 +111,7 @@ def analytics():
 
 
 @bp.route('/export')
+@api.view(ODPScope.CATALOG_READ)
 def export_csv():
     """Export download logs as CSV."""
     start_date = request.args.get('start_date', '')
