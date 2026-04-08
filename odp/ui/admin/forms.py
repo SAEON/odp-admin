@@ -292,6 +292,7 @@ class ImmutableResourceForm(BaseForm):
     file_name = StringField('File name')
     resource_name = StringField('Resource name')
     resource_description = StringField('Resource description')
+    file_checksum = StringField('File checksum')
 
 
 class ResourceTypeForm(BaseForm):
