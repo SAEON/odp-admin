@@ -1,0 +1,463 @@
+{% extends 'base.html' %}
+
+{% block web_title %}
+    {{ super() }} |
+    {% block heading %}
+        Download Analytics
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <h2 class="mb-4">Download Analytics Dashboard</h2>
+
+        <!-- Date Range Filter -->
+        <form class="row g-3 mb-4 p-3 bg-light rounded" method="get">
+            <div class="col-md-3">
+                <label for="start_date" class="form-label">Start Date</label>
+                <input type="date" class="form-control" id="start_date" name="start_date" value="{{ start_date }}">
+            </div>
+            <div class="col-md-3">
+                <label for="end_date" class="form-label">End Date</label>
+                <input type="date" class="form-control" id="end_date" name="end_date" value="{{ end_date }}">
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Update</button>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <a href="{{ url_for('downloads.index') }}" class="btn btn-secondary w-100">Back to Logs</a>
+            </div>
+        </form>
+
+        {% if error %}
+            <div class="alert alert-danger">
+                <strong>Error:</strong> {{ error }}
+            </div>
+        {% else %}
+            <!-- Summary Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-white bg-primary">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Downloads</h5>
+                            <p class="card-text" style="font-size: 2rem; font-weight: bold;">
+                                {{ stats.get('total_downloads', 0)|default('0') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-success">
+                        <div class="card-body">
+                            <h5 class="card-title">Unique Users</h5>
+                            <p class="card-text" style="font-size: 2rem; font-weight: bold;">
+                                {{ stats.get('unique_users', 0)|default('0') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+<!--                <div class="col-md-3">-->
+<!--                    <div class="card text-white bg-info">-->
+<!--                        <div class="card-body">-->
+<!--                            <h5 class="card-title">Total Data Volume</h5>-->
+<!--                            <p class="card-text" style="font-size: 1.3rem; font-weight: bold;">-->
+<!--                                {% set volume = stats.get('total_data_volume', 0) %}-->
+<!--                                {% if volume > 1073741824 %}-->
+<!--                                    {{ (volume / 1073741824)|round(2) }} GB-->
+<!--                                {% elif volume > 1048576 %}-->
+<!--                                    {{ (volume / 1048576)|round(2) }} MB-->
+<!--                                {% else %}-->
+<!--                                    {{ volume }} bytes-->
+<!--                                {% endif %}-->
+<!--                            </p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+                <div class="col-md-3">
+                    <div class="card text-white bg-warning">
+                        <div class="card-body">
+                            <h5 class="card-title">Success Rate</h5>
+                            <p class="card-text" style="font-size: 2rem; font-weight: bold;">
+                                {% set total = stats.get('total_downloads', 0) %}
+                                {% set successful = stats.get('successful_downloads', 0) %}
+                                {% if total > 0 %}
+                                    {{ ((successful / total) * 100)|round(1) }}%
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Download Breakdown -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="card-title mb-0">Downloads by Type</h5>
+                        </div>
+                        <div class="card-body">
+                            {% set by_type = stats.get('downloads_by_type', {}) %}
+                            {% if by_type %}
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Type</th>
+                                            <th class="text-end">Count</th>
+                                            <th class="text-end">Percentage</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% set total_downloads = stats.get('total_downloads', 0) %}
+                                        {% for type_name, count in by_type.items() %}
+                                            <tr>
+                                                <td>
+                                                    {% if type_name == 'single_record' %}
+                                                        <span class="badge bg-primary">Single Record</span>
+                                                    {% elif type_name == 'zip_bundle' %}
+                                                        <span class="badge bg-warning text-dark">ZIP Bundle</span>
+                                                    {% else %}
+                                                        {{ type_name }}
+                                                    {% endif %}
+                                                </td>
+                                                <td class="text-end"><strong>{{ count }}</strong></td>
+                                                <td class="text-end">
+                                                    {% if total_downloads > 0 %}
+                                                        {{ ((count / total_downloads) * 100)|round(1) }}%
+                                                    {% else %}
+                                                        0%
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <p class="text-muted">No data available</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="card-title mb-0">Download Status</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Status</th>
+                                        <th class="text-end">Count</th>
+                                        <th class="text-end">Percentage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="badge bg-success">Successful</span></td>
+                                        <td class="text-end"><strong>{{ stats.get('successful_downloads', 0) }}</strong></td>
+                                        <td class="text-end">
+                                            {% set total_downloads = stats.get('total_downloads', 0) %}
+                                            {% set successful = stats.get('successful_downloads', 0) %}
+                                            {% if total_downloads > 0 %}
+                                                {{ ((successful / total_downloads) * 100)|round(1) }}%
+                                            {% else %}
+                                                0%
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge bg-danger">Failed</span></td>
+                                        <td class="text-end"><strong>{{ stats.get('failed_downloads', 0) }}</strong></td>
+                                        <td class="text-end">
+                                            {% set total_downloads = stats.get('total_downloads', 0) %}
+                                            {% set failed = stats.get('failed_downloads', 0) %}
+                                            {% if total_downloads > 0 %}
+                                                {{ ((failed / total_downloads) * 100)|round(1) }}%
+                                            {% else %}
+                                                0%
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Organisations Analytics -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="card-title mb-0">Downloads by Organisation (Top 20)</h5>
+                        </div>
+                        <div class="card-body">
+                            {% set organisations = stats.get('organisations', []) %}
+                            {% if organisations %}
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Organisation</th>
+                                                <th class="text-end">Downloads</th>
+                                                <th class="text-end">Unique Users</th>
+                                                <th class="text-end">% of Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% set total_downloads = stats.get('total_downloads', 0) %}
+                                            {% for org in organisations %}
+                                                <tr>
+                                                    <td><strong>{{ org.name }}</strong></td>
+                                                    <td class="text-end">{{ org.downloads }}</td>
+                                                    <td class="text-end">{{ org.unique_users }}</td>
+                                                    <td class="text-end">
+                                                        {% if total_downloads > 0 %}
+                                                            {{ ((org.downloads / total_downloads) * 100)|round(1) }}%
+                                                        {% else %}
+                                                            0%
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No organisation data available</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Most Downloaded Records -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="card-title mb-0">Most Downloaded Records (Top 10)</h5>
+                        </div>
+                        <div class="card-body">
+                            {% set top_records = stats.get('top_records', []) %}
+                            {% if top_records %}
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>DOI</th>
+                                                <th class="text-end">Downloads</th>
+                                                <th class="text-end">Unique Users</th>
+                                                <th class="text-end">% of Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% set total_downloads = stats.get('total_downloads', 0) %}
+                                            {% for record in top_records %}
+                                                <tr>
+                                                    <td>
+                                                        {% if record.doi %}
+                                                            {% set base = config.get('MIMS_CATALOG_URL', '').rstrip('/') %}
+
+                                                                <a href="
+                                                                {% if base.endswith('/catalog') %}
+                                                                    {{ base }}/{{ record.doi }}
+                                                                {% else %}
+                                                                    {{ base }}/catalog/{{ record.doi }}
+                                                                {% endif %}
+                                                                " target="_blank" class="text-decoration-none">
+                                                                    {{ record.doi }}
+                                                                </a>
+
+                                                        {% else %}
+                                                            <span class="text-muted">-</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="text-end"><strong>{{ record.downloads }}</strong></td>
+                                                    <td class="text-end">{{ record.unique_users }}</td>
+                                                    <td class="text-end">
+                                                        {% if total_downloads > 0 %}
+                                                            {{ ((record.downloads / total_downloads) * 100)|round(1) }}%
+                                                        {% else %}
+                                                            0%
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No record data available</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Daily Downloads Trend -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="card-title mb-0">Daily Downloads Trend</h5>
+                        </div>
+                        <div class="card-body">
+                            {% set daily = stats.get('daily_downloads', []) %}
+                            {% if daily %}
+                                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                                    <table class="table table-sm">
+                                        <thead style="position: sticky; top: 0; background: #f8f9fa;">
+                                            <tr>
+                                                <th>Date</th>
+                                                <th class="text-end">Total Downloads</th>
+                                                <th class="text-end">Successful</th>
+                                                <th class="text-end">Failed</th>
+                                                <th class="text-end">Success Rate</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for day in daily %}
+                                                <tr>
+                                                    <td><strong>{{ day.date }}</strong></td>
+                                                    <td class="text-end">{{ day.downloads }}</td>
+                                                    <td class="text-end"><span class="badge bg-success">{{ day.successful }}</span></td>
+                                                    <td class="text-end"><span class="badge bg-danger">{{ day.failed }}</span></td>
+                                                    <td class="text-end">
+                                                        {% if day.downloads > 0 %}
+                                                            {{ ((day.successful / day.downloads) * 100)|round(1) }}%
+                                                        {% else %}
+                                                            N/A
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No daily data available</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Visualization -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="card-title mb-0">Downloads Over Time</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="dailyTrendChart" height="80"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Info -->
+            <div class="alert alert-info">
+                <strong>Date Range:</strong> {{ start_date }} to {{ end_date }}
+            </div>
+
+        {% endif %}
+    </div>
+
+    <!-- Chart.js library for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <script>
+        // Initialize daily downloads trend chart
+        document.addEventListener('DOMContentLoaded', function() {
+            const chartCanvas = document.getElementById('dailyTrendChart');
+            if (!chartCanvas) return;
+
+            const dailyData = {{ stats.get('daily_downloads', [])|tojson }};
+            if (dailyData.length === 0) {
+                chartCanvas.parentElement.innerHTML = '<p class="text-muted">No data available for chart</p>';
+                return;
+            }
+
+            const labels = dailyData.map(d => d.date);
+            const downloads = dailyData.map(d => d.downloads);
+            const successful = dailyData.map(d => d.successful);
+            const failed = dailyData.map(d => d.failed);
+
+            new Chart(chartCanvas, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Total Downloads',
+                            data: downloads,
+                            borderColor: '#0d6efd',
+                            backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                            tension: 0.3,
+                            fill: true,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Successful',
+                            data: successful,
+                            borderColor: '#198754',
+                            backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                            tension: 0.3,
+                            fill: true,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Failed',
+                            data: failed,
+                            borderColor: '#dc3545',
+                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                            tension: 0.3,
+                            fill: true,
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 15
+                            }
+                        },
+                        title: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            },
+                            title: {
+                                display: true,
+                                text: 'Number of Downloads'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}
