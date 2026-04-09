@@ -1,9 +1,14 @@
-from wtforms import BooleanField, RadioField, SelectField, StringField, TextAreaField, ValidationError
-from wtforms.validators import data_required, input_required, length, optional, regexp
+from datetime import datetime
+
+from wtforms import BooleanField, RadioField, SelectField, StringField, TextAreaField, ValidationError, HiddenField, \
+    FieldList, FormField, SelectMultipleField, IntegerField
+from wtforms.validators import data_required, input_required, length, optional, regexp, DataRequired
 
 from odp.const import DOI_REGEX, SID_REGEX
+from odp.const import ODPMetadataSchema
 from odp.const.hydra import GrantType, ResponseType, TokenEndpointAuthMethod
 from odp.ui.base.forms import BaseForm, DateStringField, JSONTextField, MultiCheckboxField, StringListField, json_object
+from odp.ui.base.forms import SubmissionForm, CreatorForm, ContributorForm
 
 
 class ClientForm(BaseForm):
@@ -278,4 +283,304 @@ class VocabularyTermProjectForm(BaseForm):
     )
     description = StringField(
         label='Project description',
+    )
+
+
+class ImmutableResourceForm(BaseForm):
+    download_url = StringField('Download URL')
+    file_format = StringField('File format')
+    file_name = StringField('File name')
+    resource_name = StringField('Resource name')
+    resource_description = StringField('Resource description')
+    file_checksum = StringField('File checksum')
+
+
+class ResourceTypeForm(BaseForm):
+    resource_type_general = SelectField('Resource Type General', choices=[
+        "Audiovisual",
+        "Collection",
+        "DataPaper",
+        "Dataset",
+        "Event",
+        "Image",
+        "InteractiveResource",
+        "Model",
+        "PhysicalObject",
+        "Service",
+        "Software",
+        "Sound",
+        "Text",
+        "Workflow",
+        "Other"
+    ])
+    resource_type = StringField(label='Resource Type')
+
+
+class CreatorWithRORForm(CreatorForm):
+    ror = StringField(label='ROR')
+
+
+class ContributorWithRORForm(ContributorForm):
+    ror = StringField(label='ROR')
+
+
+def validate_past_year(form, field):
+    current_year = datetime.now().year
+    year_val = field.data
+
+    if year_val is None:
+        return
+
+    if not (1000 <= year_val <= 9999):
+        raise ValidationError('Year must be a 4-digit number (e.g., 2024).')
+
+    if year_val > current_year:
+        raise ValidationError(f'Year cannot be in the future.')
+
+
+class CurationSubmissionForm(SubmissionForm):
+    creators = FieldList(
+        FormField(CreatorWithRORForm),
+        label='Creators',
+        min_entries=1,
+        description='The main researchers or organisations involved in producing the data submission'
+    )
+    contributors = FieldList(
+        FormField(ContributorWithRORForm),
+        label='Contributors',
+        min_entries=1,
+        description='Other parties who contributed to the resource, including a contact person'
+    )
+    languages = HiddenField(label='Language', default='en-US')
+    publication_year = IntegerField(label='Publication Year', validators=[validate_past_year])
+    publisher = SelectField(
+        label='Publisher',
+        choices=[
+            'South African Environmental Observation Network',
+            'Department of Forestry, Fisheries and the Environment'
+        ])
+    format = StringField(label='Format Name')
+    resource_types = FormField(ResourceTypeForm, label='Resource Types')
+    earth_science_theme_keyword = SelectField(
+        'GCMD Earth Science theme keyword',
+        choices=[
+            'AGRICULTURE',
+            'ATMOSPHERE',
+            'BIOLOGICAL CLASSIFICATION',
+            'BIOSPHERE',
+            'CLIMATE INDICATORS',
+            'CRYOSPHERE',
+            'HUMAN DIMENSIONS',
+            'LAND SURFACE',
+            'OCEANS',
+            'PALEOCLIMATE',
+            'SOLID EARTH',
+            'SPECTRAL / ENGINEERING',
+            'SUN - EARTH INTERACTIONS',
+            'TERRESTRIAL HYDROSPHERE'
+        ])
+    eov_keywords = SelectMultipleField(
+        'Essential Ocean Variables',
+        choices=[
+            "Sea state",
+            "Ocean surface stress",
+            "Sea ice",
+            "Sea surface height",
+            "Sea surface temperature, SST",
+            "Subsurface temperature",
+            "Surface currents",
+            "Subsurface currents",
+            "Sea surface salinity",
+            "Subsurface salinity",
+            "Ocean surface heat flux",
+            "Ocean bottom pressure",
+            "Turbulent diapycnal fluxes (emerging)",
+            "Oxygen",
+            "Nutrients",
+            "Inorganic carbon",
+            "Transient tracers",
+            "Particulate matter",
+            "Nitrous oxide",
+            "Stable carbon isotopes",
+            "Dissolved organic carbon",
+            "Phytoplankton biomass and diversity",
+            "Zooplankton biomass and diversity",
+            "Fish abundance and distribution",
+            "Marine turtles, birds, mammals abundance and distribution",
+            "Hard coral cover and composition",
+            "Seagrass cover and composition",
+            "Macroalgal canopy cover and composition",
+            "Mangrove cover and composition",
+            "Microbe biomass and diversity (emerging)",
+            "Invertebrate abundance and distribution (emerging)"
+        ])
+    ecv_keywords = SelectMultipleField(
+        'Essential Climate Variables',
+        choices=[
+            'Precipitation',
+            'Surface Pressure',
+            'Surface Radiation Budget',
+            'Surface Temperature',
+            'Surface Water Vapour',
+            'Surface Wind Speed and Direction',
+            'Upper-air Temperature',
+            'Earth Radiation Budget',
+            'Lightning',
+            'Upper-air Water Vapour',
+            'Upper-air Wind Speed and Direction',
+            'Clouds',
+            'Aerosols',
+            'Carbon Dioxide, Methane & Other Greenhouse Gases',
+            'Ozone',
+            'Precursors for Aerosols and Ozone',
+            'Groundwater',
+            'Lakes',
+            'River Discharge',
+            'Terrestrial Water Storage (TWS)',
+            'Evaporation from Land',
+            'Soil Moisture',
+            'Glaciers',
+            'Ice sheets and Ice Shelves',
+            'Permafrost',
+            'Snow',
+            'Above-ground Biomass',
+            'Albedo',
+            'Fire',
+            'Fraction of Absorbed Photosynthetically Active Radiation (FAPAR)',
+            'Land Cover',
+            'Land Surface Temperature',
+            'Leaf Area Index',
+            'Soil Carbon',
+            'Anthropogenic Greenhouse Gas Emissions',
+            'Anthropogenic Water Use',
+            'Ocean Surface Heat Flux',
+            'Sea Ice',
+            'Sea Level',
+            'Sea State',
+            'Surface Currents',
+            'Sea Surface Salinity',
+            'Surface Stress',
+            'Sea Surface Temperature',
+            'Subsurface Currents',
+            'Subsurface Salinity',
+            'Subsurface Temperature',
+            'Inorganic Carbon',
+            'Nitrous Oxide',
+            'Nutrients',
+            'Ocean Colour',
+            'Oxygen',
+            'Transient Tracers',
+            'Marine Habitats',
+            'Plankton'
+        ])
+    ebv_keywords = SelectMultipleField(
+        'Essential Biodiversity Variables',
+        choices=[
+            'Genetic diversity (richness & heterozygosity)',
+            'Genetic differentiation (number of genetic units and genetic distance)',
+            'Effective population size',
+            'Inbreeding',
+            'Species distributions',
+            'Species abundances',
+            'Morphology',
+            'Physiology',
+            'Phenology',
+            'Movement',
+            'Reproduction',
+            'Community abundance',
+            'Taxonomic/phylogenetic diversity',
+            'Trait diversity',
+            'Interaction diversity',
+            'Live cover fraction',
+            'Ecosystem distribution',
+            'Ecosystem Vertical Profile',
+            'Primary productivity',
+            'Ecosystem phenology',
+            'Ecosystem disturbances',
+        ])
+    eav_keywords = SelectMultipleField(
+        'Essential Agricultural Variables',
+        choices=[
+            'Seasonal Dynamics of Surface Water Availability',
+            'Reference Evapotranspiration',
+            'Reference Crop Calendars',
+            'Non-Perennial Cover Crop Utilization Mask',
+            'Managed Grasslands Mask',
+            'Leaf Area Index',
+            'Irrigated Cropland Map',
+            'Degree Growing Days',
+            'Fractional Cover',
+            'Field Boundaries',
+            'fAPAR',
+            'Current Crop Stage',
+            'Crop Rotation Sequence',
+            'Crop Residue Cover Percentage',
+            'Actual Evapotranspiration',
+            'Above Ground Agricultural Biomass',
+            'Surface Soil Moisture',
+            'Root Zone Soil Moisture',
+            'Precipitation',
+            'Land Surface Temperature',
+            'Air Temperature',
+            'Water Productivity',
+            'Seasonal Fallow Mask',
+            'Rangelands Mask',
+            'Rangeland Condition Assessment',
+            'Perennial Cropland Mask',
+            'Non-Perennial Cropland Mask',
+            'Managed Grasslands Mask',
+            'Crop Yield Forecast',
+            'Crop Yield Estimation',
+            'Crop Type Area Estimate',
+            'Cropland Mask',
+            'Crop Type Masks',
+            'Incoming Radiation',
+            'Relative Humidity',
+            'Wind Speed',
+            'Crop Condition Assessment',
+            'Agriculture Mask',
+        ])
+    status = SelectField('Status', choices=[
+        'historicalArchive',
+        'onGoing',
+        'completed',
+    ])
+    place_keywords = SelectMultipleField(label='Place Keywords')
+    topic_categories = SelectField('Topic categories', choices=[
+        'farming',
+        'biota',
+        'boundaries',
+        'climatologyMeteorologyAtmosphere',
+        'economy',
+        'environment',
+        'geoscientificInformation',
+        'health',
+        'imageryBaseMapsEarthCover',
+        'intelligenceMilitary',
+        'inlandWaters',
+        'location',
+        'oceans',
+        'planningCadastre',
+        'society',
+        'structure',
+        'transportation',
+        'utlitiesCommunication',
+    ])
+    immutable_resource = FormField(ImmutableResourceForm, label='Immutable Resource')
+
+
+class SubmissionFilterForm(BaseForm):
+    status = SelectField(label='Status')
+
+
+class SubmissionAcceptForm(BaseForm):
+    collection_id = SelectField(label='Collection')
+    doi = StringField(label='DOI')
+    schema_id = RadioField(
+        label='Schema',
+        choices=[
+            ODPMetadataSchema.SAEON_DATACITE4.value,
+            ODPMetadataSchema.SAEON_ISO19115.value
+        ],
+        validators=[data_required()]
     )
