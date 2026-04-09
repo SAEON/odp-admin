@@ -3,7 +3,7 @@
 {% from 'page.j2' import nav_logo, nav_title, nav_menu, nav_dropdown, footer %}
 
 {% block web_title %}
-ODP Admin
+    ODP Admin
 {% endblock %}
 
 {% block header %}
@@ -41,19 +41,12 @@ ODP Admin
             <div class="navbar-nav justify-content-end flex-grow-evenly">
                 {{ nav_menu(current_user) }}
             </div>
-            {% endif %}
         </div>
-        <div class="navbar-nav justify-content-end flex-grow-evenly">
-            {{ nav_menu(current_user) }}
-        </div>
-    </div>
-</nav>
+    </nav>
 {% endblock %}
 
 {% block footer %}
-{{ footer(
-repos=['odp-server', 'odp-admin', 'odp-core', 'odp-ui']
-) }}
+    {{ footer(repos=['odp-server', 'odp-admin', 'odp-core', 'odp-ui']) }}
 {% endblock %}
 
 {% block styles %}
