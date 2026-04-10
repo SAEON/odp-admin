@@ -136,7 +136,7 @@ def export_csv():
     try:
 
         api_url = f"{api.api_url}/download/export/csv"
-        response = api._send_request('GET', api_url, data=None, params=params)
+        response = api._send_request('GET', api_url, data=None, files=None, params=params, headers={}, stream=True)
 
         # Check for errors (this will raise ODPAPIError if the backend fails)
         response.raise_for_status()
