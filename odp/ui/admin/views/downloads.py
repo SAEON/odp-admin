@@ -1,10 +1,10 @@
 """Admin interface for download audit logs and reporting."""
 from datetime import datetime, timedelta
 
-import requests
 from flask import Blueprint, Response, render_template, request, redirect, url_for, flash
 
 from odp.const import ODPScope
+from odp.lib.client import ODPAPIError
 from odp.ui.base import api
 
 bp = Blueprint('downloads', __name__)
@@ -40,7 +40,7 @@ def index():
 
     try:
 
-        download_logs = api.get('/download/logs', params=params)
+        download_logs = api.get('/download/logs', **params)
 
         return render_template(
             'download_index.html',
@@ -56,8 +56,8 @@ def index():
             download_type=download_type,
         )
 
-    except requests.RequestException as e:
-        flash(f'Error retrieving download logs: {str(e)}', category='error')
+    except ODPAPIError as e:
+        flash(f'Error retrieving download logs: {e.error_detail}', category='error')
         return render_template(
             'download_index.html',
             downloads=[],
@@ -90,8 +90,7 @@ def analytics():
 
     try:
         # Call the backend API for statistics
-        download_stats = api.get('/download/stats', params=params)
-
+        download_stats = api.get('/download/stats', **params)
 
         return render_template(
             'download_analytics.html',
@@ -100,9 +99,8 @@ def analytics():
             end_date=end_date,
         )
 
-
-    except requests.RequestException as e:
-        flash(f'Error retrieving download statistics: {str(e)}', category='error')
+    except ODPAPIError as e:
+        flash(f'Error retrieving download statistics: {e.error_detail}', category='error')
         return render_template(
             'download_analytics.html',
             stats={},
@@ -135,11 +133,7 @@ def export_csv():
 
     try:
 
-        api_url = f"{api.api_url}/download/export/csv"
-        response = api._send_request('GET', api_url, data=None, files=None, params=params, headers={}, stream=True)
-
-        # Check for errors (this will raise ODPAPIError if the backend fails)
-        response.raise_for_status()
+        response = api.request('GET', '/download/export/csv', stream=True, **params)
 
         # Stream the CSV content directly to the browser
         return Response(
