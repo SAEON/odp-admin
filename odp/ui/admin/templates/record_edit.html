@@ -24,22 +24,10 @@
 {% block scripts %}
     {{ super() }}
     <script>
-        function showErrorMessage(message) {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = 'alert alert-danger alert-dismissible fade show';
-            alertDiv.setAttribute('role', 'alert');
-            alertDiv.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            `;
-            const container = document.querySelector('main') || document.body;
-            container.insertBefore(alertDiv, container.firstChild);
-        }
-
         $(function() {
             $("#new-doi").bind("click", function() {
                 if (!$("#collection_id").val()) {
-                    showErrorMessage("Please select a collection.");
+                    alert("Please select a collection.");
                     return;
                 }
                 $.getJSON(rootPath + "/collections/" + $("#collection_id").val() + "/doi/new",
@@ -47,7 +35,7 @@
                         if (result.doi) {
                             $("#doi").val(result.doi);
                         } else if (result.detail) {
-                            showErrorMessage(result.detail);
+                            alert(result.detail);
                         }
                     }
                 );
