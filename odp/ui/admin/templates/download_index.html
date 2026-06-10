@@ -110,48 +110,38 @@ Download Logs
                 </td>
                 <td>
                     {% if download.download_type == 'single_record' %}
-                    {% set doi = download.doi %}
-                    {% if doi %}
-                    {% set base = config.get('MIMS_CATALOG_URL', '').rstrip('/') %}
-                    <a href="
-                                                {% if base.endswith('/catalog') %}
-                                                    {{ base }}/{{ doi }}
-                                                {% else %}
-                                                    {{ base }}/catalog/{{ doi }}
-                                                {% endif %}
-                                                " target="_blank" class="btn btn-sm btn-outline-primary">
-                        View Record
-                    </a>
-                    {% else %}
-                    -
-                    {% endif %}
+                        {% set doi = download.doi %}
+                        {% if doi %}
+                            {% set base = config.get('MIMS_CATALOG_URL', '').rstrip('/') %}
+                            {% if base.endswith('/catalog') %}
+                                {% set url = base ~ '/' ~ doi %}
+                            {% else %}
+                                {% set url = base ~ '/catalog/' ~ doi %}
+                            {% endif %}
+                            <a href="{{ url }}" target="_blank" class="btn btn-sm btn-outline-primary">View Record</a>
+                        {% else %}
+                            -
+                        {% endif %}
                     {% elif download.download_type == 'zip_bundle' %}
-                    {% set record_ids = download.record_ids %} {% if record_ids and record_ids|length > 0 %}
-                    {% set query_parts = [] %}
-                    {% for record_id in record_ids %}
-                    {% set _ = query_parts.append('record_id_or_doi_list=' + record_id) %}
-                    {% endfor %}
-                    {% set query = query_parts|join('&') %}
-
-                    {% set base = config.get('MIMS_CATALOG_URL', '').rstrip('/') %}
-
-                    {% set base = config.get('MIMS_CATALOG_URL', '').rstrip('/') %}
-
-                    <a href="
-                                                {% if base.endswith('/catalog') %}
-                                                    {{ base }}/subset?{{ query }}&page=1&size=50
-                                                {% else %}
-                                                    {{ base }}/catalog/subset?{{ query }}&page=1&size=50
-                                                {% endif %}
-                                                " target="_blank" class="btn btn-sm btn-outline-warning">
-                        View Bundle
-                    </a>
-
+                        {% set record_ids = download.record_ids %}
+                        {% if record_ids and record_ids|length > 0 %}
+                            {% set query_parts = [] %}
+                            {% for record_id in record_ids %}
+                                {% set _ = query_parts.append('record_id_or_doi_list=' + record_id) %}
+                            {% endfor %}
+                            {% set query = query_parts|join('&') %}
+                            {% set base = config.get('MIMS_CATALOG_URL', '').rstrip('/') %}
+                            {% if base.endswith('/catalog') %}
+                                {% set url = base ~ '/subset?' ~ query ~ '&page=1&size=50' %}
+                            {% else %}
+                                {% set url = base ~ '/catalog/subset?' ~ query ~ '&page=1&size=50' %}
+                            {% endif %}
+                            <a href="{{ url }}" target="_blank" class="btn btn-sm btn-outline-warning">View Bundle</a>
+                        {% else %}
+                            -
+                        {% endif %}
                     {% else %}
-                    -
-                    {% endif %}
-                    {% else %}
-                    -
+                        -
                     {% endif %}
                 </td>
                 <td><small>{{ download.ip_address or '-' }}</small></td>

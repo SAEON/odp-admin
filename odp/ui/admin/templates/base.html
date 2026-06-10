@@ -3,59 +3,59 @@
 {% from 'page.j2' import nav_logo, nav_title, nav_menu, nav_dropdown, footer %}
 
 {% block web_title %}
-ODP Admin
+    ODP Admin
 {% endblock %}
 
 {% block header %}
-<nav class="navbar navbar-expand-lg bg-dark navbar-dark p-3">
-    <div class="container-fluid">
-        <div class="navbar-nav justify-content-start flex-grow-evenly">
-            {{ nav_logo() }}
-        </div>
-        <div class="d-flex flex-column navbar-nav justify-content-center align-items-center">
-            {{ nav_title() }}
-            {% if current_user.is_authenticated %}
-            <div class="d-flex flex-row">
-                {{ nav_dropdown('Metadata Management', request.blueprint, dark=true,
-                records='Records',
-                collections='Collections',
-                providers='Providers',
-                _='',
-                catalogs='Catalogues',
-                schemas='Schemas',
-                tags='Tags',
-                vocabularies='Vocabularies'
-                ) }}
-                {{ nav_dropdown('Access Control', request.blueprint, dark=true,
-                clients='Clients',
-                roles='Roles',
-                users='Users'
-                ) }}
-                {{ nav_dropdown('Reports', request.blueprint, dark=true,
-                downloads='Downloads'
-                ) }}
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark p-3">
+        <div class="container-fluid">
+            <div class="navbar-nav justify-content-start flex-grow-evenly">
+                {{ nav_logo() }}
             </div>
-            {% endif %}
+            <div class="d-flex flex-column navbar-nav justify-content-center align-items-center">
+                {{ nav_title() }}
+                {% if current_user.is_authenticated %}
+                    <div class="d-flex flex-row">
+                        {{ nav_dropdown('Metadata Management', request.blueprint, dark=true,
+                            records='Records',
+                            collections='Collections',
+                            providers='Providers',
+                            _='',
+                            catalogs='Catalogues',
+                            schemas='Schemas',
+                            tags='Tags',
+                            vocabularies='Vocabularies'
+                        ) }}
+                        {{ nav_dropdown('Access Control', request.blueprint, dark=true,
+                            clients='Clients',
+                            roles='Roles',
+                            users='Users'
+                        ) }}
+                        {{ nav_dropdown('Reports', request.blueprint, dark=true,
+                            downloads='Downloads'
+                        ) }}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="navbar-nav justify-content-end flex-grow-evenly">
+                {{ nav_menu(current_user) }}
+            </div>
         </div>
-        <div class="navbar-nav justify-content-end flex-grow-evenly">
-            {{ nav_menu(current_user) }}
-        </div>
-    </div>
-</nav>
+    </nav>
 {% endblock %}
 
 {% block footer %}
-{{ footer(
-repos=['odp-server', 'odp-admin', 'odp-core', 'odp-ui']
-) }}
+    {{ footer(
+        repos=['odp-server', 'odp-admin', 'odp-core', 'odp-ui']
+    ) }}
 {% endblock %}
 
 {% block styles %}
-{{ super() }}
-{{ bootswatch_spacelab_css() }}
+    {{ super() }}
+    {{ bootswatch_spacelab_css() }}
 {% endblock %}
 
 {% block scripts %}
-{{ super() }}
-{{ jquery_js() }}
+    {{ super() }}
+    {{ jquery_js() }}
 {% endblock %}
