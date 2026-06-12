@@ -47,7 +47,7 @@ def index():
             downloads=download_logs.get('items', []),
             total=download_logs.get('total', 0),
             page=page,
-            total_pages=download_logs.get('total_pages', 0),
+            total_pages=download_logs.get('pages', 0),
             size=download_logs.get('size', 50),
             start_date=start_date,
             end_date=end_date,
