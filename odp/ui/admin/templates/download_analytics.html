@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% from 'lib.j2' import chartjs_js %}
 
 {% block web_title %}
     {{ super() }} |
@@ -369,11 +370,12 @@
 
         {% endif %}
     </div>
+{% endblock %}
 
-    <!-- Chart.js library for visualizations -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+{% block scripts %}
+    {{ super() }}
+    {{ chartjs_js() }}
     <script>
-        // Initialize daily downloads trend chart
         document.addEventListener('DOMContentLoaded', function() {
             const chartCanvas = document.getElementById('dailyTrendChart');
             if (!chartCanvas) return;
