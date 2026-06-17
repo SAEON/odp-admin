@@ -324,23 +324,6 @@ class ContributorWithRORForm(ContributorForm):
     ror = StringField(label='ROR')
 
 
-class FundingReferencesForm(BaseForm):
-    funder_name = StringField(label='Funder name')
-    funder_identifier = StringField(label='Funder identifier')
-    funder_identifier_type = SelectField(
-        label='Funder identifier type',
-        choices=[
-            "ISNI",
-            "GRID",
-            "Crossref Funder ID",
-            "ROR",
-            "Other"
-        ]
-    )
-    award_number = StringField(label='Award number')
-    award_title = StringField(label='Award title')
-
-
 class LinkedResourcesForm(BaseForm):
     linked_resource_type = SelectField(label='Linked resource type', choices=[
         "Information",
@@ -600,7 +583,6 @@ class CurationSubmissionForm(SubmissionForm):
         'utlitiesCommunication',
     ])
     immutable_resource = FormField(ImmutableResourceForm, label='Immutable Resource')
-    funding_reference = FieldList(FormField(FundingReferencesForm), min_entries=1, label='Funding References')
     data_size = StringField(label='Data Size')
     linked_resource = FieldList(FormField(LinkedResourcesForm), min_entries=1, label='Linked Resources')
 
