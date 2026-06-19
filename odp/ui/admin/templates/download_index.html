@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% from 'controls.j2' import pagination %}
+
+{% block web_title %}
+{{ super() }} |
+{% block heading %}
+Download Logs
+{% endblock %}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">Download Audit Logs</h2>
+
+    <!-- Filter Form -->
+    <form class="row g-3 mb-4 p-3 bg-light rounded" method="get">
+        <div class="col-md-2">
+            <label for="start_date" class="form-label">Start Date</label>
+            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ start_date }}">
+        </div>
+        <div class="col-md-2">
+            <label for="end_date" class="form-label">End Date</label>
+            <input type="date" class="form-control" id="end_date" name="end_date" value="{{ end_date }}">
+        </div>
+        <div class="col-md-2">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" value="{{ email }}"
+                   placeholder="user@example.com">
+        </div>
+        <div class="col-md-2">
+            <label for="organisation" class="form-label">Organisation</label>
+            <input type="text" class="form-control" id="organisation" name="organisation" value="{{ organisation }}"
+                   placeholder="Org name">
+        </div>
+        <div class="col-md-2">
+            <label for="download_type" class="form-label">Download Type</label>
+            <select class="form-control" id="download_type" name="download_type">
+                <option value="">All Types</option>
+                <option value="single_record" {% if download_type==
+                'single_record' %}selected{% endif %}>Single Record</option>
+                <option value="zip_bundle" {% if download_type==
+                'zip_bundle' %}selected{% endif %}>ZIP Bundle</option>
+            </select>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+    </form>
+
+    <!-- Action Buttons -->
+    <div class="mb-3">
+        <a href="{{ url_for('downloads.analytics') }}" class="btn btn-info">View Analytics</a>
+        <a href="{{ url_for('downloads.export_csv', start_date=start_date, end_date=end_date, email=email, organisation=organisation, download_type=download_type) }}"
+           class="btn btn-success">Export CSV</a>
+    </div>
+
+    <!-- Results Summary -->
+    <div class="alert alert-info">
+        Showing <strong>{{ downloads|length }}</strong> of <strong>{{ total }}</strong> total downloads
+        {% if start_date or end_date or email or organisation or download_type %}
+        <span class="ms-3">
+            <a href="{{ url_for('downloads.index') }}" class="alert-link">Clear filters</a>
+        </span>
+        {% endif %}
+    </div>
+
+    {% if error %}
+    <div class="alert alert-danger">
+        <strong>Error:</strong> {{ error }}
+    </div>
+    {% endif %}
+
+    <!-- Downloads Table -->
+    {% if downloads %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-sm">
+            <thead class="table-dark">
+            <tr>
+                <th>Date/Time</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Organisation</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Record Link</th>
+                <th>IP Address</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for download in downloads %}
+            <tr>
+                <td>{{ download.timestamp[:19] }}</td>
+                <td>{{ download.name or '-' }}</td>
+                <td>{{ download.email or '-' }}</td>
+                <td>{{ download.organisation or '-' }}</td>
+                <td>
+                    {% if download.download_type == 'single_record' %}
+                    <span class="badge bg-primary">Single Record</span>
+                    {% elif download.download_type == 'zip_bundle' %}
+                    <span class="badge bg-warning text-dark">ZIP Bundle</span>
+                    {% else %}
+                    <span class="badge bg-secondary">{{ download.download_type or '-' }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if download.success %}
+                    <span class="badge bg-success">Success</span>
+                    {% else %}
+                    <span class="badge bg-danger">Failed</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if download.download_type == 'single_record' %}
+                        {% set doi = download.doi %}
+                        {% if doi %}
+                            {% set base = config.get('MIMS_CATALOG_URL', '').rstrip('/') %}
+                            {% if base.endswith('/catalog') %}
+                                {% set url = base ~ '/' ~ doi %}
+                            {% else %}
+                                {% set url = base ~ '/catalog/' ~ doi %}
+                            {% endif %}
+                            <a href="{{ url }}" target="_blank" class="btn btn-sm btn-outline-primary">View Record</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    {% elif download.download_type == 'zip_bundle' %}
+                        {% set record_ids = download.record_ids %}
+                        {% if record_ids and record_ids|length > 0 %}
+                            {% set query_parts = [] %}
+                            {% for record_id in record_ids %}
+                                {% set _ = query_parts.append('record_id_or_doi_list=' + record_id) %}
+                            {% endfor %}
+                            {% set query = query_parts|join('&') %}
+                            {% set base = config.get('MIMS_CATALOG_URL', '').rstrip('/') %}
+                            {% if base.endswith('/catalog') %}
+                                {% set url = base ~ '/subset?' ~ query ~ '&page=1&size=50' %}
+                            {% else %}
+                                {% set url = base ~ '/catalog/subset?' ~ query ~ '&page=1&size=50' %}
+                            {% endif %}
+                            <a href="{{ url }}" target="_blank" class="btn btn-sm btn-outline-warning">View Bundle</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td><small>{{ download.ip_address or '-' }}</small></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {{ pagination(
+        page,
+        total_pages,
+        total,
+        items_singular='download',
+        items_plural='downloads',
+        endpoint='downloads.index',
+        start_date=start_date,
+        end_date=end_date,
+        email=email,
+        organisation=organisation,
+        download_type=download_type
+    ) }}
+
+    {% else %}
+    <div class="alert alert-info">
+        No download records found matching your criteria.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
