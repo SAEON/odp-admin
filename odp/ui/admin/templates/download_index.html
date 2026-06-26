@@ -112,31 +112,21 @@ Download Logs
                 <td>
                     {% if download.download_type == 'single_record' %}
                         {% set doi = download.doi %}
-                        {% if doi %}
-                            {% set base = config.get('MIMS_CATALOG_URL', '').rstrip('/') %}
-                            {% if base.endswith('/catalog') %}
-                                {% set url = base ~ '/' ~ doi %}
-                            {% else %}
-                                {% set url = base ~ '/catalog/' ~ doi %}
-                            {% endif %}
+                        {% if doi and download.catalog_url %}
+                            {% set url = download.catalog_url.rstrip('/') ~ '/catalog/' ~ doi %}
                             <a href="{{ url }}" target="_blank" class="btn btn-sm btn-outline-primary">View Record</a>
                         {% else %}
                             -
                         {% endif %}
                     {% elif download.download_type == 'zip_bundle' %}
                         {% set record_ids = download.record_ids %}
-                        {% if record_ids and record_ids|length > 0 %}
+                        {% if record_ids and record_ids|length > 0 and download.catalog_url %}
                             {% set query_parts = [] %}
                             {% for record_id in record_ids %}
                                 {% set _ = query_parts.append('record_id_or_doi_list=' + record_id) %}
                             {% endfor %}
                             {% set query = query_parts|join('&') %}
-                            {% set base = config.get('MIMS_CATALOG_URL', '').rstrip('/') %}
-                            {% if base.endswith('/catalog') %}
-                                {% set url = base ~ '/subset?' ~ query ~ '&page=1&size=50' %}
-                            {% else %}
-                                {% set url = base ~ '/catalog/subset?' ~ query ~ '&page=1&size=50' %}
-                            {% endif %}
+                            {% set url = download.catalog_url.rstrip('/') ~ '/catalog/subset?' ~ query ~ '&page=1&size=50' %}
                             <a href="{{ url }}" target="_blank" class="btn btn-sm btn-outline-warning">View Bundle</a>
                         {% else %}
                             -
