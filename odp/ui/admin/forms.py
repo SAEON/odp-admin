@@ -326,6 +326,7 @@ class ContributorWithRORForm(ContributorForm):
 
 class LinkedResourcesForm(BaseForm):
     linked_resource_type = SelectField(label='Linked resource type', choices=[
+        "",
         "Information",
         "OfflineAccess",
         "ConditionalAccess",
