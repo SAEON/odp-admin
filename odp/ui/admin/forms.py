@@ -297,6 +297,7 @@ class ImmutableResourceForm(BaseForm):
 
 class ResourceTypeForm(BaseForm):
     resource_type_general = SelectField('Resource Type General', choices=[
+        "",
         "Audiovisual",
         "Collection",
         "DataPaper",
@@ -381,6 +382,7 @@ class CurationSubmissionForm(SubmissionForm):
     earth_science_theme_keyword = SelectField(
         'GCMD Earth Science theme keyword',
         choices=[
+            '',
             'AGRICULTURE',
             'ATMOSPHERE',
             'BIOLOGICAL CLASSIFICATION',
