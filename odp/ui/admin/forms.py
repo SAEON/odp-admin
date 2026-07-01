@@ -405,7 +405,7 @@ class CurationSubmissionForm(SubmissionForm):
             "Ocean surface stress",
             "Sea ice",
             "Sea surface height",
-            "Sea surface temperature, SST",
+            "Sea surface temperature",
             "Subsurface temperature",
             "Surface currents",
             "Subsurface currents",
