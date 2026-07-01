@@ -31,6 +31,9 @@
                             roles='Roles',
                             users='Users'
                         ) }}
+                        {{ nav_dropdown('Reports', request.blueprint, dark=true,
+                            downloads='Downloads'
+                        ) }}
                     </div>
                 {% endif %}
             </div>
