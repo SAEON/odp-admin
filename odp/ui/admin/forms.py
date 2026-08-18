@@ -2,66 +2,7 @@ from wtforms import BooleanField, RadioField, SelectField, StringField, TextArea
 from wtforms.validators import data_required, input_required, length, optional, regexp
 
 from odp.const import DOI_REGEX, SID_REGEX
-from odp.const.hydra import GrantType, ResponseType, TokenEndpointAuthMethod
 from odp.ui.base.forms import BaseForm, DateStringField, JSONTextField, MultiCheckboxField, StringListField, json_object
-
-
-class ClientForm(BaseForm):
-    id = StringField(
-        label='Client id',
-        filters=[lambda s: s.strip() if s else s],
-        validators=[data_required(), length(min=2)],
-    )
-    name = StringField(
-        label='Client name',
-        validators=[data_required()],
-    )
-    secret = StringField(
-        label='Client secret',
-    )
-    collection_specific = BooleanField(
-        label='Collection-specific',
-    )
-    collection_ids = MultiCheckboxField(
-        label='Collections',
-    )
-    scope_ids = MultiCheckboxField(
-        label='Scope',
-    )
-    grant_types = MultiCheckboxField(
-        label='Grant types',
-        choices=[(gt.value, gt.value) for gt in GrantType],
-    )
-    response_types = MultiCheckboxField(
-        label='Response types',
-        choices=[(rt.value, rt.value) for rt in ResponseType],
-    )
-    redirect_uris = StringListField(
-        label='Redirect URIs',
-    )
-    post_logout_redirect_uris = StringListField(
-        label='Post-logout redirect URIs',
-    )
-    client_credentials_grant_access_token_lifespan = StringField(
-        label='Access token lifespan (client credentials)',
-        description='Leave blank for the system default.',
-    )
-    token_endpoint_auth_method = RadioField(
-        label='Token endpoint auth method',
-        choices=[(tm.value, tm.value) for tm in TokenEndpointAuthMethod],
-        default=TokenEndpointAuthMethod.CLIENT_SECRET_BASIC.value,
-    )
-    allowed_cors_origins = StringListField(
-        label='Allowed CORS origins',
-    )
-
-    def validate_secret(self, field):
-        if field.data and len(field.data) < 16:
-            raise ValidationError('Client secret must be at least 16 characters long.')
-
-    def validate_scope_ids(self, field):
-        if not field.data:
-            raise ValidationError('At least one scope must be selected.')
 
 
 class CollectionForm(BaseForm):
@@ -199,23 +140,6 @@ class RecordTagEmbargoForm(BaseForm):
             raise ValidationError('The end date cannot be earlier than the start date.')
 
 
-class RoleForm(BaseForm):
-    id = StringField(
-        label='Role id',
-        filters=[lambda s: s.strip() if s else s],
-        validators=[data_required(), length(min=2)],
-    )
-    collection_specific = BooleanField(
-        label='Collection-specific',
-    )
-    collection_ids = MultiCheckboxField(
-        label='Collections',
-    )
-    scope_ids = MultiCheckboxField(
-        label='Scope',
-    )
-
-
 class TagKeywordForm(BaseForm):
     vocabulary = StringField(
         label='Vocabulary',
@@ -227,27 +151,6 @@ class TagKeywordForm(BaseForm):
     )
     comment = StringField(
         label='Comment',
-    )
-
-
-class UserForm(BaseForm):
-    id = StringField(
-        label='User id',
-        render_kw={'readonly': ''},
-    )
-    email = StringField(
-        label='Email',
-        render_kw={'readonly': ''},
-    )
-    name = StringField(
-        label='Name',
-        render_kw={'readonly': ''},
-    )
-    active = BooleanField(
-        label='Active',
-    )
-    role_ids = MultiCheckboxField(
-        label='Roles',
     )
 
 
