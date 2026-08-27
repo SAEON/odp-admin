@@ -596,7 +596,7 @@ class SubmissionFilterForm(BaseForm):
 
 class SubmissionAcceptForm(BaseForm):
     collection_id = SelectField(label='Collection')
-    doi = StringField(label='DOI')
+    doi = StringField(label='DOI', validators=[data_required()])
     schema_id = RadioField(
         label='Schema',
         choices=[

@@ -61,13 +61,17 @@ def detail(id):
 def accept(id):
     accept_form = SubmissionAcceptForm(request.form)
 
-    api.put(
-        f'/submission/admin/{id}/accept',
-        data=dict(),
-        collection_id=accept_form.data['collection_id'],
-        schema_id=accept_form.data['schema_id'],
-        doi=accept_form.data['doi']
-    )
+    populate_collection_choices(accept_form.collection_id)
+
+    if accept_form.validate():
+
+        api.put(
+            f'/submission/admin/{id}/accept',
+            data=dict(),
+            collection_id=accept_form.data['collection_id'],
+            schema_id=accept_form.data['schema_id'],
+            doi=accept_form.data['doi']
+        )
 
     return redirect(url_for('.detail', id=id))
 
@@ -113,7 +117,7 @@ def edit(id):
     )
 
 
-@bp.route('/<id>/delete', methods=['GET', 'POST'])
+@bp.route('/<id>/delete', methods=['POST'])
 @api.view(ODPScope.SUBMISSION_ADMIN)
 def delete(id):
     api.delete(f'/submission/admin/{id}')

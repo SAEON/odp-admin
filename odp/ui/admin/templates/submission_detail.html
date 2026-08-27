@@ -42,8 +42,10 @@
                     <input type="text" class="form-control" placeholder="{{ dataset_placeholder }}" disabled="">
                 </div>
 
-
                 <form id="submit-form" action="{{ url_for('.accept', id=submission.id) }}" method="post">
+
+                    {{ accept_form.csrf_token }}
+
                     <div class="mt-4">
                         {{ accept_form.collection_id.label(class="form-label") }}
                         {{ accept_form.collection_id(class="form-control") }}
@@ -100,4 +102,5 @@
 
 {% block scripts %}
     {{ super() }}
+    <script src="{{ url_for('static', filename='scripts/controls.js') }}"></script>
 {% endblock %}
