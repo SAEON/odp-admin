@@ -23,23 +23,5 @@
 
 {% block scripts %}
     {{ super() }}
-    <script>
-        $(function() {
-            $("#new-doi").bind("click", function() {
-                if (!$("#collection_id").val()) {
-                    alert("Please select a collection.");
-                    return;
-                }
-                $.getJSON(rootPath + "/collections/" + $("#collection_id").val() + "/doi/new",
-                    function(result) {
-                        if (result.doi) {
-                            $("#doi").val(result.doi);
-                        } else if (result.detail) {
-                            alert(result.detail);
-                        }
-                    }
-                );
-            });
-        });
-    </script>
+    <script src="{{ url_for('static', filename='scripts/controls.js') }}"></script>
 {% endblock %}
