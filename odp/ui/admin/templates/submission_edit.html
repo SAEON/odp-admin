@@ -18,6 +18,7 @@
 {% block styles %}
     {{ super() }}
     {{ select2_css() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/submission.css') }}">
 {% endblock %}
 
 {% block scripts %}
