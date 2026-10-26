@@ -239,23 +239,6 @@ def populate_metadata_schema_choices(field):
     ]
 
 
-def populate_scope_choices(field, scope_types=None):
-    scopes = api.get('/scope/', size=0)['items']
-    field.choices = [
-        (scope['id'], scope['id'])
-        for scope in scopes
-        if scope_types is None or scope['type'] in scope_types
-    ]
-
-
-def populate_role_choices(field):
-    roles = api.get('/role/', size=0)['items']
-    field.choices = [
-        (role['id'], role['id'])
-        for role in roles
-    ]
-
-
 def populate_keyword_choices(field, vocabulary_id, include_none=False):
     vocabulary = api.get(f'/vocabulary/{vocabulary_id}', size=0)
     field.choices = [('', '(None)')] if include_none else []
