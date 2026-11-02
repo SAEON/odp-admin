@@ -39,8 +39,6 @@ def index():
 def detail(id):
     submission = api.get(f'/submission/admin/{id}')
 
-    submission_user = api.get(f'/user/{submission["user_id"]}')
-
     accept_form = SubmissionAcceptForm(request.form, data=submission)
 
     populate_collection_choices(accept_form.collection_id)
@@ -50,7 +48,6 @@ def detail(id):
     return render_template(
         'submission_detail.html',
         submission=submission,
-        submission_user=submission_user,
         accept_form=accept_form,
         buttons_enabled=buttons_enabled,
     )
